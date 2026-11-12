@@ -70,6 +70,7 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .l1::before{background:var(--done)}
 .l2::before{border:1.5px dashed var(--muted)}
 .l3::before{background:var(--accent)}
+.lblue::before{background:#4d7bff}
 .grs{display:flex;flex-direction:column;gap:22px}
 .gr-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .gr-name{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
@@ -92,6 +93,19 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .p-out{color:#ff8a8a;background:rgba(255,107,107,.14)}
 .people li.out .pn{color:var(--muted)}
 .leg2 span::before{display:none}
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+.hbar{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:8px 12px;align-items:center}
+.hbar .hn{font-size:14px;text-align:right;line-height:1.2}
+.hbar .hn small{display:block;font-size:11px;color:var(--muted)}
+.hbar .ht{position:relative;height:26px;border-left:1.5px solid #3a5190}
+.hbar .ht i{position:absolute;left:0;top:2px;bottom:2px;background:#4d7bff;border-radius:0 6px 6px 0;min-width:6px}
+.hbar .ht i.meta{background:var(--done)}
+.hbar .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.hgrid{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:12px;margin-top:6px}
+.hticks{position:relative;height:18px;font-size:11px;color:var(--muted)}
+.hticks span{position:absolute;transform:translateX(-50%)}
+.hcap{margin-top:6px;font-size:12px;color:var(--muted);text-align:center}
+.vazio{color:var(--muted);text-align:center;padding:12px}
 footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 </style>
 </head>
@@ -145,6 +159,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
     <h2>Placar por corretor</h2>
     <div class="legend"><span class="l1">Agendado</span><span class="l2">Falta agendar</span><span class="l3">Acima da promessa</span></div>
     <div class="list" id="list"></div>
+  </section>
+
+  <section aria-label="Gráfico de agendamentos do dia" id="grafico-sec">
+    <h2>Agendamentos do dia por corretor</h2>
+    <div class="legend"><span class="l1">Bateu a promessa</span><span style="--c:#4d7bff" class="lblue">Agendou</span></div>
+    <div class="chart-card">
+      <div id="grafico" role="img" aria-label="Gráfico de barras com quantos agendamentos cada corretor criou hoje"></div>
+    </div>
   </section>
 
   <section aria-label="Agendaram sem promessa" id="extras-sec">
@@ -377,6 +399,39 @@ E.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forE
     block.append(head, gvs);
     root.appendChild(block);
   });
+})();
+
+// gráfico de barras: quem agendou hoje (inclui quem está fora da lista)
+(function grafico() {
+  const box = $("grafico");
+  const nomeCompleto = {};
+  (DADOS.equipe || []).forEach((p) => { if (p.lista) nomeCompleto[p.lista] = p; });
+  const rows = C.filter((c) => c.feito > 0).map((c) => ({nome: (nomeCompleto[c.nome] || {}).nome || c.nome, gv: (nomeCompleto[c.nome] || {}).gv, v: c.feito, bateu: c.feito >= c.prometido}))
+    .concat(E.filter((c) => c.feito > 0).map((c) => {
+      const p = (DADOS.equipe || []).find((x) => x.nome === c.nome) || {};
+      return {nome: c.nome, gv: p.gv, v: c.feito, bateu: false, fora: true};
+    }))
+    .sort((a, b) => b.v - a.v || a.nome.localeCompare(b.nome));
+  if (!rows.length) { const d = document.createElement("div"); d.className = "vazio"; d.textContent = "Ninguém agendou ainda hoje."; box.appendChild(d); return; }
+  const max = Math.max(...rows.map((r) => r.v));
+  const grid = document.createElement("div"); grid.className = "hbar";
+  rows.forEach((r) => {
+    const hn = document.createElement("div"); hn.className = "hn"; hn.textContent = r.nome;
+    const sm = document.createElement("small"); sm.textContent = (r.gv ? "Equipe " + r.gv : "") + (r.fora ? " · fora da lista" : ""); hn.appendChild(sm);
+    const ht = document.createElement("div"); ht.className = "ht";
+    const bar = document.createElement("i"); if (r.bateu) bar.className = "meta";
+    const w = r.v / max * 88; bar.style.width = w + "%";
+    const val = document.createElement("b"); val.textContent = r.v; val.style.left = "calc(" + w + "% + 8px)";
+    ht.append(bar, val);
+    grid.append(hn, ht);
+  });
+  box.appendChild(grid);
+  const g2 = document.createElement("div"); g2.className = "hgrid";
+  const vazio = document.createElement("div");
+  const ticks = document.createElement("div"); ticks.className = "hticks";
+  for (let t = 0; t <= max; t++) { const s = document.createElement("span"); s.style.left = (t / max * 88) + "%"; s.textContent = t; ticks.appendChild(s); }
+  g2.append(vazio, ticks); box.appendChild(g2);
+  const cap = document.createElement("div"); cap.className = "hcap"; cap.textContent = "Número de agendamentos criados hoje"; box.appendChild(cap);
 })();
 </script>
 </body>
