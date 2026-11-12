@@ -188,7 +188,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-12",
-  atualizado: "2026-11-12T13:55:00-03:00",
+  atualizado: "2026-11-12T14:52:00-03:00",
   corretores: [
     {nome: "Ana Luiza", prometido: 2, feito: 0},
     {nome: "Sirlene", prometido: 5, feito: 0},
@@ -202,14 +202,14 @@ const DADOS = {
     {nome: "Cláudio", prometido: 3, feito: 0},
     {nome: "Amekion", prometido: 2, feito: 0},
     {nome: "Guilherme", prometido: 3, feito: 0},
-    {nome: "Marcelo", prometido: 2, feito: 0},
+    {nome: "Marcelo", prometido: 2, feito: 1},
     {nome: "Custódio", prometido: 3, feito: 0},
     {nome: "Aloísio", prometido: 3, feito: 0},
     {nome: "Flavia", prometido: 3, feito: 0},
     {nome: "Jorge", prometido: 3, feito: 0},
     {nome: "Fer", prometido: 3, feito: 0},
     {nome: "Ana Paula", prometido: 2, feito: 0},
-    {nome: "Mayara", prometido: 2, feito: 0},
+    {nome: "Mayara", prometido: 2, feito: 1},
     {nome: "Paola", prometido: 3, feito: 1},
     {nome: "Daniel", prometido: 2, feito: 0},
     {nome: "Lincoln", prometido: 4, feito: 1},
@@ -217,7 +217,11 @@ const DADOS = {
     {nome: "Layane", prometido: 2, feito: 0},
     {nome: "Rose T.", prometido: 2, feito: 0},
     {nome: "Larissa", prometido: 3, feito: 0},
-    {nome: "Lúcia", prometido: 2, feito: 0}
+    {nome: "Lúcia", prometido: 2, feito: 0},
+    {nome: "Fábio", prometido: 2, feito: 0},
+    {nome: "Sônia Maruki", prometido: 2, feito: 0},
+    {nome: "Fran", prometido: 2, feito: 1},
+    {nome: "Jow", prometido: 2, feito: 0}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -230,7 +234,7 @@ const DADOS = {
     {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi", lista: "Wanderson"},
     {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia", lista: "Guilherme"},
     {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: "João Gabriel"},
-    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: "Jow"},
     {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia", lista: "Custódio"},
     {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia", lista: null},
@@ -263,13 +267,13 @@ const DADOS = {
     {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: "Cláudio"},
     {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia", lista: "Ellen"},
     {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: null},
-    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: "Fábio"},
     {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia", lista: "Fer"},
     {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia", lista: "Flavia"},
-    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia", lista: "Fran"},
     {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia", lista: "Jorge"},
     {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia", lista: "Layane"},
-    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia", lista: "Sônia Maruki"},
     {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia", lista: null},
     {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi", lista: null},
     {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi", lista: null},
@@ -279,7 +283,8 @@ const DADOS = {
   // agendaram hoje sem ter feito promessa no grupo
   extras: [
     {nome: "Luciana Lemes", feito: 1},
-    {nome: "Marli Teixeira da Costa", feito: 1}
+    {nome: "Marli Teixeira da Costa", feito: 1},
+    {nome: "Rickelle Quirino de Oliveira", feito: 1}
   ]
 };
 // ==========================================================
