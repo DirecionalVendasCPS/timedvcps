@@ -163,7 +163,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-12",
-  atualizado: "2026-11-12T13:00:00-03:00",
+  atualizado: "2026-11-12T13:55:00-03:00",
   corretores: [
     {nome: "Ana Luiza", prometido: 2, feito: 0},
     {nome: "Sirlene", prometido: 5, feito: 0},
@@ -188,7 +188,11 @@ const DADOS = {
     {nome: "Paola", prometido: 3, feito: 1},
     {nome: "Daniel", prometido: 2, feito: 0},
     {nome: "Lincoln", prometido: 4, feito: 1},
-    {nome: "Taíssa", prometido: 2, feito: 0}
+    {nome: "Taíssa", prometido: 2, feito: 0},
+    {nome: "Layane", prometido: 2, feito: 0},
+    {nome: "Rose T.", prometido: 2, feito: 0},
+    {nome: "Larissa", prometido: 3, feito: 0},
+    {nome: "Lúcia", prometido: 2, feito: 0}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -208,11 +212,11 @@ const DADOS = {
     {nome: "Taline Fideles da Silva", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo", lista: null},
     {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo", lista: "Sirlene"},
-    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: "Lúcia"},
     {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi", lista: null},
-    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi", lista: "Rose T."},
     {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi", lista: null},
@@ -220,7 +224,7 @@ const DADOS = {
     {nome: "Bianca Nascimento Sabino da Silva", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo", lista: "Daniel"},
     {nome: "Emerson Gonçalves Pereira", gv: "Ivan", gr: "Gustavo", lista: null},
-    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: "Larissa"},
     {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo", lista: "Lincoln"},
     {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo", lista: "Marcelo"},
     {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo", lista: "Mayara"},
@@ -239,7 +243,7 @@ const DADOS = {
     {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia", lista: "Flavia"},
     {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia", lista: "Jorge"},
-    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia", lista: "Layane"},
     {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia", lista: null},
     {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi", lista: null},
