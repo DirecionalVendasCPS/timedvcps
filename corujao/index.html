@@ -84,6 +84,12 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .gv-count b{color:var(--ink)}
 .mini{height:8px;border-radius:4px;background:#0f1d40;overflow:hidden}
 .mini i{display:block;height:100%;background:var(--done)}
+.ag{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.ag b{font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ag b.real{color:var(--accent)}
+.ag .pct{font-weight:700;color:var(--ink)}
+.gr-head .ag{width:100%}
+.mini.ag-bar i{background:var(--accent)}
 .people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .people li{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:6px 8px;border-radius:8px;background:#0f1d40}
 .people .pn{min-width:0;overflow-wrap:anywhere}
@@ -352,6 +358,17 @@ E.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forE
   ex.appendChild(row);
 });
 
+// prometido x realizado de um grupo de corretores (GR ou GV)
+function BD_ag(lista) {
+  const prom = lista.reduce((a, p) => a + (p.promessa ? p.promessa.prometido : 0), 0);
+  const real = lista.reduce((a, p) => a + p.feito, 0);
+  const d = document.createElement("div"); d.className = "ag";
+  const b1 = document.createElement("b"); b1.textContent = prom;
+  const b2 = document.createElement("b"); b2.className = "real"; b2.textContent = real;
+  const pc = document.createElement("span"); pc.className = "pct"; pc.textContent = prom ? "(" + Math.round(real / prom * 100) + "%)" : "";
+  d.append("Prometido ", b1, " · Realizado no sistema ", b2, pc);
+  return d;
+}
 // ===== Painel por GR / GV =====
 (function equipes() {
   const porLista = Object.fromEntries(C.map((c) => [c.nome, c]));
@@ -375,7 +392,7 @@ E.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forE
     const b2 = document.createElement("b"); b2.textContent = doGr.length;
     const b3 = document.createElement("b"); b3.textContent = Math.round(na / doGr.length * 100) + "%";
     gs.append(b1, " de ", b2, " corretores na lista (", b3, ")");
-    head.append(gn, gs);
+    head.append(gn, gs, BD_ag(doGr));
     const gvs = document.createElement("div"); gvs.className = "gvs";
     [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
       const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => ordem[a.status] - ordem[b.status] || a.nome.localeCompare(b.nome));
@@ -399,7 +416,12 @@ E.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forE
         else { pill.className = "pill p-out"; pill.textContent = "Não colocou o nome"; }
         li.append(pn, pill); ul.appendChild(li);
       });
-      card.append(top, mini, ul);
+      const agv = BD_ag(doGv);
+      const mini2 = document.createElement("div"); mini2.className = "mini ag-bar";
+      const prom = doGv.reduce((a, p) => a + (p.promessa ? p.promessa.prometido : 0), 0);
+      const real = doGv.reduce((a, p) => a + p.feito, 0);
+      const m2 = document.createElement("i"); m2.style.width = Math.min(100, prom ? real / prom * 100 : (real ? 100 : 0)) + "%"; mini2.appendChild(m2);
+      card.append(top, mini, agv, mini2, ul);
       gvs.appendChild(card);
     });
     block.append(head, gvs);
