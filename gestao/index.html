@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Gestão Semanal dos GVs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Painel de gestão no mesmo azul-noite dos placares: cartões de métrica, semana a semana, funil e ranking */
+:root{
+  --bg:#0b1630; --panel:#12224a; --panel2:#0f1d40; --line:#22376b;
+  --ink:#eef2fb; --muted:#93a3c8; --accent:#ffb627; --blue:#5b7cff;
+  --ok:#3ddc97; --warn:#ffb627; --bad:#ff6b6b;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(91,124,255,.12), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 48px;display:flex;flex-direction:column;gap:30px}
+a.back{color:var(--muted);font-size:13px;text-decoration:none}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:6px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,4.6vw,46px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;line-height:1}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0}
+.sub{font-size:13px;color:var(--muted);margin:4px 0 14px;max-width:80ch;line-height:1.45}
+.lead{font-size:17px;line-height:1.5;margin:12px 0 0;max-width:75ch;color:var(--muted)}
+.lead b{color:var(--ink)}
+.ctrls{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-top:18px}
+.ctrls label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+select{font:600 15px var(--body);color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;min-width:200px}
+select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--c)}
+.grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.klbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;display:flex;justify-content:space-between}
+.kbig{font-family:var(--display);font-weight:800;font-size:46px;line-height:1;margin-top:8px;font-variant-numeric:tabular-nums}
+.kof{color:var(--muted);font-size:14px;margin-top:2px}
+.kof b{color:var(--ink)}
+.bar{position:relative;height:10px;border-radius:5px;background:var(--panel2);margin:12px 0 10px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.bar b{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--ink);border-radius:1px}
+.chip{display:inline-flex;gap:4px;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.st-ok{color:var(--ok);background:rgba(61,220,151,.14)}
+.st-warn{color:var(--warn);background:rgba(255,182,39,.16)}
+.st-bad{color:var(--bad);background:rgba(255,107,107,.14)}
+.cap{font-size:12px;color:var(--muted);margin-top:8px}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--body);font-size:11px;fill:var(--muted)}
+.chart text.v{fill:var(--ink);font-weight:700}
+.tt{position:absolute;pointer-events:none;background:#1b2d5e;border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.4);border-radius:8px;padding:6px 9px;font-size:12px;white-space:nowrap;z-index:5}
+.tt .m{color:var(--muted)}
+.fstep{display:grid;grid-template-columns:110px 1fr 54px;gap:10px;align-items:center}
+.fname{font-size:13px;color:var(--muted)}
+.ftrack{height:26px;position:relative}
+.ftrack i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--blue)}
+.fnum{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.fconv{padding:4px 0 4px 120px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+@media (max-width:520px){.fconv{padding-left:0}}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px;font-variant-numeric:tabular-nums}
+th{font-size:12px;color:var(--muted);font-weight:600;text-align:center;padding:6px;border-bottom:1px solid var(--line)}
+td{padding:6px;text-align:center;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+td .cell{display:flex;flex-direction:column;align-items:center;border-radius:8px;padding:4px 2px}
+td .n{font-weight:700}
+td .p{font-size:11px}
+tr.sel td{background:rgba(255,255,255,.05)}
+tbody tr{cursor:pointer}
+.gvn{font-weight:700}
+.grn{font-size:11px;color:var(--muted)}
+.hb{display:grid;grid-template-columns:minmax(120px,42%) 1fr 30px;gap:8px;align-items:center;font-size:13px;margin-bottom:8px}
+.hb .t{height:14px;position:relative}
+.hb .t i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--blue)}
+.hb .v{text-align:right;font-weight:700}
+details{font-size:13px;color:var(--muted);line-height:1.55}
+details summary{cursor:pointer;color:var(--ink)}
+footer{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="../">← Direcional Vendas CPS</a>
+    <div class="eyebrow">Direcional Vendas · Campinas · Novembro/26 · atualizado em <span id="upd"></span></div>
+    <h1>Gestão Semanal dos GVs</h1>
+    <p class="lead" id="lead"></p>
+    <div class="ctrls">
+      <label for="f-gr">Gerente Regional (GR)<select id="f-gr"></select></label>
+      <label for="f-gv">Gerente de Vendas (GV)<select id="f-gv"></select></label>
+      <div class="legend">
+        <span style="--c:var(--ok)">No ritmo (100%+ do esperado)</span>
+        <span style="--c:var(--warn)">Atenção (70–99%)</span>
+        <span style="--c:var(--bad)">Abaixo (menos de 70%)</span>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Resultado do mês x meta</h2>
+    <p class="sub">Número grande = realizado em novembro. A barra mostra quanto da meta do mês já foi feito; o traço branco marca onde deveria estar até esta semana.</p>
+    <div class="grid5" id="kpis"></div>
+  </section>
+
+  <section>
+    <h2>Semana a semana</h2>
+    <p class="sub">Barras = realizado em cada semana (começando no domingo). Linha tracejada = meta semanal. A semana atual aparece destacada.</p>
+    <div class="grid5" id="semanas"></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Funil de conversão do mês</h2>
+      <p class="sub">Quanto de cada etapa vira a próxima, comparado com a premissa usada nas metas.</p>
+      <div id="funil"></div>
+    </section>
+    <section class="card">
+      <h2>Ranking dos GVs</h2>
+      <p class="sub">Realizado no mês e % do esperado até esta semana. Toque em um GV para filtrar.</p>
+      <div class="twrap"><table><thead><tr><th>GV</th><th>OPs</th><th>AG</th><th>VIS</th><th>PAS</th><th>Vendas</th></tr></thead><tbody id="ranking"></tbody></table></div>
+    </section>
+  </div>
+
+  <section>
+    <h2>Últimas 6 semanas · equipe toda</h2>
+    <p class="sub">Tendência da equipe de Campinas. Não muda com os filtros de GR/GV.</p>
+    <div class="grid5" id="tendencia"></div>
+  </section>
+
+  <div class="grid2">
+    <section class="card"><h2>Vendas por empreendimento</h2><p class="sub">Últimas 6 semanas, equipe toda.</p><div id="emp"></div></section>
+    <section class="card"><h2>Vendas por origem do cliente</h2><p class="sub">Últimas 6 semanas, equipe toda.</p><div id="orig"></div></section>
+  </div>
+
+  <details>
+    <summary>Como ler este painel</summary>
+    <ul>
+      <li><b>Meta do mês</b>: soma das metas de cada GV (aba Novembro/26). Meta semanal = meta do mês ÷ 5.</li>
+      <li><b>Esperado até agora</b>: meta do mês × semanas já iniciadas ÷ 5. No meio da semana é normal ficar abaixo de 100%.</li>
+      <li><b>% do esperado</b>: realizado ÷ esperado. Verde 100%+, amarelo 70–99%, vermelho abaixo de 70%.</li>
+      <li><b>Vendas de novembro</b>: as 13 vendas de meses anteriores migradas para novembro não contam.</li>
+      <li><b>Agendamentos</b> incluem visitas já marcadas para semanas futuras.</li>
+    </ul>
+  </details>
+  <footer>Dados da planilha "BURDIM - Gestão Semanal - GVs - Campinas".</footer>
+</div>
+
+<script>
+const DADOS = {"metas": [{"gv": "Aldinei", "gr": "Takeashi", "nome": "Aldinei Rezende Fagundes", "ops": 180, "ag": 90, "vis": 30, "pas": 12, "vn": 3}, {"gv": "Ícaro", "gr": "Takeashi", "nome": "Ícaro Zivko Miranda", "ops": 180, "ag": 90, "vis": 30, "pas": 12, "vn": 3}, {"gv": "Pina", "gr": "Takeashi", "nome": "Shirley do Nascimento Pina", "ops": 60, "ag": 30, "vis": 10, "pas": 4, "vn": 1}, {"gv": "Mada", "gr": "Patricia", "nome": "Madeleine Borges", "ops": 720, "ag": 360, "vis": 120, "pas": 48, "vn": 12}, {"gv": "Bruno", "gr": "Patricia", "nome": "Bruno Miccoli de Oliveira", "ops": 240, "ag": 120, "vis": 40, "pas": 16, "vn": 4}, {"gv": "Sandro", "gr": "Patricia", "nome": "Sandro Antonio da Silva", "ops": 60, "ag": 30, "vis": 10, "pas": 4, "vn": 1}, {"gv": "Ivan", "gr": "Gustavo", "nome": "Ivan de Aguiar Nascimento", "ops": 300, "ag": 150, "vis": 50, "pas": 20, "vn": 5}, {"gv": "Débora", "gr": "Gustavo", "nome": "Débora (equipe a ajustar na planilha)", "ops": 60, "ag": 30, "vis": 10, "pas": 4, "vn": 1}], "realizado": [{"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-01", "ops": 165, "ag": 19, "vis": 9, "pas": 0, "vn": 0}, {"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-08", "ops": 64, "ag": 10, "vis": 2, "pas": 0, "vn": 0}, {"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-01", "ops": 102, "ag": 16, "vis": 6, "pas": 0, "vn": 0}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-08", "ops": 42, "ag": 14, "vis": 8, "pas": 1, "vn": 1}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-01", "ops": 0, "ag": 15, "vis": 3, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-08", "ops": 0, "ag": 9, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-01", "ops": 234, "ag": 51, "vis": 16, "pas": 7, "vn": 0}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-08", "ops": 54, "ag": 40, "vis": 10, "pas": 6, "vn": 0}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-01", "ops": 112, "ag": 16, "vis": 3, "pas": 1, "vn": 0}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-08", "ops": 64, "ag": 13, "vis": 6, "pas": 0, "vn": 0}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-15", "ops": 0, "ag": 1, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-01", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-08", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-01", "ops": 160, "ag": 18, "vis": 8, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-08", "ops": 121, "ag": 22, "vis": 4, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-15", "ops": 0, "ag": 4, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-01", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-08", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}], "tendencia": [{"semana": "2026-10-04", "ops": 658, "ag": 113, "vis": 44, "pas": 11, "vn": 2}, {"semana": "2026-10-11", "ops": 704, "ag": 100, "vis": 34, "pas": 10, "vn": 6}, {"semana": "2026-10-18", "ops": 531, "ag": 155, "vis": 52, "pas": 10, "vn": 2}, {"semana": "2026-10-25", "ops": 828, "ag": 110, "vis": 32, "pas": 10, "vn": 6}, {"semana": "2026-11-01", "ops": 773, "ag": 120, "vis": 42, "pas": 8, "vn": 0}, {"semana": "2026-11-08", "ops": 345, "ag": 99, "vis": 30, "pas": 7, "vn": 1}], "empreendimentos": [{"empreendimento": "Alta Vista Mangará", "vendas": 17}, {"empreendimento": "Cores da Mata Mangará", "vendas": 7}, {"empreendimento": "Seleto Amoreiras", "vendas": 5}, {"empreendimento": "Rise Parque Prado", "vendas": 1}], "origens": [{"origem": "Oferta do corretor", "vendas": 14}, {"origem": "WhatsApp", "vendas": 10}, {"origem": "Portal Vertical", "vendas": 2}, {"origem": "Stand", "vendas": 1}, {"origem": "Indica mais", "vendas": 1}, {"origem": "Book", "vendas": 1}]};
+const ATUALIZADO = "12/11 às 11h15";
+
+const M = ["ops","ag","vis","pas","vn"];
+const NOME = {ops:"Oportunidades",ag:"Agendamentos",vis:"Visitas",pas:"Pastas",vn:"Vendas"};
+const CURTO = {ops:"OPs",ag:"AG",vis:"VIS",pas:"PAS",vn:"VN"};
+const SEMANAS = ["2026-11-01","2026-11-08","2026-11-15","2026-11-22","2026-11-29"];
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n == null ? "—" : Number(n).toLocaleString("pt-BR", {maximumFractionDigits: 1});
+const dia = (s) => s.slice(8,10) + "/" + s.slice(5,7);
+const el = (t, cls, txt) => { const e = document.createElement(t); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const status = (p) => p == null ? "bad" : p >= 100 ? "ok" : p >= 70 ? "warn" : "bad";
+const STXT = {ok:"No ritmo", warn:"Atenção", bad:"Abaixo"};
+const SCOR = {ok:"var(--ok)", warn:"var(--warn)", bad:"var(--bad)"};
+const agora = new Date();
+const semIni = Math.max(1, Math.min(5, SEMANAS.filter((d) => new Date(d + "T00:00:00-03:00") <= agora).length));
+let F = {gr: "", gv: ""};
+
+function filtro(r) { return F.gv ? r.gv === F.gv : F.gr ? r.gr === F.gr : true; }
+function nomeEscopo() { return F.gv ? "GV " + F.gv : F.gr ? "Equipe do GR " + F.gr : "Equipe Campinas"; }
+function resumo(ok) {
+  const o = {};
+  M.forEach((m) => {
+    const real = DADOS.realizado.filter(ok).reduce((a, r) => a + r[m], 0);
+    const meta = DADOS.metas.filter(ok).reduce((a, r) => a + r[m], 0);
+    const esp = Math.round(meta * semIni / 5);
+    o[m] = {real, meta, esp, pctMes: meta ? Math.round(real / meta * 100) : null, pctEsp: esp ? Math.round(real / esp * 100) : null};
+  });
+  return o;
+}
+
+function tooltip(wrap) {
+  const t = el("div", "tt"); t.hidden = true; wrap.appendChild(t);
+  return {
+    show(ev, lines) {
+      t.replaceChildren(...lines.map(([s, c]) => el("div", c, s))); t.hidden = false;
+      const r = wrap.getBoundingClientRect();
+      let x = ev.clientX - r.left + 12; if (x + t.offsetWidth > r.width) x = Math.max(0, ev.clientX - r.left - t.offsetWidth - 12);
+      t.style.left = x + "px"; t.style.top = Math.max(0, ev.clientY - r.top - 10) + "px";
+    },
+    hide() { t.hidden = true; }
+  };
+}
+
+function barras(box, pts, aria) {
+  const W = 260, H = 150, m = {t: 18, b: 20, l: 4, r: 4};
+  const max = Math.max(1, ...pts.map((p) => Math.max(p.v, p.meta || 0))) * 1.12;
+  const n = pts.length, step = (W - m.l - m.r) / n, bw = step * 0.7;
+  const y = (v) => H - m.b - v / max * (H - m.t - m.b);
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", aria);
+  const add = (t, a, txt) => { const e = document.createElementNS(ns, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; };
+  add("line", {x1: m.l, x2: W - m.r, y1: y(0), y2: y(0), stroke: "#2f4c8f"});
+  const tip = tooltip(box);
+  pts.forEach((p, i) => {
+    const x = m.l + i * step + (step - bw) / 2;
+    add("rect", {x, y: y(p.v), width: bw, height: Math.max(0, y(0) - y(p.v)), rx: 3, fill: p.hi ? "#5b7cff" : "#3a5190", opacity: p.faint ? .45 : 1});
+    add("text", {x: x + bw / 2, y: y(p.v) - 4, "text-anchor": "middle", class: "v"}, fmt(p.v));
+    add("text", {x: x + bw / 2, y: H - 5, "text-anchor": "middle"}, p.label);
+    const hit = add("rect", {x: m.l + i * step, y: m.t, width: step, height: H - m.t - m.b, fill: "transparent"});
+    hit.addEventListener("pointermove", (ev) => tip.show(ev, p.tip)); hit.addEventListener("pointerleave", () => tip.hide());
+  });
+  const meta = pts.find((p) => p.meta != null);
+  if (meta) {
+    add("line", {x1: m.l, x2: W - m.r, y1: y(meta.meta), y2: y(meta.meta), stroke: "#eef2fb", "stroke-dasharray": "4 3", opacity: .7});
+    add("text", {x: W - m.r, y: y(meta.meta) - 4, "text-anchor": "end"}, "meta " + fmt(meta.meta));
+  }
+  box.prepend(svg);
+}
+
+function desenhar() {
+  const R = resumo(filtro);
+  // frase
+  const lead = $("lead"); lead.replaceChildren();
+  const comMeta = M.filter((m) => R[m].esp > 0);
+  const melhor = comMeta.slice().sort((a, b) => R[b].pctEsp - R[a].pctEsp)[0];
+  const pior = comMeta.slice().sort((a, b) => R[a].pctEsp - R[b].pctEsp)[0];
+  lead.append(el("b", null, nomeEscopo()), ", até a semana de " + dia(SEMANAS[semIni - 1]) + ": vendas ", el("b", null, fmt(R.vn.real)), " de ", el("b", null, fmt(R.vn.meta)), " no mês. ");
+  if (melhor && pior && melhor !== pior) lead.append("O ponto mais forte é " + NOME[melhor].toLowerCase() + " (", el("b", null, R[melhor].pctEsp + "%"), " do esperado) e o que mais precisa de atenção é " + NOME[pior].toLowerCase() + " (", el("b", null, R[pior].pctEsp + "%"), ").");
+
+  // KPIs
+  const k = $("kpis"); k.replaceChildren();
+  M.forEach((m) => {
+    const x = R[m], st = status(x.pctEsp);
+    const c = el("div", "card");
+    const l = el("div", "klbl"); l.append(el("span", null, NOME[m]), el("span", null, CURTO[m]));
+    const of = el("div", "kof"); of.append("de ", el("b", null, fmt(x.meta)), " no mês · " + (x.pctMes ?? 0) + "%");
+    const bar = el("div", "bar"); const fi = el("i"); fi.style.width = Math.min(100, x.meta ? x.real / x.meta * 100 : 0) + "%"; fi.style.background = SCOR[st];
+    const pc = el("b"); pc.style.left = "calc(" + (x.meta ? Math.min(100, x.esp / x.meta * 100) : 0) + "% - 1px)"; bar.append(fi, pc);
+    c.append(l, el("div", "kbig", fmt(x.real)), of, bar, el("span", "chip st-" + st, STXT[st] + " · " + (x.pctEsp == null ? "—" : x.pctEsp + "%")), el("div", "cap", "Esperado até agora: " + fmt(x.esp)));
+    k.appendChild(c);
+  });
+
+  // semana a semana
+  const s = $("semanas"); s.replaceChildren();
+  M.forEach((m) => {
+    const metaSem = Math.round(DADOS.metas.filter(filtro).reduce((a, r) => a + r[m], 0) / 5 * 10) / 10;
+    const pts = SEMANAS.map((sem, i) => {
+      const v = DADOS.realizado.filter((r) => filtro(r) && r.semana === sem).reduce((a, r) => a + r[m], 0);
+      return {label: dia(sem), v, meta: metaSem, hi: i === semIni - 1, faint: i >= semIni,
+        tip: [["Semana de " + dia(sem) + (i === semIni - 1 ? " (atual)" : "")], [NOME[m] + ": " + fmt(v)], ["Meta semanal: " + fmt(metaSem), "m"]]};
+    });
+    const c = el("div", "card"); c.appendChild(el("div", "klbl", NOME[m]));
+    const ch = el("div", "chart"); c.appendChild(ch); s.appendChild(c);
+    barras(ch, pts, NOME[m] + " por semana de novembro");
+  });
+
+  // funil
+  const f = $("funil"); f.replaceChildren();
+  const maxV = Math.max(1, ...M.map((m) => R[m].real));
+  M.forEach((m, i) => {
+    const st = el("div", "fstep"); const tr = el("div", "ftrack"); const b = el("i");
+    b.style.width = Math.max(R[m].real ? 2 : 0, Math.sqrt(R[m].real / maxV) * 100) + "%"; b.style.opacity = 1 - i * .12; tr.appendChild(b);
+    st.append(el("span", "fname", NOME[m]), tr, el("span", "fnum", fmt(R[m].real))); f.appendChild(st);
+    if (i < M.length - 1) {
+      const n = M[i + 1];
+      const conv = R[m].real ? Math.round(R[n].real / R[m].real * 100) : null;
+      const prem = R[m].meta ? Math.round(R[n].meta / R[m].meta * 100) : null;
+      const st2 = status(prem && conv != null ? conv / prem * 100 : null);
+      const cv = el("div", "fconv"); cv.append("↓", el("span", "chip st-" + st2, (conv == null ? "—" : conv + "%") + " viram " + NOME[n].toLowerCase()), "premissa " + (prem == null ? "—" : prem + "%"));
+      f.appendChild(cv);
+    }
+  });
+
+  // ranking
+  const tb = $("ranking"); tb.replaceChildren();
+  DADOS.metas.filter((g) => !F.gr || g.gr === F.gr).map((g) => ({g, r: resumo((x) => x.gv === g.gv)}))
+    .sort((a, b) => (b.r.vn.real - a.r.vn.real) || (b.r.pas.real - a.r.pas.real) || (b.r.vis.real - a.r.vis.real))
+    .forEach(({g, r}) => {
+      const tr = el("tr"); if (g.gv === F.gv) tr.className = "sel";
+      tr.addEventListener("click", () => { F.gv = F.gv === g.gv ? "" : g.gv; if (F.gv) F.gr = g.gr; sincronizar(); });
+      const td0 = el("td"); td0.append(el("div", "gvn", g.gv), el("div", "grn", "GR " + g.gr)); tr.appendChild(td0);
+      M.forEach((m) => { const td = el("td"); const c = el("div", "cell st-" + status(r[m].pctEsp)); c.append(el("span", "n", fmt(r[m].real)), el("span", "p", r[m].pctEsp == null ? "—" : r[m].pctEsp + "%")); td.appendChild(c); tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+}
+
+function fixos() {
+  const t = $("tendencia");
+  const n = DADOS.tendencia.length;
+  M.forEach((m) => {
+    const pts = DADOS.tendencia.map((d, i) => ({label: dia(d.semana), v: d[m], hi: i === n - 2, faint: i === n - 1,
+      tip: [["Semana de " + dia(d.semana) + (i === n - 1 ? " (em andamento)" : "")], [NOME[m] + ": " + fmt(d[m])]]}));
+    const c = el("div", "card"); c.appendChild(el("div", "klbl", NOME[m])); const ch = el("div", "chart"); c.appendChild(ch); t.appendChild(c);
+    barras(ch, pts, NOME[m] + " da equipe nas últimas 6 semanas");
+  });
+  [["emp", "empreendimentos", "empreendimento"], ["orig", "origens", "origem"]].forEach(([id, ds, key]) => {
+    const box = $(id); const rows = DADOS[ds].slice().sort((a, b) => b.vendas - a.vendas); const max = Math.max(1, ...rows.map((r) => r.vendas));
+    rows.forEach((r) => { const l = el("div", "hb"); const t2 = el("div", "t"); const i = el("i"); i.style.width = r.vendas / max * 100 + "%"; t2.appendChild(i); l.append(el("span", null, r[key]), t2, el("span", "v", fmt(r.vendas))); box.appendChild(l); });
+  });
+}
+
+function sincronizar() {
+  const sg = $("f-gr"), sv = $("f-gv");
+  const grs = [...new Set(DADOS.metas.map((r) => r.gr))];
+  sg.replaceChildren(new Option("Todos os GRs", ""), ...grs.map((g) => new Option(g, g))); sg.value = F.gr;
+  const gvs = DADOS.metas.filter((r) => !F.gr || r.gr === F.gr);
+  sv.replaceChildren(new Option(F.gr ? "Todos da equipe" : "Todos os GVs", ""), ...gvs.map((r) => new Option(r.gv + " · " + r.gr, r.gv))); sv.value = F.gv;
+  desenhar();
+}
+$("f-gr").addEventListener("change", (e) => { F.gr = e.target.value; F.gv = ""; sincronizar(); });
+$("f-gv").addEventListener("change", (e) => { F.gv = e.target.value; sincronizar(); });
+$("upd").textContent = ATUALIZADO;
+fixos(); sincronizar();
+</script>
+</body>
+</html>
