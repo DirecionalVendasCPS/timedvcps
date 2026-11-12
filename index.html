@@ -162,7 +162,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-12",
-  atualizado: "2026-11-12T12:06:00-03:00",
+  atualizado: "2026-11-12T13:00:00-03:00",
   corretores: [
     {nome: "Ana Luiza", prometido: 2, feito: 0},
     {nome: "Sirlene", prometido: 5, feito: 0},
@@ -184,7 +184,10 @@ const DADOS = {
     {nome: "Fer", prometido: 3, feito: 0},
     {nome: "Ana Paula", prometido: 2, feito: 0},
     {nome: "Mayara", prometido: 2, feito: 0},
-    {nome: "Paola", prometido: 3, feito: 0}
+    {nome: "Paola", prometido: 3, feito: 1},
+    {nome: "Daniel", prometido: 2, feito: 0},
+    {nome: "Lincoln", prometido: 4, feito: 1},
+    {nome: "Taíssa", prometido: 2, feito: 0}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -214,16 +217,16 @@ const DADOS = {
     {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo", lista: "Ana Paula"},
     {nome: "Bianca Nascimento Sabino da Silva", gv: "Ivan", gr: "Gustavo", lista: null},
-    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo", lista: "Daniel"},
     {nome: "Emerson Gonçalves Pereira", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: null},
-    {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo", lista: "Lincoln"},
     {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo", lista: "Marcelo"},
     {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo", lista: "Mayara"},
     {nome: "Muller Gustavo dos Santos", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo", lista: null},
-    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo", lista: "Taíssa"},
     {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia", lista: "Aloísio"},
     {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia", lista: "Amekion"},
     {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia", lista: null},
@@ -245,7 +248,6 @@ const DADOS = {
   ],
   // agendaram hoje sem ter feito promessa no grupo
   extras: [
-    {nome: "Lincoln Farah", feito: 1},
     {nome: "Luciana Lemes", feito: 1},
     {nome: "Marli Teixeira da Costa", feito: 1}
   ]
