@@ -43,6 +43,14 @@ a.tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .tile h2{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:.03em;text-transform:uppercase;margin:0;line-height:1}
 .tile p{margin:0;color:var(--muted);font-size:15px;line-height:1.45;max-width:30ch}
 .go{margin-top:4px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--bg);background:var(--accent);padding:10px 18px;border-radius:999px}
+.som{position:fixed;right:16px;bottom:16px;z-index:10;display:flex;align-items:center;gap:10px;padding:10px 16px 10px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font:600 14px var(--body);cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.som:hover{border-color:var(--accent)}
+.som:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.som svg{width:22px;height:22px;flex:none}
+.som .faixa{font-weight:500;color:var(--muted);font-size:12px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.som.on{border-color:var(--accent)}
+.som.on .ico-off,.som:not(.on) .ico-on{display:none}
+@media (prefers-reduced-motion:no-preference){.som.on .onda{animation:pulso 1s ease-in-out infinite}@keyframes pulso{50%{opacity:.35}}}
 footer{text-align:center;font-size:13px;color:var(--muted)}
 </style>
 </head>
@@ -91,5 +99,54 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
 
   <footer>Números atualizados a partir das planilhas de gestão do time.</footer>
 </div>
+<button class="som" id="som" type="button" aria-pressed="false" aria-label="Ligar o som">
+  <svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="#ffb627" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="#ffb627"/><path class="onda" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+  <svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="#93a3c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z" fill="#93a3c8"/><path d="M17 9l5 5M22 9l-5 5"/></svg>
+  <span><span id="som-txt">Ligar som</span><br><span class="faixa" id="faixa">O Piso é Pouco</span></span>
+</button>
+<audio id="player" preload="auto"></audio>
+<script>
+// Duas músicas em sequência, repetindo sem parar. O navegador só deixa tocar com som depois que a pessoa interage com a página.
+(function () {
+  const faixas = [
+    {src: "audio/o-piso-e-pouco.mp3", nome: "O Piso é Pouco"},
+    {src: "audio/nos-queremos-a-meta.mp3", nome: "Nós Queremos a Meta"}
+  ];
+  const player = document.getElementById("player");
+  const btn = document.getElementById("som");
+  const txt = document.getElementById("som-txt");
+  const faixa = document.getElementById("faixa");
+  let i = 0, ligado = false;
+  let quer = true;
+  try { quer = localStorage.getItem("dvcps-som") !== "off"; } catch (e) {}
+
+  function carregar(n) { i = n % faixas.length; player.src = faixas[i].src; faixa.textContent = faixas[i].nome; }
+  function mostrar() {
+    btn.classList.toggle("on", ligado);
+    btn.setAttribute("aria-pressed", String(ligado));
+    btn.setAttribute("aria-label", ligado ? "Desligar o som" : "Ligar o som");
+    txt.textContent = ligado ? "Desligar som" : "Ligar som";
+  }
+  function tocar() {
+    return player.play().then(() => { ligado = true; mostrar(); }).catch(() => { ligado = false; mostrar(); });
+  }
+  function parar() { player.pause(); ligado = false; mostrar(); }
+  function salvar(v) { try { localStorage.setItem("dvcps-som", v ? "on" : "off"); } catch (e) {} }
+
+  player.addEventListener("ended", () => { carregar(i + 1); if (ligado) tocar(); });
+  btn.addEventListener("click", (ev) => {
+    ev.stopPropagation();
+    if (ligado) { parar(); quer = false; salvar(false); }
+    else { quer = true; salvar(true); tocar(); }
+  });
+  // primeiro toque em qualquer lugar da página liga a música, se a pessoa não desligou antes
+  const primeiro = () => { if (quer && !ligado) tocar(); };
+  document.addEventListener("pointerdown", primeiro, {once: true});
+  document.addEventListener("keydown", primeiro, {once: true});
+
+  carregar(0); mostrar();
+  if (quer) tocar();
+})();
+</script>
 </body>
 </html>
