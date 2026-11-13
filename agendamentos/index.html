@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Agendamentos do dia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Agendamentos do dia: mesmo visual do corujão, versão diurna (sol no lugar da coruja) */
+:root{
+  --bg:#0b1630;
+  --panel:#12224a;
+  --line:#22376b;
+  --ink:#eef2fb;
+  --muted:#93a3c8;
+  --accent:#ffb627;
+  --done:#3ddc97;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;text-wrap:balance}
+.upd{font-size:13px;color:var(--muted);text-align:right}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center;overflow:hidden}
+@media (max-width:700px){.hero{grid-template-columns:1fr;text-align:center}}
+.lbl{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.6vw,38px);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;line-height:1}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(130px,20vw,220px);line-height:.85;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(255,182,39,.25);margin:6px 0}
+.unit{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.sub{margin-top:14px;font-size:17px;color:var(--muted)}
+.sub b{color:var(--ink)}
+.hit .faltam-block{display:none}
+.bateu{display:none;font-family:var(--display);font-weight:900;color:var(--done);font-size:clamp(56px,9vw,100px);line-height:.9;text-transform:uppercase}
+.hit .bateu{display:block}
+.owl{width:100%;max-width:260px;justify-self:center}
+.bar{height:14px;border-radius:7px;background:#0f1d40;border:1px solid var(--line);overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd27a);border-radius:7px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.row.ok{border-color:rgba(61,220,151,.55);background:linear-gradient(0deg,rgba(61,220,151,.08),rgba(61,220,151,.08)),var(--panel)}
+.nome{font-weight:700;font-size:16px}
+.tag{font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums;text-align:right;line-height:1}
+.tag small{display:block;font-family:var(--body);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.row.ok .tag{color:var(--done)}
+.dots{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
+.dot{width:16px;height:16px;border-radius:4px;border:1.5px dashed #3a5190}
+.dot.done{background:var(--done);border:1.5px solid var(--done)}
+.dot.extra{background:var(--accent);border:1.5px solid var(--accent)}
+.det{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.det b{color:var(--ink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:-4px 0 12px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.l1::before{background:var(--done)}
+.l2::before{border:1.5px dashed var(--muted)}
+.l3::before{background:var(--accent)}
+.lblue::before{background:#4d7bff}
+.grs{display:flex;flex-direction:column;gap:22px}
+.gr-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.gr-name{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.gr-sum{font-size:14px;color:var(--muted)}
+.gr-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+.gvs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.gv{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gv-name{font-weight:700;font-size:17px}
+.gv-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gv-count b{color:var(--ink)}
+.mini{height:8px;border-radius:4px;background:#0f1d40;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--done)}
+.ag{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.ag b{font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ag b.real{color:var(--accent)}
+.ag .pct{font-weight:700;color:var(--ink)}
+.gr-head .ag{width:100%}
+.mini.ag-bar i{background:var(--accent)}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.people li{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:6px 8px;border-radius:8px;background:#0f1d40}
+.people .pn{min-width:0;overflow-wrap:anywhere}
+.pill{flex:none;font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.p-in{color:var(--done);background:rgba(61,220,151,.14)}
+.p-extra{color:var(--accent);background:rgba(255,182,39,.16)}
+.p-out{color:#ff8a8a;background:rgba(255,107,107,.14)}
+.people li.out .pn{color:var(--muted)}
+.leg2 span::before{display:none}
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+.hbar{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:8px 12px;align-items:center}
+.hbar .hn{font-size:14px;text-align:right;line-height:1.2}
+.hbar .hn small{display:block;font-size:11px;color:var(--muted)}
+.hbar .ht{position:relative;height:26px;border-left:1.5px solid #3a5190}
+.hbar .ht i{position:absolute;left:0;top:2px;bottom:2px;background:#4d7bff;border-radius:0 6px 6px 0;min-width:6px}
+.hbar .ht i.meta{background:var(--done)}
+.hbar .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.hgrid{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:12px;margin-top:6px}
+.hticks{position:relative;height:18px;font-size:11px;color:var(--muted)}
+.hticks span{position:absolute;transform:translateX(-50%)}
+.hcap{margin-top:6px;font-size:12px;color:var(--muted);text-align:center}
+.vazio{color:var(--muted);text-align:center;padding:12px}
+.upd-box{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.btn-upd{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:var(--bg);background:var(--accent);border:none;border-radius:999px;padding:9px 16px;text-decoration:none;cursor:pointer}
+.btn-upd:hover{filter:brightness(1.08)}
+.btn-upd:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn-upd svg{width:16px;height:16px}
+.upd-ok{font-size:12px;color:var(--done)}
+footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
+.hero .sun{width:100%;max-width:260px;justify-self:center}
+.big.zero{color:var(--muted);text-shadow:none}
+.p-n{color:var(--done);background:rgba(61,220,151,.14)}
+.p-top{color:var(--bg);background:var(--accent)}
+.hbar .ht i.top{background:var(--accent)}
+.aviso{background:#14264f;border:1px dashed var(--line);border-radius:14px;padding:12px 14px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a href="../" style="color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px">← Direcional Vendas CPS</a>
+      <div class="eyebrow">Direcional Vendas · Campinas · <span id="dia">—</span></div>
+      <h1>Agendamentos do dia</h1>
+    </div>
+    <div class="upd-box">
+      <a class="btn-upd" id="btn-upd" href="https://claude.ai/code/session_0172nLXY28TiKGBuvAfugnUo" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Atualizar
+      </a>
+      <div class="upd">Atualizado às <span id="upd">—</span></div>
+      <div class="upd-ok" id="upd-ok" hidden>"atualizar agendamentos" copiado. Cole na conversa e envie.</div>
+    </div>
+  </header>
+
+  <section class="hero" id="hero" aria-live="polite">
+    <div>
+      <div class="lbl">Hoje o time criou</div>
+      <div class="big" id="total">—</div>
+      <div class="unit" id="total-unit">agendamentos</div>
+      <div class="sub"><b id="n-ag">—</b> de <b id="n-eq">—</b> corretores já agendaram hoje (<b id="pct">—</b>)<span id="meta-txt"></span></div>
+      <div class="bar" role="img" id="barra"><i id="barra-i" style="width:0"></i></div>
+    </div>
+    <svg class="sun" viewBox="0 0 200 200" role="img" aria-label="Agenda do dia">
+      <g stroke="#ffb627" stroke-width="6" stroke-linecap="round">
+        <path d="M150 18 v14 M150 88 v14 M108 60 h14 M178 60 h14 M120 30 l10 10 M170 80 l10 10 M180 30 l-10 10 M130 80 l-10 10"/>
+      </g>
+      <circle cx="150" cy="60" r="22" fill="#ffb627"/>
+      <rect x="20" y="70" width="120" height="110" rx="14" fill="#1d3366" stroke="#2f4c8f" stroke-width="3"/>
+      <rect x="20" y="70" width="120" height="28" rx="14" fill="#3ddc97"/>
+      <rect x="20" y="86" width="120" height="12" fill="#3ddc97"/>
+      <rect x="44" y="60" width="9" height="22" rx="4.5" fill="#93a3c8"/><rect x="107" y="60" width="9" height="22" rx="4.5" fill="#93a3c8"/>
+      <g fill="#0f1d40"><rect x="34" y="110" width="20" height="16" rx="3"/><rect x="70" y="110" width="20" height="16" rx="3"/><rect x="106" y="110" width="20" height="16" rx="3"/>
+      <rect x="34" y="136" width="20" height="16" rx="3"/><rect x="106" y="136" width="20" height="16" rx="3"/></g>
+      <rect x="70" y="136" width="20" height="16" rx="3" fill="#ffb627"/>
+      <path d="M74 144 l4 4 l8 -8" stroke="#0b1630" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </section>
+
+  <div class="aviso" id="aviso" hidden>Ainda não há agendamentos registrados hoje na planilha. Os números aparecem assim que o relatório do Salesforce for atualizado.</div>
+
+  <section class="stats" aria-label="Resumo dos corretores">
+    <div class="stat g"><div class="n" id="s-ag">—</div><div class="t">corretores agendaram hoje</div></div>
+    <div class="stat"><div class="n" id="s-media">—</div><div class="t">agendamentos por corretor que agendou</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ainda sem agendamento</div></div>
+  </section>
+
+  <section aria-label="Ranking do dia" id="grafico-sec">
+    <h2>Ranking de agendamentos do dia</h2>
+    <div class="legend"><span class="l3">Líder do dia</span><span class="lblue">Agendou</span></div>
+    <div class="chart-card">
+      <div id="grafico" role="img" aria-label="Gráfico de barras com quantos agendamentos cada corretor criou hoje"></div>
+    </div>
+  </section>
+
+  <section aria-label="Agendamentos por GR e GV" id="equipes-sec">
+    <h2>Agendamentos por equipe</h2>
+    <div class="legend leg2"><span class="pill p-n">Agendou</span><span class="pill p-out">Sem agendamento hoje</span></div>
+    <div class="grs" id="grs"></div>
+  </section>
+
+  <section aria-label="Fora da base" id="fora-sec" hidden>
+    <h2>Também agendaram hoje</h2>
+    <div class="legend" style="margin-top:-6px">Nomes do relatório que não estão na base de corretores por GR e GV.</div>
+    <div class="list" id="fora"></div>
+  </section>
+
+  <footer>Agendamentos contados pela data de criação no relatório do Salesforce (planilha "Contadores do mês e corujão", aba "contador de agendamentos corujão"). Nas quintas de corujão, o placar com promessas fica na página do Corujão.</footer>
+</div>
+
+<script>
+// ===== Dados (atualizar a cada leitura do relatório) =====
+const DADOS = {
+  dia: "2026-11-13",
+  atualizado: "2026-11-13T11:50:00-03:00",
+  meta: null, // meta de agendamentos do dia (opcional)
+  // agendamentos criados hoje, pelo nome completo da base
+  agendamentos: {
+  },
+  // agendaram mas não estão na base
+  fora: [
+  ],
+  equipe: [
+    {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia"},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia"},
+    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia"},
+    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia"},
+    {nome: "Taline Fideles da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo"},
+    {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo"},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Bianca Nascimento Sabino da Silva", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Emerson Gonçalves Pereira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Muller Gustavo dos Santos", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia"},
+    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia"},
+    {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia"},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia"},
+    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia"},
+    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia"},
+    {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia"},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia"},
+    {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia"},
+    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia"},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia"},
+    {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia"},
+    {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi"},
+    {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi"},
+    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi"},
+    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi"}
+  ],
+};
+// ==========================================================
+
+const $ = (id) => document.getElementById(id);
+const plural = (n, s, p) => n === 1 ? s : p;
+const A = DADOS.agendamentos;
+const F = DADOS.fora || [];
+const pessoas = DADOS.equipe.map((p) => ({...p, feito: A[p.nome] || 0}));
+const total = pessoas.reduce((a, p) => a + p.feito, 0) + F.reduce((a, c) => a + c.feito, 0);
+const nAg = pessoas.filter((p) => p.feito > 0).length;
+const nEq = pessoas.length;
+const pct = Math.round(nAg / nEq * 100);
+
+const d = new Date(DADOS.dia + "T12:00:00-03:00");
+$("dia").textContent = d.toLocaleDateString("pt-BR", {weekday: "long", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"});
+$("upd").textContent = new Date(DADOS.atualizado).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
+$("total").textContent = total;
+if (!total) { $("total").classList.add("zero"); $("aviso").hidden = false; }
+$("total-unit").textContent = plural(total, "agendamento", "agendamentos");
+$("n-ag").textContent = nAg;
+$("n-eq").textContent = nEq;
+$("pct").textContent = pct + "%";
+$("barra-i").style.width = pct + "%";
+$("barra").setAttribute("aria-label", nAg + " de " + nEq + " corretores agendaram hoje");
+if (DADOS.meta) {
+  const m = document.createElement("span");
+  m.append(" · Meta do dia ");
+  const b = document.createElement("b"); b.textContent = DADOS.meta; m.appendChild(b);
+  m.append(" (" + Math.round(total / DADOS.meta * 100) + "%)");
+  $("meta-txt").appendChild(m);
+}
+$("s-ag").textContent = nAg;
+$("s-media").textContent = nAg ? (pessoas.reduce((a, p) => a + p.feito, 0) / nAg).toLocaleString("pt-BR", {maximumFractionDigits: 1}) : "0";
+$("s-zero").textContent = nEq - nAg;
+
+// ===== Painel por GR / GV =====
+(function equipes() {
+  const root = $("grs");
+  [...new Set(pessoas.map((p) => p.gr))].forEach((gr) => {
+    const doGr = pessoas.filter((p) => p.gr === gr);
+    const block = document.createElement("div");
+    const head = document.createElement("div"); head.className = "gr-head";
+    const gn = document.createElement("div"); gn.className = "gr-name"; gn.textContent = "GR " + gr;
+    const gs = document.createElement("div"); gs.className = "gr-sum";
+    const na = doGr.filter((p) => p.feito > 0).length;
+    const b1 = document.createElement("b"); b1.textContent = na;
+    const b2 = document.createElement("b"); b2.textContent = doGr.length;
+    const b3 = document.createElement("b"); b3.textContent = Math.round(na / doGr.length * 100) + "%";
+    gs.append(b1, " de ", b2, " corretores agendaram (", b3, ")");
+    const ag = document.createElement("div"); ag.className = "ag";
+    const tb = document.createElement("b"); tb.className = "real"; tb.textContent = doGr.reduce((a, p) => a + p.feito, 0);
+    ag.append(tb, " " + plural(+tb.textContent, "agendamento", "agendamentos") + " hoje");
+    head.append(gn, gs, ag);
+    const gvs = document.createElement("div"); gvs.className = "gvs";
+    [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
+      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome));
+      const nIn = doGv.filter((p) => p.feito > 0).length;
+      const tot = doGv.reduce((a, p) => a + p.feito, 0);
+      const card = document.createElement("div"); card.className = "gv";
+      const top = document.createElement("div"); top.className = "gv-top";
+      const nm = document.createElement("div"); nm.className = "gv-name"; nm.textContent = "Equipe " + gv;
+      const ct = document.createElement("div"); ct.className = "gv-count";
+      const c1 = document.createElement("b"); c1.textContent = nIn;
+      ct.append(c1, " de " + doGv.length + " agendaram");
+      top.append(nm, ct);
+      const mini = document.createElement("div"); mini.className = "mini";
+      const mi = document.createElement("i"); mi.style.width = (nIn / doGv.length * 100) + "%"; mini.appendChild(mi);
+      const agv = document.createElement("div"); agv.className = "ag";
+      const tv = document.createElement("b"); tv.className = "real"; tv.textContent = tot;
+      agv.append(tv, " " + plural(tot, "agendamento", "agendamentos") + " hoje");
+      const ul = document.createElement("ul"); ul.className = "people";
+      doGv.forEach((p) => {
+        const li = document.createElement("li"); if (!p.feito) li.className = "out";
+        const pn = document.createElement("span"); pn.className = "pn"; pn.textContent = p.nome;
+        const pill = document.createElement("span");
+        if (p.feito) { pill.className = "pill p-n"; pill.textContent = p.feito + " " + plural(p.feito, "agendamento", "agendamentos"); }
+        else { pill.className = "pill p-out"; pill.textContent = "Sem agendamento"; }
+        li.append(pn, pill); ul.appendChild(li);
+      });
+      card.append(top, mini, agv, ul);
+      gvs.appendChild(card);
+    });
+    block.append(head, gvs);
+    root.appendChild(block);
+  });
+})();
+
+// fora da base
+(function () {
+  if (!F.length) return;
+  $("fora-sec").hidden = false;
+  F.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
+    const row = document.createElement("div"); row.className = "row ok";
+    const nm = document.createElement("div"); nm.className = "nome"; nm.textContent = c.nome;
+    const tag = document.createElement("div"); tag.className = "tag"; tag.textContent = c.feito;
+    const sm = document.createElement("small"); sm.textContent = plural(c.feito, "agendamento", "agendamentos"); tag.appendChild(sm);
+    row.append(nm, tag); $("fora").appendChild(row);
+  });
+})();
+
+// ranking: quem agendou hoje
+(function grafico() {
+  const box = $("grafico");
+  const rows = pessoas.filter((p) => p.feito > 0).map((p) => ({nome: p.nome, gv: p.gv, v: p.feito}))
+    .concat(F.map((c) => ({nome: c.nome, gv: null, v: c.feito})))
+    .sort((a, b) => b.v - a.v || a.nome.localeCompare(b.nome));
+  if (!rows.length) { const v = document.createElement("div"); v.className = "vazio"; v.textContent = "Ninguém agendou ainda hoje."; box.appendChild(v); return; }
+  const max = Math.max(...rows.map((r) => r.v));
+  const grid = document.createElement("div"); grid.className = "hbar";
+  rows.forEach((r) => {
+    const hn = document.createElement("div"); hn.className = "hn"; hn.textContent = r.nome;
+    const sm = document.createElement("small"); sm.textContent = r.gv ? "Equipe " + r.gv : "fora da base"; hn.appendChild(sm);
+    const ht = document.createElement("div"); ht.className = "ht";
+    const bar = document.createElement("i"); if (r.v === max) bar.className = "top";
+    const w = r.v / max * 88; bar.style.width = w + "%";
+    const val = document.createElement("b"); val.textContent = r.v; val.style.left = "calc(" + w + "% + 8px)";
+    ht.append(bar, val);
+    grid.append(hn, ht);
+  });
+  box.appendChild(grid);
+  const g2 = document.createElement("div"); g2.className = "hgrid";
+  const ticks = document.createElement("div"); ticks.className = "hticks";
+  for (let t = 0; t <= max; t++) { const s = document.createElement("span"); s.style.left = (t / max * 88) + "%"; s.textContent = t; ticks.appendChild(s); }
+  g2.append(document.createElement("div"), ticks); box.appendChild(g2);
+  const cap = document.createElement("div"); cap.className = "hcap"; cap.textContent = "Número de agendamentos criados hoje"; box.appendChild(cap);
+})();
+
+// botão Atualizar: abre a conversa do Claude e copia o pedido para colar
+(function () {
+  const b = $("btn-upd");
+  b.addEventListener("click", () => {
+    try { navigator.clipboard.writeText("atualizar agendamentos").then(() => { $("upd-ok").hidden = false; }).catch(() => {}); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
