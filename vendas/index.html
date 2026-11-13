@@ -67,12 +67,16 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .legend{display:flex;gap:16px;font-size:13px;color:var(--muted)}
 .legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .legend .l-done::before{background:var(--done)}
+.legend .l-com::before{background:var(--accent)}
+.legend .l-fac::before{background:#7cc4ff}
 .legend .l-todo::before{border:1.5px dashed var(--muted)}
 .houses{display:grid;grid-template-columns:repeat(15,1fr);gap:8px}
 @media (max-width:640px){.houses{grid-template-columns:repeat(10,1fr);gap:6px}}
 .house{aspect-ratio:1;border-radius:8px;border:1.5px dashed #3a5190;display:grid;place-items:center;color:#3a5190;--win:var(--bg)}
 .house svg{width:62%;height:62%}
 .house.done{background:var(--done);border:1.5px solid var(--done);color:var(--bg);--win:var(--done)}
+.house.done.com{background:var(--accent);border-color:var(--accent);--win:var(--accent)}
+.house.done.fac{background:#7cc4ff;border-color:#7cc4ff;--win:#7cc4ff}
 .teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
 .team{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .team-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -84,6 +88,8 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .dots{display:flex;flex-wrap:wrap;gap:5px}
 .dot{width:12px;height:12px;border-radius:3px;border:1.5px dashed #3a5190}
 .dot.done{background:var(--done);border:1.5px solid var(--done)}
+.dot.done.com{background:var(--accent);border-color:var(--accent)}
+.dot.done.fac{background:#7cc4ff;border-color:#7cc4ff}
 .team-line{font-size:13px;color:var(--muted)}
 .team-line b{color:var(--ink)}
 .meta-batida{display:none}
@@ -161,7 +167,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <section class="houses-wrap" aria-label="Cada apê é uma venda da meta">
     <div class="houses-head">
       <h2>Cada apê é uma venda</h2>
-      <div class="legend"><span class="l-done">Vendida</span><span class="l-todo">Falta vender</span></div>
+      <div class="legend"><span class="l-com">Comercial</span><span class="l-fac">Facilitada</span><span class="l-todo">Falta vender</span></div>
     </div>
     <div class="houses" id="houses"></div>
   </section>
@@ -180,7 +186,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   </section>
 
   <footer>
-    Meta do mês e vendas tiradas da planilha de Gestão Semanal dos GVs de Campinas. Vendas de meses anteriores lançadas em novembro não entram na contagem.
+    Meta do mês tirada da planilha de Gestão Semanal dos GVs; vendas da aba "contador de vendas". A venda conta no mês da confirmação; com FID é Comercial, sem FID ou sem data de confirmação é Facilitada. Amarelo = Comercial, azul = Facilitada.
   </footer>
 </div>
 
@@ -234,12 +240,19 @@ if (faltam === 0) $("hero").classList.add("hit");
   $("pl-fac").textContent = todas.filter((v) => v.tipo === "Facilitada").length;
 })();
 
+// tipo de cada venda, na ordem em que pintamos: primeiro as comerciais, depois as facilitadas
+const ORDEM_TIPO = {Comercial: 0, Facilitada: 1};
+const tiposDe = (lista) => lista.map((v) => v.tipo).sort((a, b) => (ORDEM_TIPO[a] ?? 2) - (ORDEM_TIPO[b] ?? 2));
+const TIPOS = tiposDe((DADOS.vendasCorretores || []).flatMap((c) => c.vendas));
+const clsTipo = (t) => t === "Comercial" ? " com" : t === "Facilitada" ? " fac" : "";
+const COR = {Comercial: ["#ffb627", "#ffd27a"], Facilitada: ["#7cc4ff", "#b9e0ff"]};
+
 // casinhas
 const casa = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 2h14v20h-5v-4h-4v4H5z"/><g fill="var(--win,#0b1630)"><rect x="7.5" y="4.5" width="3" height="2.6" rx=".4"/><rect x="13.5" y="4.5" width="3" height="2.6" rx=".4"/><rect x="7.5" y="9" width="3" height="2.6" rx=".4"/><rect x="13.5" y="9" width="3" height="2.6" rx=".4"/><rect x="7.5" y="13.5" width="3" height="2.6" rx=".4"/><rect x="13.5" y="13.5" width="3" height="2.6" rx=".4"/></g></svg>';
 const houses = $("houses");
 for (let i = 0; i < meta; i++) {
   const d = document.createElement("div");
-  d.className = "house" + (i < vendidas ? " done" : "");
+  d.className = "house" + (i < vendidas ? " done" + clsTipo(TIPOS[i]) : "");
   d.innerHTML = casa;
   if (i < vendidas) d.style.animationDelay = (i * 60) + "ms";
   houses.appendChild(d);
@@ -282,7 +295,8 @@ for (let i = 0; i < meta; i++) {
       const x = bodyX + pad + c * (winW + gapX);
       const y = top + pad + f * (winH + gapY);
       const lit = i < vendidas;
-      el("rect", {x, y, width: winW, height: winH, rx: 3, fill: lit ? "#ffb627" : "#0f1d40", stroke: lit ? "#ffd27a" : "#2f4c8f", "stroke-width": 1.5});
+      const [cor, borda] = COR[TIPOS[i]] || COR.Comercial;
+      el("rect", {x, y, width: winW, height: winH, rx: 3, fill: lit ? cor : "#0f1d40", stroke: lit ? borda : "#2f4c8f", "stroke-width": 1.5});
       if (lit) el("rect", {x: x + 3, y: y + 3, width: winW - 6, height: 5, rx: 2, fill: "#fff3cf", opacity: .7});
       i++;
     }
@@ -319,8 +333,11 @@ DADOS.equipes.slice().sort((a, b) => (b.meta - b.vendas) - (a.meta - a.vendas) |
   fl.appendChild(sm);
   top.append(nm, fl);
   const dots = document.createElement("div"); dots.className = "dots";
+  const tiposGv = tiposDe((DADOS.vendasCorretores || []).filter((c) => c.gv === e.gv).flatMap((c) => c.vendas));
   for (let i = 0; i < Math.max(e.meta, e.vendas); i++) {
-    const d = document.createElement("div"); d.className = "dot" + (i < e.vendas ? " done" : ""); dots.appendChild(d);
+    const d = document.createElement("div"); d.className = "dot" + (i < e.vendas ? " done" + clsTipo(tiposGv[i]) : "");
+    if (i < e.vendas && tiposGv[i]) d.title = tiposGv[i];
+    dots.appendChild(d);
   }
   const line = document.createElement("div"); line.className = "team-line";
   line.append("Vendidas ");
