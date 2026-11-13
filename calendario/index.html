@@ -15,7 +15,7 @@
 :root{
   --bg:#0b1630; --panel:#12224a; --panel2:#0f1d40; --line:#22376b;
   --ink:#eef2fb; --muted:#93a3c8; --accent:#ffb627;
-  --black:#05070d; --stand:#ffd23f; --coruja:#a9c8ea; --divul:#9fdcb4; --outro:#c7b8ff;
+  --black:#05070d; --stand:#ffd23f; --coruja:#a9c8ea; --divul:#9fdcb4; --outro:#c7b8ff; --aniv:#ff9ec7;
   --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   color-scheme:dark;
@@ -53,6 +53,21 @@ h1{font-family:var(--display);font-weight:900;font-size:clamp(36px,6vw,60px);lin
 .ev.t-coruja{background:var(--coruja)}
 .ev.t-divul{background:var(--divul)}
 .ev.t-outro{background:var(--outro)}
+.ev.t-aniv{background:transparent;color:var(--aniv);border:1px dashed var(--aniv);font-weight:700}
+.aniv-sec{display:flex;flex-direction:column;gap:12px}
+.aniv-sec h2{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.03em;text-transform:uppercase;margin:0}
+.aniv-sec .sub2{color:var(--muted);font-size:14px;margin:-6px 0 0}
+.meses{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.mes{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mes.atual{border-color:var(--aniv)}
+.mes h3{margin:0 0 8px;font-size:16px;text-transform:capitalize;display:flex;justify-content:space-between;align-items:baseline}
+.mes h3 small{color:var(--muted);font-weight:600;font-size:12px}
+.mes ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.mes li{display:grid;grid-template-columns:52px 1fr;gap:8px;font-size:14px;align-items:baseline}
+.mes li b{font-variant-numeric:tabular-nums;color:var(--aniv)}
+.mes li.passou{opacity:.5}
+.mes li.hoje{background:rgba(255,158,199,.12);border-radius:8px;padding:4px 6px;margin:0 -6px}
+.mes li.hoje span::after{content:" · hoje 🎉";color:var(--aniv);font-weight:700}
 .ev .del{position:absolute;top:2px;right:3px;border:none;background:rgba(0,0,0,.25);color:#fff;border-radius:4px;width:18px;height:18px;font-size:12px;line-height:18px;padding:0;cursor:pointer}
 .ev.nova{padding-right:24px}
 .agenda{display:none;flex-direction:column;gap:10px}
@@ -91,6 +106,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
     <span><i style="background:var(--coruja)"></i>Corujão</span>
     <span><i style="background:var(--divul)"></i>Divulgação</span>
     <span><i style="background:var(--outro)"></i>Outra atividade</span>
+    <span><i style="border:1px dashed var(--aniv)"></i>Aniversário</span>
   </div>
   <div class="msg" id="msg" role="status"></div>
 
@@ -99,6 +115,12 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
     <div id="weeks"></div>
   </div>
   <div class="agenda" id="agenda"></div>
+
+  <section class="aniv-sec" aria-label="Aniversariantes">
+    <h2>🎂 Aniversariantes</h2>
+    <p class="sub2">Corretores ativos da base, a partir deste mês.</p>
+    <div class="meses" id="aniv"></div>
+  </section>
 
   <p class="note">As atividades novas ficam salvas neste navegador. Para que todo o time veja, toque em <b>Copiar atividades novas</b> e mande para o Claude, que publica no site.</p>
 </div>
@@ -144,8 +166,63 @@ const ATIVIDADES = [
   {data: "2026-11-27", titulo: "Carro de som", tipo: "divul"},
   {data: "2026-11-28", titulo: "Evento Black Principal > Visita à obra", tipo: "black"}
 ];
-const ORDEM = {black: 0, stand: 1, coruja: 2, divul: 3, outro: 4};
-const NOMES = {black: "Evento Black", stand: "Evento Stand", coruja: "Corujão", divul: "Divulgação", outro: "Outra atividade"};
+// Aniversários dos corretores ativos (aba "base de corretores"; só dia e mês)
+const ANIVERSARIOS = [
+  {"nome": "Ellen Cassia Pereira Cassemiro de Campos", "dia": "01-01"},
+  {"nome": "Lincoln Farah", "dia": "01-13"},
+  {"nome": "Fernanda Guilherme dos Santos", "dia": "01-19"},
+  {"nome": "Fabiana Sertori de Oliveira", "dia": "01-20"},
+  {"nome": "Roseli Martim Tibiriça", "dia": "02-02"},
+  {"nome": "José Luis Gomes de Araujo", "dia": "02-23"},
+  {"nome": "Vanderlucia de Oliveira Batista Pereira", "dia": "03-04"},
+  {"nome": "Mayara Soares Diogo", "dia": "03-05"},
+  {"nome": "Robson de Oliveira", "dia": "03-07"},
+  {"nome": "Paola Cassanelli da Rocha", "dia": "03-09"},
+  {"nome": "Paulo Henrique Campos Almeida", "dia": "03-11"},
+  {"nome": "Taíssa Ayane Oliveira da Silva", "dia": "03-11"},
+  {"nome": "Benedito Thomaz Siqueira", "dia": "03-23"},
+  {"nome": "Luis Fernando Maestro", "dia": "03-28"},
+  {"nome": "Marli Teixeira da Costa", "dia": "04-06"},
+  {"nome": "Jonathan Pereira da Silva", "dia": "04-07"},
+  {"nome": "Ana Paula de Souza Leite Aguiar", "dia": "04-09"},
+  {"nome": "Layane Silva Santos Bispo", "dia": "04-29"},
+  {"nome": "Lucas Vinícius Ferreira Chaves", "dia": "05-02"},
+  {"nome": "Sirlene Aparecida da Silva", "dia": "05-06"},
+  {"nome": "Teresinha Aparecida Crivelaro Lopes", "dia": "05-07"},
+  {"nome": "Ana Lucia Menezes de Paula", "dia": "05-19"},
+  {"nome": "Flavia Maria Ramos", "dia": "05-21"},
+  {"nome": "Jorge Luiz de Lima", "dia": "05-29"},
+  {"nome": "Roseli Sampaio Bastos Ferreira", "dia": "05-31"},
+  {"nome": "Valda Terezinha Delanhese Francisco", "dia": "06-05"},
+  {"nome": "Marlene Santana Corrêa dos Santos", "dia": "06-06"},
+  {"nome": "Márcio Antônio Custódio", "dia": "06-08"},
+  {"nome": "Fabio Carlo da Silva", "dia": "06-09"},
+  {"nome": "Claudio Sena Borges", "dia": "06-14"},
+  {"nome": "Luciane Aparecida Gomes Barbosa Silva", "dia": "06-18"},
+  {"nome": "Guilherme Garcia", "dia": "06-21"},
+  {"nome": "Rickelle Quirino de Oliveira", "dia": "06-23"},
+  {"nome": "Taline Fideles da Silva", "dia": "06-23"},
+  {"nome": "Luciana Lemes", "dia": "07-03"},
+  {"nome": "Isabella Garcia Silva", "dia": "07-04"},
+  {"nome": "José Raimundo da Silva", "dia": "07-17"},
+  {"nome": "Mauro de Pinho Micaela", "dia": "07-20"},
+  {"nome": "Emerson Gonçalves Pereira", "dia": "07-21"},
+  {"nome": "Roberto Oliveira da Silva Souza", "dia": "08-06"},
+  {"nome": "Franciely Gomes", "dia": "08-11"},
+  {"nome": "Marcelo Vicentini Coelho", "dia": "08-25"},
+  {"nome": "Wanderson de Carvalho Coutinho", "dia": "09-07"},
+  {"nome": "Ana Luiza Martins", "dia": "10-05"},
+  {"nome": "Amekion Ferreira Cruz", "dia": "10-07"},
+  {"nome": "Sonia Maria de Oliveira Maruki", "dia": "10-07"},
+  {"nome": "Aloisio Antonio Mache Tavares", "dia": "10-14"},
+  {"nome": "Clarice Pereira", "dia": "10-19"},
+  {"nome": "Larissa Gabriele Vitor", "dia": "10-30"},
+  {"nome": "Daniel Alves Silva", "dia": "11-21"},
+  {"nome": "João Gabriel Campos Carvalho da Silva", "dia": "12-10"},
+  {"nome": "Mariana Lazaretti Salomão", "dia": "12-17"}
+];
+const ORDEM = {aniv: -1, black: 0, stand: 1, coruja: 2, divul: 3, outro: 4};
+const NOMES = {aniv: "Aniversário", black: "Evento Black", stand: "Evento Stand", coruja: "Corujão", divul: "Divulgação", outro: "Outra atividade"};
 const CHAVE = "dvcps-calendario-novas";
 const $ = (id) => document.getElementById(id);
 const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
@@ -162,11 +239,12 @@ const hoje = iso(new Date());
 function doDia(d) {
   const of = ATIVIDADES.filter((a) => a.data === d).map((a) => ({...a, nova: false}));
   const nv = novas.map((a, i) => ({...a, nova: true, idx: i})).filter((a) => a.data === d);
-  return of.concat(nv).sort((a, b) => ORDEM[a.tipo] - ORDEM[b.tipo]);
+  const an = ANIVERSARIOS.filter((x) => x.dia === d.slice(5)).map((x) => ({data: d, titulo: "🎂 " + curto(x.nome), tipo: "aniv", nova: false, nomeCompleto: x.nome}));
+  return an.concat(of, nv).sort((a, b) => ORDEM[a.tipo] - ORDEM[b.tipo]);
 }
 function chip(a) {
   const c = el("div", "ev t-" + a.tipo + (a.nova ? " nova" : ""), a.titulo);
-  c.title = NOMES[a.tipo];
+  c.title = a.nomeCompleto ? "Aniversário de " + a.nomeCompleto : NOMES[a.tipo];
   if (a.nova) {
     const x = el("button", "del", "×"); x.type = "button"; x.setAttribute("aria-label", "Remover " + a.titulo);
     x.addEventListener("click", () => { novas.splice(a.idx, 1); salvarNovas(novas); desenhar(); });
@@ -225,7 +303,33 @@ $("btn-copiar").addEventListener("click", () => {
   navigator.clipboard.writeText(txt).then(() => { $("msg").textContent = "Copiado! Cole na conversa com o Claude para publicar para todos."; })
     .catch(() => { $("msg").textContent = txt; });
 });
+// nome curto para caber no dia: primeiro e último nome
+function curto(n) {
+  const p = n.split(" ").filter((w) => !/^(de|da|do|dos|das|e)$/i.test(w));
+  return p.length > 1 ? p[0] + " " + p[p.length - 1] : n;
+}
+const MESES_N = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+function aniversariantes() {
+  const box = $("aniv"); box.replaceChildren();
+  const mesHoje = Number(hoje.slice(5, 7)), dmHoje = hoje.slice(5);
+  for (let k = 0; k < 12; k++) {
+    const m = ((mesHoje - 1 + k) % 12) + 1, mm = String(m).padStart(2, "0");
+    const lista = ANIVERSARIOS.filter((x) => x.dia.slice(0, 2) === mm);
+    if (!lista.length) continue;
+    const card = el("div", "mes" + (k === 0 ? " atual" : ""));
+    const h = el("h3", null, MESES_N[m - 1]); h.appendChild(el("small", null, lista.length + (lista.length === 1 ? " aniversariante" : " aniversariantes")));
+    const ul = el("ul");
+    lista.forEach((x) => {
+      const li = el("li", k === 0 ? (x.dia === dmHoje ? "hoje" : x.dia < dmHoje ? "passou" : null) : null);
+      li.append(el("b", null, x.dia.slice(3) + "/" + mm), el("span", null, x.nome));
+      ul.appendChild(li);
+    });
+    card.append(h, ul); box.appendChild(card);
+  }
+  if (!box.children.length) box.appendChild(el("p", "note", "Nenhum aniversário cadastrado."));
+}
 desenhar();
+aniversariantes();
 </script>
 </body>
 </html>
