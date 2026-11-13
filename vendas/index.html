@@ -231,7 +231,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 // ===== Dados (atualizar a cada leitura da planilha) =====
 const DADOS = {
   mes: "2026-11",          // mês vigente
-  atualizado: "2026-11-13T14:58:00-03:00",
+  atualizado: "2026-11-13T15:02:00-03:00",
   inicio: "2026-09",    // primeiro mês que aparece no calendário
   // metas por mês e equipe (só os meses com meta no painel de Gestão Semanal)
   metas: {
@@ -245,6 +245,10 @@ const DADOS = {
     {gv: "Ivan",    gr: "Gustavo",  meta: 5},
     {gv: "Débora",  gr: "Gustavo",  meta: 1}
   ]
+  },
+  // metas do mês sem divisão por equipe (conta = tipo que vale para a meta; banner da campanha do mês)
+  metasGerais: {
+    "2026-10": {meta: 21, conta: "Comercial", banner: "banner-2026-10.jpg", alt: "Banner da campanha de outubro: 21 vendas comerciais, bateu a meta tem churrasco especial"}
   },
   // aba "contador de vendas": a venda conta no mês da confirmação (W) quando houver, senão no mês da venda (U);
   // com FID (S) e com Data Confirmação Venda 2.0 (T) = Comercial; sem FID ou com T em branco = Facilitada.
@@ -354,10 +358,13 @@ const tiposDe = (lista) => lista.map((v) => v.tipo).sort((a, b) => (ORDEM_TIPO[a
 const clsTipo = (t) => t === "Comercial" ? " com" : t === "Facilitada" ? " fac" : "";
 const COR = {Comercial: ["#ffb627", "#ffd27a"], Facilitada: ["#7cc4ff", "#b9e0ff"]};
 const doMes = (ym) => DADOS.vendas.filter((v) => v.mes === ym);
+const BANNER = document.querySelector(".banner");
+const BANNER_ATUAL = {src: BANNER.getAttribute("src"), alt: BANNER.getAttribute("alt")};
 
 function render(ym) {
   const vendas = doMes(ym);
   const equipes = DADOS.metas[ym] || null;
+  const geral = (DADOS.metasGerais || {})[ym] || null; // meta do mês sem divisão por equipe (ex.: só comerciais)
   const ehVigente = ym === VIGENTE;
   const m = Number(ym.slice(5, 7));
   const total = vendas.length;
@@ -366,12 +373,30 @@ function render(ym) {
   const nFac = vendas.filter((v) => v.tipo === "Facilitada").length;
   const hero = $("hero");
   hero.classList.remove("hit");
-  document.querySelector(".hero-left").hidden = !ehVigente;
-  hero.classList.toggle("sem-banner", !ehVigente);
-  $("titulo").firstChild.textContent = equipes ? "Meta de vendas de " : "Vendas de ";
+  const banner = ehVigente ? BANNER_ATUAL : geral && geral.banner ? {src: geral.banner, alt: geral.alt || ""} : null;
+  if (banner) { BANNER.src = banner.src; BANNER.alt = banner.alt; }
+  document.querySelector(".hero-left").hidden = !banner;
+  hero.classList.toggle("sem-banner", !banner);
+  $("titulo").firstChild.textContent = equipes || geral ? "Meta de vendas de " : "Vendas de ";
   $("mes-nome").textContent = MESES[m - 1] + (ym.slice(0, 4) !== VIGENTE.slice(0, 4) ? " " + ym.slice(0, 4) : "");
   let slots;
-  if (equipes) {
+  if (geral) {
+    const conta = geral.conta ? vendas.filter((v) => v.tipo === geral.conta).length : total;
+    const nome = geral.conta ? (geral.conta === "Comercial" ? "vendas comerciais" : "vendas facilitadas") : "vendas";
+    const faltam = Math.max(0, geral.meta - conta);
+    $("faltam-lbl").textContent = ym < VIGENTE ? "Faltaram" : "Faltam";
+    $("faltam").textContent = faltam;
+    $("faltam-unit").textContent = plural(faltam, nome.replace("vendas", "venda").replace("comerciais", "comercial").replace("facilitadas", "facilitada"), nome);
+    $("sub").textContent = "";
+    $("sub").append("Foram ", mk("b", null, conta), " de ", mk("b", null, geral.meta), " " + nome + " no mês (", mk("b", null, Math.round(conta / geral.meta * 100) + "%"), ")");
+    if (faltam === 0) hero.classList.add("hit");
+    slots = geral.meta;
+    // no prédio só acende o que vale para a meta (ex.: só as comerciais)
+    $("pl-com").textContent = nCom; $("pl-fac").textContent = nFac;
+    torre(slots, Math.min(conta, slots), tiposDe(geral.conta ? vendas.filter((v) => v.tipo === geral.conta) : vendas));
+    times(equipes, vendas); vendedores(vendas);
+    return;
+  } else if (equipes) {
     const meta = equipes.reduce((a, e) => a + e.meta, 0);
     const faltam = Math.max(0, meta - total);
     $("faltam-lbl").textContent = "Faltam";
