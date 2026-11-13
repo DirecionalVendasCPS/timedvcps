@@ -65,7 +65,7 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .fbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 /* ranking */
 .rk{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.rk-head,.rk-row{display:grid;grid-template-columns:44px minmax(170px,1.6fr) repeat(5,minmax(58px,.55fr)) minmax(170px,1.5fr);gap:8px;align-items:center;padding:10px 14px}
+.rk-head,.rk-row{display:grid;grid-template-columns:44px minmax(170px,1.6fr) repeat(5,minmax(54px,.5fr)) minmax(160px,1.4fr) minmax(92px,.7fr);gap:8px;align-items:center;padding:10px 14px}
 .rk-head{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);background:#0f1d40}
 .rk-head span{text-align:center}
 .rk-head span:nth-child(2){text-align:left}
@@ -93,13 +93,18 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .pct{font-family:var(--display);font-weight:900;font-size:24px;min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
 .pct.h{color:var(--done)}
 .pct.m{color:var(--accent)}
+.vbad{justify-self:center;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap;text-align:center}
+.vbad.sim{color:var(--bg);background:var(--done)}
+.vbad.nao{color:var(--muted);background:rgba(147,163,200,.10)}
+.people .pn .vb{display:inline-block;margin-left:6px;font-size:10px;font-weight:700;color:var(--bg);background:var(--done);border-radius:999px;padding:1px 6px;vertical-align:1px}
 @media (max-width:860px){
   .rk-head{display:none}
-  .rk-row{grid-template-columns:36px 1fr;grid-template-areas:"p n" "p c" "p x";padding:12px}
+  .rk-row{grid-template-columns:36px 1fr;grid-template-areas:"p n" "p c" "p x" "p v";padding:12px}
   .rk-row .pos{grid-area:p;align-self:start;padding-top:2px}
   .rk-row .nm{grid-area:n}
   .rk-row .cels{grid-area:c;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
   .rk-row .chance{grid-area:x}
+  .rk-row .vbad{grid-area:v;justify-self:start}
   .cel .lbl{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
 }
 @media (min-width:861px){.cels{display:contents}}
@@ -258,10 +263,11 @@ const pessoas = DADOS.equipe.map((p) => {
   const d = DADOS.dados[p.nome] || {};
   const r = {...p, vn: DADOS.vendas[p.nome] || 0, sem: {}};
   ETAPAS.forEach(([k]) => { r[k] = soma(d[k]); r.sem[k] = (d[k] || [])[ultima] || 0; });
-  r.chance = r.vn >= F.vn ? 100 : Math.round(ETAPAS.reduce((s, [k]) => s + W[k] * Math.min(1, r[k] / F[k]), 0));
+  // mesma regra para todos (inclusive quem já vendeu): OPs 10% + AG 20% + VIS 30% + PAS 40%, proporcional ao funil
+  r.chance = Math.round(ETAPAS.reduce((s, [k]) => s + W[k] * Math.min(1, r[k] / F[k]), 0));
   return r;
 });
-const ordem = (a, b) => b.chance - a.chance || b.pas - a.pas || b.vis - a.vis || b.ag - a.ag || b.ops - a.ops || a.nome.localeCompare(b.nome);
+const ordem = (a, b) => b.chance - a.chance || b.vn - a.vn || b.pas - a.pas || b.vis - a.vis || b.ag - a.ag || b.ops - a.ops || a.nome.localeCompare(b.nome);
 pessoas.sort(ordem);
 const nivel = (c) => c >= 70 ? "h" : c >= 40 ? "m" : "";
 
@@ -300,7 +306,7 @@ function barra(c) { const t = el("div", "track"); const i = el("i", nivel(c)); i
 function ranking() {
   const box = $("rk"); box.textContent = "";
   const head = el("div", "rk-head");
-  ["#", "Corretor", "OPs", "AG", "VIS", "PAS", "Venda", "Possibilidade de 1 venda"].forEach((t) => head.appendChild(el("span", null, t)));
+  ["#", "Corretor", "OPs", "AG", "VIS", "PAS", "Venda", "Possibilidade de 1 venda", "Venda no mês"].forEach((t) => head.appendChild(el("span", null, t)));
   box.appendChild(head);
   const lst = pessoas.filter((p) => filtro === "Todos" || p.gr === filtro);
   if (!lst.length) { box.appendChild(el("div", "vazio", "Nenhum corretor.")); return; }
@@ -320,7 +326,8 @@ function ranking() {
     });
     const ch = el("div", "chance"); ch.append(barra(p.chance), el("div", "pct " + nivel(p.chance), p.chance + "%"));
     ch.setAttribute("aria-label", "Possibilidade de 1 venda: " + p.chance + "%");
-    row.append(el("div", "pos", (i + 1) + "º"), nm, cels, ch);
+    const vb = p.vn ? el("div", "vbad sim", "✓ " + p.vn + " " + plural(p.vn, "venda", "vendas")) : el("div", "vbad nao", "Sem venda");
+    row.append(el("div", "pos", (i + 1) + "º"), nm, cels, ch, vb);
     box.appendChild(row);
   });
 }
@@ -361,7 +368,8 @@ ranking();
         const li = el("li"); const pn = el("span", "pn", p.nome);
         pn.appendChild(el("small", null, ETAPAS.map(([k, lbl]) => lbl + " " + p[k]).join(" · ")));
         const pp = el("span", "pp", p.chance + "%"); if (nivel(p.chance)) pp.style.color = p.chance >= 70 ? "var(--done)" : "var(--accent)";
-        li.append(pn, p.vn ? el("span", "pill p-vn", p.vn + " " + plural(p.vn, "venda", "vendas")) : barra(p.chance), pp);
+        if (p.vn) pn.insertBefore(el("span", "vb", "✓ " + p.vn + " " + plural(p.vn, "venda", "vendas")), pn.firstChild.nextSibling);
+        li.append(pn, barra(p.chance), pp);
         ul.appendChild(li);
       });
       card.append(top, fun, ul); gvs.appendChild(card);
@@ -375,7 +383,7 @@ ranking();
   const f = $("rodape");
   f.append("Como a possibilidade é calculada: cada etapa do funil vale um peso — ",
     el("b", null, "OPs 10%, agendamentos 20%, visitas 30% e pastas 40%"),
-    ". O corretor ganha a parte de cada etapa proporcional ao quanto já fez do funil (no máximo 100% da etapa). Quem já vendeu no mês fica com 100%. ",
+    ". O corretor ganha a parte de cada etapa proporcional ao quanto já fez do funil (no máximo 100% da etapa). A regra é a mesma para quem já vendeu; a venda aparece na coluna “Venda no mês”. ",
     "Fonte: planilha \"BURDIM - Gestão Semanal - GVs - CAMPINAS\" (abas Oportunidades, Agendamentos, Visitas e Pastas; visitas pela data de comparecimento). Vendas iguais às do Contador de vendas. ",
     "Só aparecem os corretores ativos da base de corretores. Semanas começam no domingo.");
 })();
