@@ -38,6 +38,33 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,38px);let
 /* hero: resumo à esquerda, prédio no centro, painel da meta à direita */
 .hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px 0;display:grid;grid-template-columns:1fr minmax(240px,340px) 1.15fr;gap:24px;align-items:end;overflow:hidden}
 .hero-left{padding-bottom:28px;align-self:center}
+.hero.sem-banner{grid-template-columns:minmax(240px,340px) 1fr}
+@media (max-width:860px){.hero.sem-banner{grid-template-columns:1fr}}
+.team-faltam.sem-meta{color:var(--ink)}
+.cal{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.cal-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.cal-ano-box{display:flex;align-items:center;gap:10px}
+.cal-ano{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;min-width:64px;text-align:center}
+.cal-nav{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 16px var(--body);cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-meses{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+@media (max-width:860px){.cal-meses{grid-template-columns:repeat(6,1fr)}}
+@media (max-width:420px){.cal-meses{grid-template-columns:repeat(4,1fr)}}
+.cal-m{border-radius:12px;border:1px solid transparent;background:var(--bg);color:var(--ink);cursor:pointer;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 13px var(--body)}
+.cal-m-nome{text-transform:uppercase;letter-spacing:.06em;font-size:12px;color:var(--muted)}
+.cal-m-n{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.cal-m-bar{display:flex;width:80%;height:5px;border-radius:3px;background:#1d3366;overflow:hidden}
+.cal-m-bar .c{background:var(--accent)}.cal-m-bar .f{background:#7cc4ff}
+.cal-m:hover:not(:disabled){border-color:var(--accent)}
+.cal-m:disabled{background:transparent;color:#3a5190;cursor:default}
+.cal-m:disabled .cal-m-nome{color:#3a5190}
+.cal-m.atual{border-color:var(--muted)}
+.cal-m.sel{background:var(--accent);color:var(--bg)}
+.cal-m.sel .cal-m-nome{color:var(--bg)}
+.cal-m.sel .cal-m-bar{background:rgba(11,22,48,.25)}
+.cal-m:focus-visible,.cal-nav:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cal-hint{font-size:13px;color:var(--muted)}
+.cal-hoje{background:none;border:none;color:var(--accent);font:600 13px var(--body);cursor:pointer;text-decoration:underline;padding:0}
 .banner{width:100%;display:block;border-radius:14px;border:1px solid var(--line)}
 .hero-txt{padding-bottom:28px;align-self:center;text-align:right}
 .tower{width:100%;display:block;justify-self:center}
@@ -141,7 +168,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
     <div>
       <a href="../" style="color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px">← Direcional Vendas CPS</a>
       <div class="eyebrow">Direcional Vendas · Campinas</div>
-      <h1>Meta de vendas de <span id="mes-nome">novembro</span></h1>
+      <h1 id="titulo">Meta de vendas de <span id="mes-nome">novembro</span></h1>
     </div>
     <div class="upd">Atualizado em <span id="upd">—</span></div>
   </header>
@@ -152,11 +179,11 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
     <div class="hero-txt">
       <div class="meta-batida">Meta batida!</div>
       <div class="faltam-block">
-        <div class="faltam-lbl">Faltam</div>
+        <div class="faltam-lbl" id="faltam-lbl">Faltam</div>
         <div class="big" id="faltam">—</div>
         <div class="big-unit" id="faltam-unit">vendas</div>
       </div>
-      <div class="sub">Já foram <b id="vendidas">—</b> de <b id="meta">—</b> vendas no mês (<b id="pct">—</b>)</div>
+      <div class="sub" id="sub"></div>
       <div class="placar" aria-label="Vendas por tipo">
         <div class="pl com">Comercial <b id="pl-com">0</b></div>
         <div class="pl fac">Facilitada <b id="pl-fac">0</b></div>
@@ -164,16 +191,26 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
     </div>
   </section>
 
-  <section class="houses-wrap" aria-label="Cada apê é uma venda da meta">
-    <div class="houses-head">
-      <h2>Cada apê é uma venda</h2>
-      <div class="legend"><span class="l-com">Comercial</span><span class="l-fac">Facilitada</span><span class="l-todo">Falta vender</span></div>
+  <section aria-label="Consultar vendas de outros meses">
+    <div class="houses-head" style="margin-bottom:10px">
+      <h2>Consultar outros meses</h2>
+      <div class="legend"><span class="l-com">Comercial</span><span class="l-fac">Facilitada</span></div>
     </div>
-    <div class="houses" id="houses"></div>
+    <div class="cal">
+      <div class="cal-top">
+        <div class="cal-ano-box">
+          <button class="cal-nav" id="cal-prev" type="button" aria-label="Ano anterior">‹</button>
+          <div class="cal-ano" id="cal-ano">—</div>
+          <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo ano">›</button>
+        </div>
+        <div class="cal-hint">Toque num mês para ver as vendas · <button class="cal-hoje" id="cal-hoje" type="button">voltar para o mês atual</button></div>
+      </div>
+      <div class="cal-meses" id="cal-meses"></div>
+    </div>
   </section>
 
   <section aria-label="Contagem por equipe">
-    <div class="houses-head" style="margin-bottom:10px"><h2>Quanto falta para cada equipe</h2></div>
+    <div class="houses-head" style="margin-bottom:10px"><h2 id="teams-tit">Quanto falta para cada equipe</h2></div>
     <div class="teams" id="teams"></div>
   </section>
 
@@ -194,74 +231,176 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 // ===== Dados (atualizar a cada leitura da planilha) =====
 const DADOS = {
   mes: "2026-11",          // mês vigente
-  atualizado: "2026-11-13T14:41:00-03:00",
-  equipes: [
-    {gv: "Aldinei", gr: "Takeashi", meta: 3,  vendas: 0},
-    {gv: "Ícaro",   gr: "Takeashi", meta: 3,  vendas: 1},
-    {gv: "Pina",    gr: "Takeashi", meta: 1,  vendas: 0},
-    {gv: "Mada",    gr: "Patricia", meta: 12, vendas: 0},
-    {gv: "Bruno",   gr: "Patricia", meta: 4,  vendas: 0},
-    {gv: "Sandro",  gr: "Patricia", meta: 1,  vendas: 0},
-    {gv: "Ivan",    gr: "Gustavo",  meta: 5,  vendas: 0},
-    {gv: "Débora",  gr: "Gustavo",  meta: 1,  vendas: 0}
-  ],
-  // vendas do mês por corretor (aba "contador de vendas"): conta a venda pelo mês da confirmação (W) quando houver;
-  // entra só o que é do mês vigente (U). Com FID (S) = Comercial; sem FID = Facilitada;
-  // sem Data Confirmação Venda 2.0 (T em branco) = Facilitada.
-  vendasCorretores: [
-    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", vendas: [{projeto: "Alta Vista Mangará", tipo: "Facilitada"}]}
+  atualizado: "2026-11-13T14:58:00-03:00",
+  inicio: "2026-01",    // primeiro mês com vendas na aba
+  // metas por mês e equipe (só os meses com meta no painel de Gestão Semanal)
+  metas: {
+    "2026-11": [
+    {gv: "Aldinei", gr: "Takeashi", meta: 3},
+    {gv: "Ícaro",   gr: "Takeashi", meta: 3},
+    {gv: "Pina",    gr: "Takeashi", meta: 1},
+    {gv: "Mada",    gr: "Patricia", meta: 12},
+    {gv: "Bruno",   gr: "Patricia", meta: 4},
+    {gv: "Sandro",  gr: "Patricia", meta: 1},
+    {gv: "Ivan",    gr: "Gustavo",  meta: 5},
+    {gv: "Débora",  gr: "Gustavo",  meta: 1}
+  ]
+  },
+  // aba "contador de vendas": a venda conta no mês da confirmação (W) quando houver, senão no mês da venda (U);
+  // com FID (S) e com Data Confirmação Venda 2.0 (T) = Comercial; sem FID ou com T em branco = Facilitada.
+  vendas: [
+    {"mes": "2026-01", "nome": "Luany Amstalden Teodoro", "gv": "Lais", "projeto": "Compra e Venda de Bens Imóveis III - SP", "tipo": "Comercial"},
+    {"mes": "2026-02", "nome": "Enock Carone da Cunha Junior", "gv": "Lais", "projeto": "Cores da Mata Mangará", "tipo": "Comercial"},
+    {"mes": "2026-02", "nome": "Karen Caroline Guireli de Sousa", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-02", "nome": "Karen Caroline Guireli de Sousa", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-02", "nome": "Enock Carone da Cunha Junior", "gv": "Lais", "projeto": "Cores da Mata Mangará", "tipo": "Comercial"},
+    {"mes": "2026-02", "nome": "Luany Amstalden Teodoro", "gv": "Lais", "projeto": "Cores da Mata Mangará", "tipo": "Comercial"},
+    {"mes": "2026-02", "nome": "Karen Caroline Guireli de Sousa", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-02", "nome": "Eloisa Eduarda Calo Peixoto", "gv": "Lais", "projeto": "Seleto Amoreiras", "tipo": "Comercial"},
+    {"mes": "2026-03", "nome": "Marisa Domingos Benevides Oliveira Martins", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-03", "nome": "Carlos Roberto Teixeira", "gv": "Bruno", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-03", "nome": "Silvia Dorea Santos", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-03", "nome": "Silvia Dorea Santos", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-03", "nome": "Marisa Domingos Benevides Oliveira Martins", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-03", "nome": "Fabio Carlo da Silva", "gv": "Lais", "projeto": "Cores da Mata Mangará", "tipo": "Comercial"},
+    {"mes": "2026-04", "nome": "Fabio Carlo da Silva", "gv": "Lais", "projeto": "Seleto Amoreiras", "tipo": "Comercial"},
+    {"mes": "2026-05", "nome": "Marisa Domingos Benevides Oliveira Martins", "gv": "Bruno", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-05", "nome": "Marisa Domingos Benevides Oliveira Martins", "gv": "Bruno", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-05", "nome": "Silvia Dorea Santos", "gv": "Bruno", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-05", "nome": "Luiz Fernando Batista Teixeira", "gv": "Bruno", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-05", "nome": "Daniela Caroza Aleixo Rodrigues de Carvalho", "gv": "Bruno", "projeto": "Casa Prado Residencial Riva", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-05", "nome": "Amekion Ferreira Cruz", "gv": "Lais", "projeto": "Seleto Amoreiras", "tipo": "Comercial"},
+    {"mes": "2026-06", "nome": "Ana Luiza Martins", "gv": "Aldinei", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-06", "nome": "Marli Teixeira da Costa", "gv": "Aldinei", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-06", "nome": "Denise Savoy", "gv": "Lais", "projeto": "Alta Vista Mangará", "tipo": "Comercial"},
+    {"mes": "2026-06", "nome": "João Paulo da Silva", "gv": "Aldinei", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-06", "nome": "Teresinha Aparecida Crivelaro Lopes", "gv": "Aldinei", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-06", "nome": "Silvia Dorea Santos", "gv": "Bruno", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-06", "nome": "Marli Teixeira da Costa", "gv": "Aldinei", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-06", "nome": "Silvia Dorea Santos", "gv": "Bruno", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-07", "nome": "Isabella Garcia Silva", "gv": "Aldinei", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-07", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Algarve Residencial", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-07", "nome": "Daniel Campos dos Santos", "gv": "Aldinei", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Takeashi"},
+    {"mes": "2026-07", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-07", "nome": "Isabella Garcia Silva", "gv": "Aldinei", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-07", "nome": "Madeleine Kassia de Campos Sena Borges", "gv": "Gianlucca", "projeto": "Cores da Mata Mangará", "tipo": "Comercial"},
+    {"mes": "2026-07", "nome": "Sonia Maria de Oliveira Maruki", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-07", "nome": "Ellen Cassia Pereira Cassemiro de Campos", "gv": "Arthur", "projeto": "Seleto Amoreiras", "tipo": "Comercial"},
+    {"mes": "2026-07", "nome": "Daniela Caroza Aleixo Rodrigues de Carvalho", "gv": "Bruno", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Sonia Maria de Oliveira Maruki", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Amekion Ferreira Cruz", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Jorge Luiz de Lima", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-08", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Teresinha Aparecida Crivelaro Lopes", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-09", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Larissa Gabriele Vitor", "gv": "Ivan", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Gustavo"},
+    {"mes": "2026-09", "nome": "Ana Luiza Martins", "gv": "Aldinei", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-09", "nome": "Guilherme Garcia", "gv": "Bruno", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Amekion Ferreira Cruz", "gv": "Gianlucca", "projeto": "Alta Vista Mangará", "tipo": "Comercial"},
+    {"mes": "2026-10", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Amekion Ferreira Cruz", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Rise Parque Prado", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Ellen Cassia Pereira Cassemiro de Campos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Guilherme Garcia", "gv": "Bruno", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Isabella Garcia Silva", "gv": "Aldinei", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Jorge Luiz de Lima", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Ana Lucia Menezes de Paula", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-10", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Roseli Martim Tibiriça", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
+    {"mes": "2026-09", "nome": "Aloisio Antonio Mache Tavares", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-11", "nome": "Roseli Martim Tibiriça", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Takeashi"},
+    {"mes": "2026-10", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Bruno Miccoli de Oliveira", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Ellen Cassia Pereira Cassemiro de Campos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Aloisio Antonio Mache Tavares", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Guilherme Garcia", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Facilitada", "gr": "Patricia"}
   ]
 };
 // =========================================================
 
 const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const MES_CURTO = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
 const $ = (id) => document.getElementById(id);
 const plural = (n, s, p) => n === 1 ? s : p;
-const meta = DADOS.equipes.reduce((a, e) => a + e.meta, 0);
-const vendidas = DADOS.equipes.reduce((a, e) => a + e.vendas, 0);
-const faltam = Math.max(0, meta - vendidas);
-const mesNum = Number(DADOS.mes.split("-")[1]);
+const mk = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const VIGENTE = DADOS.mes;
+const PRIMEIRO = DADOS.inicio || VIGENTE;
 
-$("mes-nome").textContent = MESES[mesNum - 1];
 const upd = new Date(DADOS.atualizado);
 $("upd").textContent = upd.toLocaleDateString("pt-BR", {day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"}) + " às " +
   upd.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
-$("faltam").textContent = faltam;
-$("faltam-unit").textContent = plural(faltam, "venda", "vendas");
-$("vendidas").textContent = vendidas;
-$("meta").textContent = meta;
-$("pct").textContent = Math.round(vendidas / meta * 100) + "%";
-if (faltam === 0) $("hero").classList.add("hit");
-
-// placar por tipo (independe da regra da meta do churrasco)
-(function () {
-  const todas = (DADOS.vendasCorretores || []).flatMap((c) => c.vendas);
-  $("pl-com").textContent = todas.filter((v) => v.tipo === "Comercial").length;
-  $("pl-fac").textContent = todas.filter((v) => v.tipo === "Facilitada").length;
-})();
 
 // tipo de cada venda, na ordem em que pintamos: primeiro as comerciais, depois as facilitadas
 const ORDEM_TIPO = {Comercial: 0, Facilitada: 1};
 const tiposDe = (lista) => lista.map((v) => v.tipo).sort((a, b) => (ORDEM_TIPO[a] ?? 2) - (ORDEM_TIPO[b] ?? 2));
-const TIPOS = tiposDe((DADOS.vendasCorretores || []).flatMap((c) => c.vendas));
 const clsTipo = (t) => t === "Comercial" ? " com" : t === "Facilitada" ? " fac" : "";
 const COR = {Comercial: ["#ffb627", "#ffd27a"], Facilitada: ["#7cc4ff", "#b9e0ff"]};
+const doMes = (ym) => DADOS.vendas.filter((v) => v.mes === ym);
 
-// casinhas
-const casa = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 2h14v20h-5v-4h-4v4H5z"/><g fill="var(--win,#0b1630)"><rect x="7.5" y="4.5" width="3" height="2.6" rx=".4"/><rect x="13.5" y="4.5" width="3" height="2.6" rx=".4"/><rect x="7.5" y="9" width="3" height="2.6" rx=".4"/><rect x="13.5" y="9" width="3" height="2.6" rx=".4"/><rect x="7.5" y="13.5" width="3" height="2.6" rx=".4"/><rect x="13.5" y="13.5" width="3" height="2.6" rx=".4"/></g></svg>';
-const houses = $("houses");
-for (let i = 0; i < meta; i++) {
-  const d = document.createElement("div");
-  d.className = "house" + (i < vendidas ? " done" + clsTipo(TIPOS[i]) : "");
-  d.innerHTML = casa;
-  if (i < vendidas) d.style.animationDelay = (i * 60) + "ms";
-  houses.appendChild(d);
+function render(ym) {
+  const vendas = doMes(ym);
+  const equipes = DADOS.metas[ym] || null;
+  const ehVigente = ym === VIGENTE;
+  const m = Number(ym.slice(5, 7));
+  const total = vendas.length;
+  const TIPOS = tiposDe(vendas);
+  const nCom = vendas.filter((v) => v.tipo === "Comercial").length;
+  const nFac = vendas.filter((v) => v.tipo === "Facilitada").length;
+  const hero = $("hero");
+  hero.classList.remove("hit");
+  document.querySelector(".hero-left").hidden = !ehVigente;
+  hero.classList.toggle("sem-banner", !ehVigente);
+  $("titulo").firstChild.textContent = equipes ? "Meta de vendas de " : "Vendas de ";
+  $("mes-nome").textContent = MESES[m - 1] + (ym.slice(0, 4) !== VIGENTE.slice(0, 4) ? " " + ym.slice(0, 4) : "");
+  let slots;
+  if (equipes) {
+    const meta = equipes.reduce((a, e) => a + e.meta, 0);
+    const faltam = Math.max(0, meta - total);
+    $("faltam-lbl").textContent = "Faltam";
+    $("faltam").textContent = faltam;
+    $("faltam-unit").textContent = plural(faltam, "venda", "vendas");
+    $("sub").textContent = "";
+    $("sub").append("Já foram ", mk("b", null, total), " de ", mk("b", null, meta), " vendas no mês (", mk("b", null, Math.round(total / meta * 100) + "%"), ")");
+    if (faltam === 0) hero.classList.add("hit");
+    slots = meta;
+  } else {
+    $("faltam-lbl").textContent = "Vendas em " + MESES[m - 1];
+    $("faltam").textContent = total;
+    $("faltam-unit").textContent = plural(total, "venda", "vendas");
+    $("sub").textContent = ym > VIGENTE ? "Mês ainda não começou." : "Mês fechado, sem meta cadastrada no painel.";
+    slots = Math.max(10, Math.ceil(total / 5) * 5);
+  }
+  $("pl-com").textContent = nCom;
+  $("pl-fac").textContent = nFac;
+  torre(slots, total, TIPOS);
+  times(equipes, vendas);
+  vendedores(vendas);
 }
 
-// prédio: uma janela por venda da meta (30); as vendidas são pintadas de baixo para cima.
+// prédio: uma janela por venda da meta; as vendidas são pintadas de baixo para cima, na cor do tipo.
 // A portaria fica num térreo próprio, abaixo da grade, para não tomar o lugar de nenhuma janela.
-(function torre() {
+function torre(meta, vendidas, TIPOS) {
   const svg = $("tower");
+  svg.textContent = "";
+  svg.setAttribute("aria-label", `Prédio de ${meta} janelas: ${vendidas} pintadas, uma por venda`);
   const cols = 5, floors = Math.ceil(meta / cols);
   const winW = 26, winH = 20, gapX = 10, gapY = 12, pad = 18, lobbyH = 40;
   const bodyW = cols * winW + (cols - 1) * gapX + pad * 2;
@@ -273,21 +412,16 @@ for (let i = 0; i < meta; i++) {
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   const ns = "http://www.w3.org/2000/svg";
   const el = (t, a) => { const e = document.createElementNS(ns, t); for (const k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
-  // céu: lua e estrelas
   el("circle", {cx: W - 30, cy: 26, r: 11, fill: "#ffe7a8", opacity: .85});
   [[22,20],[60,40],[38,70],[200,70],[14,110],[226,120]].forEach(([x, y]) => el("circle", {cx: x, cy: y, r: 1.4, fill: "#c9d6f5", opacity: .7}));
-  // antena e topo
   el("rect", {x: W / 2 - 1.5, y: top - 34, width: 3, height: 24, fill: "#5a72b0"});
   el("circle", {cx: W / 2, cy: top - 36, r: 4, fill: "#ffb627"});
   el("rect", {x: bodyX + 14, y: top - 12, width: bodyW - 28, height: 14, rx: 3, fill: "#2a4380"});
-  // corpo
   el("rect", {x: bodyX, y: top, width: bodyW, height: bodyH, rx: 6, fill: "#1d3366", stroke: "#2f4c8f", "stroke-width": 2});
-  // faixas de laje
   for (let f = 1; f < floors; f++) {
     const y = top + pad + f * (winH + gapY) - gapY / 2;
     el("line", {x1: bodyX + 8, x2: bodyX + bodyW - 8, y1: y, y2: y, stroke: "#2a4380", "stroke-width": 2});
   }
-  // janelas: índice 0 = andar de baixo, esquerda
   let i = 0;
   for (let f = floors - 1; f >= 0; f--) {
     for (let c = 0; c < cols; c++) {
@@ -301,12 +435,10 @@ for (let i = 0; i < meta; i++) {
       i++;
     }
   }
-  // térreo: portaria
   const ly = top + gridH;
   el("line", {x1: bodyX + 8, x2: bodyX + bodyW - 8, y1: ly - 2, y2: ly - 2, stroke: "#2a4380", "stroke-width": 2});
   el("rect", {x: W / 2 - 18, y: ly + 6, width: 36, height: lobbyH - 6, rx: 3, fill: "#0f1d40", stroke: "#ffb627", "stroke-width": 1.5});
   el("line", {x1: W / 2, x2: W / 2, y1: ly + 6, y2: ly + lobbyH, stroke: "#ffb627", "stroke-width": 1, opacity: .6});
-  // chão e árvores
   const gy = top + bodyH;
   el("rect", {x: 0, y: gy, width: W, height: groundH, fill: "#0e1b3a"});
   [[bodyX - 18, gy], [bodyX + bodyW + 18, gy]].forEach(([x, y]) => {
@@ -314,77 +446,116 @@ for (let i = 0; i < meta; i++) {
     el("circle", {cx: x, cy: y - 26, r: 14, fill: "#2e8f6a"});
   });
   el("rect", {x: 0, y: gy + 18, width: W, height: 3, fill: "#1a2c58"});
-})();
+}
 
-// equipes: quem está mais longe da meta aparece primeiro
-const teams = $("teams");
-DADOS.equipes.slice().sort((a, b) => (b.meta - b.vendas) - (a.meta - a.vendas) || a.gv.localeCompare(b.gv)).forEach((e) => {
-  const f = Math.max(0, e.meta - e.vendas);
-  const card = document.createElement("div");
-  card.className = "team" + (f === 0 ? " ok" : "");
-  const top = document.createElement("div"); top.className = "team-top";
-  const nm = document.createElement("div");
-  const n1 = document.createElement("div"); n1.className = "team-name"; n1.textContent = "Equipe " + e.gv;
-  const n2 = document.createElement("div"); n2.className = "team-gr"; n2.textContent = "GR " + e.gr;
-  nm.append(n1, n2);
-  const fl = document.createElement("div"); fl.className = "team-faltam";
-  fl.textContent = f === 0 ? "✓" : f;
-  const sm = document.createElement("small"); sm.textContent = f === 0 ? "meta batida" : plural(f, "falta", "faltam");
-  fl.appendChild(sm);
-  top.append(nm, fl);
-  const dots = document.createElement("div"); dots.className = "dots";
-  const tiposGv = tiposDe((DADOS.vendasCorretores || []).filter((c) => c.gv === e.gv).flatMap((c) => c.vendas));
-  for (let i = 0; i < Math.max(e.meta, e.vendas); i++) {
-    const d = document.createElement("div"); d.className = "dot" + (i < e.vendas ? " done" + clsTipo(tiposGv[i]) : "");
-    if (i < e.vendas && tiposGv[i]) d.title = tiposGv[i];
-    dots.appendChild(d);
+// equipes: com meta, quem está mais longe aparece primeiro; sem meta, quem vendeu mais
+function times(equipes, vendas) {
+  const box = $("teams"); box.textContent = "";
+  $("teams-tit").textContent = equipes ? "Quanto falta para cada equipe" : "Vendas por equipe";
+  let lista;
+  if (equipes) lista = equipes.map((e) => ({...e, vendas: vendas.filter((v) => v.gv === e.gv)}));
+  else {
+    const gvs = [...new Set(vendas.map((v) => v.gv))];
+    lista = gvs.map((gv) => ({gv, gr: (vendas.find((v) => v.gv === gv) || {}).gr, meta: null, vendas: vendas.filter((v) => v.gv === gv)}));
   }
-  const line = document.createElement("div"); line.className = "team-line";
-  line.append("Vendidas ");
-  const b1 = document.createElement("b"); b1.textContent = e.vendas; line.appendChild(b1);
-  line.append(" de ");
-  const b2 = document.createElement("b"); b2.textContent = e.meta; line.appendChild(b2);
-  card.append(top, dots, line);
-  teams.appendChild(card);
-});
-
+  if (!lista.length) { box.appendChild(mk("div", "empty", "Nenhuma venda neste mês.")); return; }
+  lista.sort(equipes ? (a, b) => (b.meta - b.vendas.length) - (a.meta - a.vendas.length) || a.gv.localeCompare(b.gv)
+                     : (a, b) => b.vendas.length - a.vendas.length || a.gv.localeCompare(b.gv));
+  lista.forEach((e) => {
+    const n = e.vendas.length;
+    const f = e.meta != null ? Math.max(0, e.meta - n) : null;
+    const card = mk("div", "team" + (f === 0 ? " ok" : ""));
+    const top = mk("div", "team-top");
+    const nm = mk("div");
+    nm.append(mk("div", "team-name", "Equipe " + e.gv));
+    if (e.gr) nm.append(mk("div", "team-gr", "GR " + e.gr));
+    const fl = mk("div", "team-faltam" + (f == null ? " sem-meta" : ""), f == null ? n : (f === 0 ? "✓" : f));
+    fl.appendChild(mk("small", null, f == null ? plural(n, "venda", "vendas") : (f === 0 ? "meta batida" : plural(f, "falta", "faltam"))));
+    top.append(nm, fl);
+    const dots = mk("div", "dots");
+    const tps = tiposDe(e.vendas);
+    for (let i = 0; i < Math.max(e.meta || 0, n); i++) {
+      const d = mk("div", "dot" + (i < n ? " done" + clsTipo(tps[i]) : ""));
+      if (i < n) d.title = tps[i];
+      dots.appendChild(d);
+    }
+    const line = mk("div", "team-line");
+    const nc = e.vendas.filter((v) => v.tipo === "Comercial").length;
+    if (e.meta != null) line.append("Vendidas ", mk("b", null, n), " de ", mk("b", null, e.meta));
+    else line.append(mk("b", null, nc), plural(nc, " comercial", " comerciais"), " · ", mk("b", null, n - nc), plural(n - nc, " facilitada", " facilitadas"));
+    card.append(top, dots, line);
+    box.appendChild(card);
+  });
+}
 
 // lista de corretores que venderam, com empreendimento e tipo de venda
-(function vendedores() {
-  const box = $("sellers");
-  const lista = (DADOS.vendasCorretores || []).slice().sort((a, b) => b.vendas.length - a.vendas.length || a.nome.localeCompare(b.nome));
-  const todas = lista.flatMap((c) => c.vendas);
-  const tipos = $("tipos");
+function vendedores(vendas) {
+  const box = $("sellers"); box.textContent = "";
+  const tipos = $("tipos"); tipos.textContent = "";
   [["Comercial", "t-com"], ["Facilitada", "t-fac"]].forEach(([t, cls]) => {
-    const s = document.createElement("span"); s.className = "tipo " + cls; s.textContent = t;
-    const b = document.createElement("b"); b.textContent = todas.filter((v) => v.tipo === t).length;
-    tipos.append(s, b);
+    tipos.append(mk("span", "tipo " + cls, t), mk("b", null, vendas.filter((v) => v.tipo === t).length));
   });
-  if (!lista.length) {
-    const e = document.createElement("div"); e.className = "empty";
-    e.textContent = "Nenhuma venda no mês ainda. A primeira pode ser a sua!";
-    box.appendChild(e); return;
-  }
+  const porNome = {};
+  vendas.forEach((v) => { (porNome[v.nome] = porNome[v.nome] || {nome: v.nome, gv: v.gv, vendas: []}).vendas.push(v); });
+  const lista = Object.values(porNome).sort((a, b) => b.vendas.length - a.vendas.length || a.nome.localeCompare(b.nome));
+  if (!lista.length) { box.appendChild(mk("div", "empty", "Nenhuma venda no mês ainda. A primeira pode ser a sua!")); return; }
   lista.forEach((c, i) => {
-    const row = document.createElement("div"); row.className = "seller";
-    const rk = document.createElement("div"); rk.className = "rank"; rk.textContent = (i + 1) + "º";
-    const who = document.createElement("div");
-    const n = document.createElement("div"); n.className = "s-name"; n.textContent = c.nome;
-    const t = document.createElement("div"); t.className = "s-team"; t.textContent = "Equipe " + c.gv;
-    who.append(n, t);
+    const row = mk("div", "seller");
+    const who = mk("div");
+    who.append(mk("div", "s-name", c.nome), mk("div", "s-team", "Equipe " + c.gv));
     const qt = c.vendas.length;
-    const ct = document.createElement("div"); ct.className = "s-count"; ct.textContent = qt;
-    const sm = document.createElement("small"); sm.textContent = plural(qt, "venda", "vendas"); ct.appendChild(sm);
-    const chips = document.createElement("div"); chips.className = "chips";
+    const ct = mk("div", "s-count", qt); ct.appendChild(mk("small", null, plural(qt, "venda", "vendas")));
+    const chips = mk("div", "chips");
     c.vendas.forEach((v) => {
-      const ch = document.createElement("span"); ch.className = "chip"; ch.textContent = v.projeto;
-      const tp = document.createElement("span"); tp.className = "tipo " + (v.tipo === "Comercial" ? "t-com" : "t-fac"); tp.textContent = v.tipo;
-      ch.appendChild(tp); chips.appendChild(ch);
+      const ch = mk("span", "chip", v.projeto);
+      ch.appendChild(mk("span", "tipo " + (v.tipo === "Comercial" ? "t-com" : "t-fac"), v.tipo));
+      chips.appendChild(ch);
     });
-    row.append(rk, who, ct, chips);
+    row.append(mk("div", "rank", (i + 1) + "º"), who, ct, chips);
     box.appendChild(row);
   });
-})();
+}
+
+// ===== calendário de meses =====
+let sel = VIGENTE;
+let anoVisto = Number(VIGENTE.slice(0, 4));
+function calendario() {
+  $("cal-ano").textContent = anoVisto;
+  $("cal-prev").disabled = anoVisto <= Number(PRIMEIRO.slice(0, 4));
+  $("cal-next").disabled = anoVisto >= Number(VIGENTE.slice(0, 4));
+  const g = $("cal-meses"); g.textContent = "";
+  for (let mm = 1; mm <= 12; mm++) {
+    const ym = anoVisto + "-" + String(mm).padStart(2, "0");
+    const b = mk("button", "cal-m"); b.type = "button";
+    b.appendChild(mk("span", "cal-m-nome", MES_CURTO[mm - 1]));
+    const ok = ym >= PRIMEIRO && ym <= VIGENTE;
+    if (!ok) b.disabled = true;
+    else {
+      const vs = doMes(ym);
+      const t = vs.length;
+      b.appendChild(mk("span", "cal-m-n", t));
+      const nc = vs.filter((v) => v.tipo === "Comercial").length;
+      const bar = mk("span", "cal-m-bar");
+      if (t) { const c = mk("i", "c"); c.style.width = (nc / t * 100) + "%"; const fz = mk("i", "f"); fz.style.width = ((t - nc) / t * 100) + "%"; bar.append(c, fz); }
+      b.appendChild(bar);
+      b.setAttribute("aria-label", MESES[mm - 1] + ": " + t + " " + plural(t, "venda", "vendas"));
+      b.addEventListener("click", () => escolher(ym));
+    }
+    if (ym === VIGENTE) b.classList.add("atual");
+    if (ym === sel) { b.classList.add("sel"); b.setAttribute("aria-pressed", "true"); }
+    g.appendChild(b);
+  }
+}
+function escolher(ym) {
+  sel = ym; anoVisto = Number(ym.slice(0, 4));
+  try { history.replaceState(null, "", ym === VIGENTE ? location.pathname : "#" + ym); } catch (e) {}
+  render(ym); calendario();
+}
+$("cal-prev").addEventListener("click", () => { anoVisto--; calendario(); });
+$("cal-next").addEventListener("click", () => { anoVisto++; calendario(); });
+$("cal-hoje").addEventListener("click", () => escolher(VIGENTE));
+const pedido = location.hash.slice(1);
+escolher(/^\d{4}-\d{2}$/.test(pedido) && pedido >= PRIMEIRO && pedido <= VIGENTE ? pedido : VIGENTE);
 </script>
 </body>
 </html>
