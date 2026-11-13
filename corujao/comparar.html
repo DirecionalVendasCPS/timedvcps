@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Comparar corujões</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Placar noturno do corujão: mesmo azul-noite do contador de vendas, âmbar para o que falta, verde para promessa cumprida */
+:root{
+  --bg:#0b1630;
+  --panel:#12224a;
+  --line:#22376b;
+  --ink:#eef2fb;
+  --muted:#93a3c8;
+  --accent:#ffb627;
+  --done:#3ddc97;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;text-wrap:balance}
+.upd{font-size:13px;color:var(--muted);text-align:right}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(150px,230px) minmax(0,320px);gap:20px;align-items:center;overflow:hidden}
+.owl{width:100%;max-width:230px;justify-self:center}
+@media (max-width:960px){.hero{grid-template-columns:1fr 1fr}.hero>div:first-child{grid-column:1/-1}}
+@media (max-width:700px){.hero{grid-template-columns:1fr;text-align:center}}
+.lbl{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.6vw,38px);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;line-height:1}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(130px,20vw,220px);line-height:.85;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(255,182,39,.25);margin:6px 0}
+.unit{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.sub{margin-top:14px;font-size:17px;color:var(--muted)}
+.sub b{color:var(--ink)}
+.hit .faltam-block{display:none}
+.bateu{display:none;font-family:var(--display);font-weight:900;color:var(--done);font-size:clamp(56px,9vw,100px);line-height:.9;text-transform:uppercase}
+.hit .bateu{display:block}
+.cal{justify-self:end;width:100%;max-width:330px;background:#0f1d40;border:1px solid var(--line);border-radius:18px;padding:14px}
+@media (max-width:700px){.cal{justify-self:center}}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.cal-nav{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 16px var(--body);cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-nav:focus-visible,.cal-d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-w{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal-d{aspect-ratio:1;border-radius:9px;border:1px solid transparent;background:transparent;color:#3a5190;font:600 13px var(--body);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font-variant-numeric:tabular-nums;text-decoration:none}
+.cal-d small{font-size:10px;font-weight:700;line-height:1}
+.cal-d.cor{background:var(--panel);color:var(--ink)}
+.cal-d.cor small{color:var(--muted)}
+.cal-d.tem{cursor:pointer}
+.cal-d.tem small{color:var(--done)}
+.cal-d.tem:hover{border-color:var(--accent)}
+.cal-d.hoje{border-color:var(--muted)}
+.cal-d.sel{background:var(--accent);color:var(--bg)}
+.cal-d.sel small{color:var(--bg)}
+.cal-btn{display:block;margin-top:10px;text-align:center;background:var(--accent);color:var(--bg);font:700 14px var(--body);text-decoration:none;border-radius:999px;padding:9px 14px}
+.cal-btn:hover{filter:brightness(1.08)}
+.cal-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.4}
+.bar{height:14px;border-radius:7px;background:#0f1d40;border:1px solid var(--line);overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd27a);border-radius:7px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.row.ok{border-color:rgba(61,220,151,.55);background:linear-gradient(0deg,rgba(61,220,151,.08),rgba(61,220,151,.08)),var(--panel)}
+.nome{font-weight:700;font-size:16px}
+.tag{font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums;text-align:right;line-height:1}
+.tag small{display:block;font-family:var(--body);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.row.ok .tag{color:var(--done)}
+.dots{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
+.dot{width:16px;height:16px;border-radius:4px;border:1.5px dashed #3a5190}
+.dot.done{background:var(--done);border:1.5px solid var(--done)}
+.dot.extra{background:var(--accent);border:1.5px solid var(--accent)}
+.det{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.det b{color:var(--ink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:-4px 0 12px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.l1::before{background:var(--done)}
+.l2::before{border:1.5px dashed var(--muted)}
+.l3::before{background:var(--accent)}
+.lblue::before{background:#4d7bff}
+.grs{display:flex;flex-direction:column;gap:22px}
+.gr-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.gr-name{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.gr-sum{font-size:14px;color:var(--muted)}
+.gr-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+.gvs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.gv{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gv-name{font-weight:700;font-size:17px}
+.gv-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gv-count b{color:var(--ink)}
+.mini{height:8px;border-radius:4px;background:#0f1d40;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--done)}
+.ag{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.ag b{font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ag b.real{color:var(--accent)}
+.ag .pct{font-weight:700;color:var(--ink)}
+.gr-head .ag{width:100%}
+.mini.ag-bar i{background:var(--accent)}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.people li{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:6px 8px;border-radius:8px;background:#0f1d40}
+.people .pn{min-width:0;overflow-wrap:anywhere}
+.pill{flex:none;font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.p-in{color:var(--done);background:rgba(61,220,151,.14)}
+.p-extra{color:var(--accent);background:rgba(255,182,39,.16)}
+.p-out{color:#ff8a8a;background:rgba(255,107,107,.14)}
+.people li.out .pn{color:var(--muted)}
+.leg2 span::before{display:none}
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+.hbar{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:8px 12px;align-items:center}
+.hbar .hn{font-size:14px;text-align:right;line-height:1.2}
+.hbar .hn small{display:block;font-size:11px;color:var(--muted)}
+.hbar .ht{position:relative;height:26px;border-left:1.5px solid #3a5190}
+.hbar .ht i{position:absolute;left:0;top:2px;bottom:2px;background:#4d7bff;border-radius:0 6px 6px 0;min-width:6px}
+.hbar .ht i.meta{background:var(--done)}
+.hbar .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.hgrid{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:12px;margin-top:6px}
+.hticks{position:relative;height:18px;font-size:11px;color:var(--muted)}
+.hticks span{position:absolute;transform:translateX(-50%)}
+.hcap{margin-top:6px;font-size:12px;color:var(--muted);text-align:center}
+.vazio{color:var(--muted);text-align:center;padding:12px}
+.upd-box{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.btn-upd{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:var(--bg);background:var(--accent);border:none;border-radius:999px;padding:9px 16px;text-decoration:none;cursor:pointer}
+.btn-upd:hover{filter:brightness(1.08)}
+.btn-upd:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn-upd svg{width:16px;height:16px}
+.upd-ok{font-size:12px;color:var(--done)}
+footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
+
+.cmp{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.cmp-c{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;color:var(--ink);text-decoration:none}
+a.cmp-c:hover{border-color:var(--accent)}
+.cmp-c.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.cmp-c.prog{border-style:dashed;opacity:.7}
+.cmp-d{font-weight:700;font-size:14px}.cmp-d small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.cmp-n{font-family:var(--display);font-weight:900;font-size:46px;line-height:.9;color:var(--accent)}
+.cmp-n small{font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted);margin-left:6px}
+.cmp-t{font-size:13px;color:var(--muted)}.cmp-t b{color:var(--ink)}
+.cmp-v{font-size:12px;font-weight:700}.cmp-v.up{color:var(--done)}.cmp-v.down{color:#ff7a7a}
+.cmp-gr{display:grid;grid-template-columns:70px 1fr auto;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.cmp-gr .b{height:6px;border-radius:3px;background:#0f1d40;overflow:hidden}.cmp-gr .b i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.cmp-gr b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+.evo{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.evo-row{display:grid;grid-template-columns:110px 1fr 90px;gap:12px;align-items:center;margin:8px 0}
+.evo-row .lb{font-weight:700;font-size:14px}.evo-row .lb small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.evo-row .tr{position:relative;height:22px;background:#0f1d40;border-radius:6px}
+.evo-row .tr i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:6px}
+.evo-row .tr u{position:absolute;top:-4px;bottom:-4px;width:3px;background:var(--ink);border-radius:2px}
+.evo-row .vl{font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted)}.evo-row .vl b{color:var(--ink);font-size:16px}
+.evo-leg{font-size:12px;color:var(--muted);margin-top:6px}
+.tab{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;font-size:14px}
+.tab th,.tab td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tab th:first-child,.tab td:first-child{text-align:left}
+.tab th{color:var(--muted);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em;background:#0f1d40}
+.tab tr:last-child td{border-bottom:none}
+.tab small{color:var(--muted)}
+.wrap-tab{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a href="./" style="color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px">← Placar do Corujão</a>
+      <div class="eyebrow">Direcional Vendas · Campinas</div>
+      <h1>Comparar corujões</h1>
+    </div>
+  </header>
+
+  <section aria-label="Evolução dos corujões">
+    <h2>Agendamentos em cada corujão</h2>
+    <div class="evo" id="evo"></div>
+  </section>
+
+  <section aria-label="Cada corujão">
+    <h2>Resultado de cada corujão</h2>
+    <div class="legend" style="margin:-6px 0 4px">Toque num corujão com placar para abrir o placar completo daquele dia.</div>
+    <div class="cmp" id="cmp"></div>
+  </section>
+
+  <section aria-label="Por GR">
+    <h2>Por GR</h2>
+    <div class="wrap-tab"><table class="tab" id="tab"></table></div>
+  </section>
+
+  <footer>Agendamentos contados pela data de criação no relatório do Salesforce (aba "agendamentos normal"). Promessas: lista do grupo "Time Corretores Direcional Campinas", nos dias em que o placar foi montado.</footer>
+</div>
+<script src="datas.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+
+// ===== comparação entre corujões =====
+(function () {
+  const lista = (typeof CORUJOES !== "undefined" ? CORUJOES : []).slice().sort((a, b) => a.dia.localeCompare(b.dia));
+  const box = $("cmp"); if (!box) return;
+  const comPlacar = lista.filter((c) => c.placar).map((c) => c.dia);
+  const ULTIMO = comPlacar[comPlacar.length - 1];
+  const mk = (t, cls, txt) => { const e = document.createElement(t); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  let anterior = null;
+  lista.forEach((c) => {
+    const card = mk(c.placar ? "a" : "div", "cmp-c" + "" + (c.feito == null ? " prog" : ""));
+    if (c.placar) { card.href = c.dia === ULTIMO ? "./" : c.dia + ".html"; card.title = "Abrir o placar completo de " + c.dia.slice(8, 10) + "/" + c.dia.slice(5, 7); }
+    const dt = new Date(c.dia + "T12:00:00-03:00");
+    const d = mk("div", "cmp-d", dt.toLocaleDateString("pt-BR", {weekday: "short", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"}));
+    d.appendChild(mk("small", null, c.rotulo));
+    card.appendChild(d);
+    if (c.feito == null) { card.appendChild(mk("div", "cmp-t", "Programado")); box.appendChild(card); return; }
+    const n = mk("div", "cmp-n", c.feito); n.appendChild(mk("small", null, c.prometido ? "de " + c.prometido + " (" + Math.round(c.feito / c.prometido * 100) + "%)" : "agendamentos"));
+    card.appendChild(n);
+    if (anterior) {
+      const dif = c.feito - anterior.feito;
+      card.appendChild(mk("div", "cmp-v " + (dif >= 0 ? "up" : "down"), (dif >= 0 ? "▲ +" : "▼ ") + dif + " vs " + anterior.dia.slice(8, 10) + "/" + anterior.dia.slice(5, 7)));
+    }
+    const t = mk("div", "cmp-t");
+    t.append(mk("b", null, c.corretores), " corretores agendaram");
+    if (c.prometeram) t.append(" · ", mk("b", null, c.cumpriram), " de ", mk("b", null, c.prometeram), " cumpriram a promessa");
+    else t.append(" · sem lista de promessas");
+    card.appendChild(t);
+    const max = Math.max(...Object.values(c.gr || {}).map((v) => v[1] || v[0]), 1);
+    Object.entries(c.gr || {}).forEach(([gr, v]) => {
+      const row = mk("div", "cmp-gr");
+      const b = mk("div", "b"); const i = mk("i"); i.style.width = (v[1] ? v[0] / v[1] * 100 : v[0] / max * 100) + "%"; b.appendChild(i);
+      const val = mk("span"); val.append(mk("b", null, v[0])); if (v[1]) val.append("/" + v[1]);
+      row.append(mk("span", null, "GR " + gr), b, val);
+      card.appendChild(row);
+    });
+    box.appendChild(card);
+    anterior = c;
+  });
+})();
+
+// ===== evolução: barra de agendamentos por corujão (traço branco = prometido) =====
+(function () {
+  const lista = CORUJOES.filter((c) => c.feito != null).sort((a, b) => a.dia.localeCompare(b.dia));
+  const box = $("evo"); const max = Math.max(...lista.map((c) => Math.max(c.feito, c.prometido || 0)), 1);
+  lista.forEach((c) => {
+    const r = document.createElement("div"); r.className = "evo-row";
+    const lb = document.createElement("div"); lb.className = "lb"; lb.textContent = c.dia.slice(8, 10) + "/" + c.dia.slice(5, 7);
+    const sm = document.createElement("small"); sm.textContent = c.rotulo.replace("Corujão ", ""); lb.appendChild(sm);
+    const tr = document.createElement("div"); tr.className = "tr";
+    const i = document.createElement("i"); i.style.width = (c.feito / max * 100) + "%"; tr.appendChild(i);
+    if (c.prometido) { const u = document.createElement("u"); u.style.left = "calc(" + (c.prometido / max * 100) + "% - 1px)"; u.title = "Prometido: " + c.prometido; tr.appendChild(u); }
+    const vl = document.createElement("div"); vl.className = "vl";
+    const b = document.createElement("b"); b.textContent = c.feito; vl.appendChild(b);
+    if (c.prometido) vl.append(" / " + c.prometido);
+    r.append(lb, tr, vl); box.appendChild(r);
+  });
+  const lg = document.createElement("div"); lg.className = "evo-leg"; lg.textContent = "Barra amarela = agendamentos criados no dia · traço branco = total prometido (quando o placar foi montado)";
+  box.appendChild(lg);
+})();
+// ===== tabela por GR =====
+(function () {
+  const lista = CORUJOES.filter((c) => c.feito != null).sort((a, b) => a.dia.localeCompare(b.dia));
+  const grs = [...new Set(lista.flatMap((c) => Object.keys(c.gr || {})))];
+  const t = $("tab");
+  const th = document.createElement("tr");
+  ["GR"].concat(lista.map((c) => c.dia.slice(8, 10) + "/" + c.dia.slice(5, 7))).forEach((x) => { const e = document.createElement("th"); e.textContent = x; th.appendChild(e); });
+  t.appendChild(th);
+  grs.concat(["Total"]).forEach((gr) => {
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td"); td0.textContent = gr === "Total" ? "Total" : "GR " + gr; if (gr === "Total") td0.style.fontWeight = "700"; tr.appendChild(td0);
+    lista.forEach((c) => {
+      const v = gr === "Total" ? [c.feito, c.prometido] : (c.gr || {})[gr] || [0];
+      const td = document.createElement("td");
+      const b = document.createElement("b"); b.textContent = v[0]; td.appendChild(b);
+      if (v[1]) { const sm = document.createElement("small"); sm.textContent = " / " + v[1] + " (" + Math.round(v[0] / v[1] * 100) + "%)"; td.appendChild(sm); }
+      tr.appendChild(td);
+    });
+    t.appendChild(tr);
+  });
+})();
+</script>
+</body>
+</html>
