@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Placar do Corujão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Placar noturno do corujão: mesmo azul-noite do contador de vendas, âmbar para o que falta, verde para promessa cumprida */
+:root{
+  --bg:#0b1630;
+  --panel:#12224a;
+  --line:#22376b;
+  --ink:#eef2fb;
+  --muted:#93a3c8;
+  --accent:#ffb627;
+  --done:#3ddc97;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;text-wrap:balance}
+.upd{font-size:13px;color:var(--muted);text-align:right}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center;overflow:hidden}
+@media (max-width:700px){.hero{grid-template-columns:1fr;text-align:center}}
+.lbl{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.6vw,38px);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;line-height:1}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(130px,20vw,220px);line-height:.85;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(255,182,39,.25);margin:6px 0}
+.unit{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.sub{margin-top:14px;font-size:17px;color:var(--muted)}
+.sub b{color:var(--ink)}
+.hit .faltam-block{display:none}
+.bateu{display:none;font-family:var(--display);font-weight:900;color:var(--done);font-size:clamp(56px,9vw,100px);line-height:.9;text-transform:uppercase}
+.hit .bateu{display:block}
+.cal{justify-self:end;width:100%;max-width:330px;background:#0f1d40;border:1px solid var(--line);border-radius:18px;padding:14px}
+@media (max-width:700px){.cal{justify-self:center}}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.cal-nav{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 16px var(--body);cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-nav:focus-visible,.cal-d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-w{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal-d{aspect-ratio:1;border-radius:9px;border:1px solid transparent;background:transparent;color:#3a5190;font:600 13px var(--body);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font-variant-numeric:tabular-nums;text-decoration:none}
+.cal-d small{font-size:10px;font-weight:700;line-height:1}
+.cal-d.cor{background:var(--panel);color:var(--ink)}
+.cal-d.cor small{color:var(--muted)}
+.cal-d.tem{cursor:pointer}
+.cal-d.tem small{color:var(--done)}
+.cal-d.tem:hover{border-color:var(--accent)}
+.cal-d.hoje{border-color:var(--muted)}
+.cal-d.sel{background:var(--accent);color:var(--bg)}
+.cal-d.sel small{color:var(--bg)}
+.cmp{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.cmp-c{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;color:var(--ink);text-decoration:none}
+a.cmp-c:hover{border-color:var(--accent)}
+.cmp-c.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.cmp-c.prog{border-style:dashed;opacity:.7}
+.cmp-d{font-weight:700;font-size:14px}.cmp-d small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.cmp-n{font-family:var(--display);font-weight:900;font-size:46px;line-height:.9;color:var(--accent)}
+.cmp-n small{font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted);margin-left:6px}
+.cmp-t{font-size:13px;color:var(--muted)}.cmp-t b{color:var(--ink)}
+.cmp-v{font-size:12px;font-weight:700}.cmp-v.up{color:var(--done)}.cmp-v.down{color:#ff7a7a}
+.cmp-gr{display:grid;grid-template-columns:70px 1fr auto;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.cmp-gr .b{height:6px;border-radius:3px;background:#0f1d40;overflow:hidden}.cmp-gr .b i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.cmp-gr b{color:var(--ink);font-variant-numeric:tabular-nums}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.4}
+.bar{height:14px;border-radius:7px;background:#0f1d40;border:1px solid var(--line);overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd27a);border-radius:7px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.row.ok{border-color:rgba(61,220,151,.55);background:linear-gradient(0deg,rgba(61,220,151,.08),rgba(61,220,151,.08)),var(--panel)}
+.nome{font-weight:700;font-size:16px}
+.tag{font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums;text-align:right;line-height:1}
+.tag small{display:block;font-family:var(--body);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.row.ok .tag{color:var(--done)}
+.dots{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
+.dot{width:16px;height:16px;border-radius:4px;border:1.5px dashed #3a5190}
+.dot.done{background:var(--done);border:1.5px solid var(--done)}
+.dot.extra{background:var(--accent);border:1.5px solid var(--accent)}
+.det{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.det b{color:var(--ink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:-4px 0 12px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.l1::before{background:var(--done)}
+.l2::before{border:1.5px dashed var(--muted)}
+.l3::before{background:var(--accent)}
+.lblue::before{background:#4d7bff}
+.grs{display:flex;flex-direction:column;gap:22px}
+.gr-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.gr-name{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.gr-sum{font-size:14px;color:var(--muted)}
+.gr-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+.gvs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.gv{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gv-name{font-weight:700;font-size:17px}
+.gv-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gv-count b{color:var(--ink)}
+.mini{height:8px;border-radius:4px;background:#0f1d40;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--done)}
+.ag{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.ag b{font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ag b.real{color:var(--accent)}
+.ag .pct{font-weight:700;color:var(--ink)}
+.gr-head .ag{width:100%}
+.mini.ag-bar i{background:var(--accent)}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.people li{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:6px 8px;border-radius:8px;background:#0f1d40}
+.people .pn{min-width:0;overflow-wrap:anywhere}
+.pill{flex:none;font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.p-in{color:var(--done);background:rgba(61,220,151,.14)}
+.p-extra{color:var(--accent);background:rgba(255,182,39,.16)}
+.p-out{color:#ff8a8a;background:rgba(255,107,107,.14)}
+.people li.out .pn{color:var(--muted)}
+.leg2 span::before{display:none}
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+.hbar{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:8px 12px;align-items:center}
+.hbar .hn{font-size:14px;text-align:right;line-height:1.2}
+.hbar .hn small{display:block;font-size:11px;color:var(--muted)}
+.hbar .ht{position:relative;height:26px;border-left:1.5px solid #3a5190}
+.hbar .ht i{position:absolute;left:0;top:2px;bottom:2px;background:#4d7bff;border-radius:0 6px 6px 0;min-width:6px}
+.hbar .ht i.meta{background:var(--done)}
+.hbar .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.hgrid{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:12px;margin-top:6px}
+.hticks{position:relative;height:18px;font-size:11px;color:var(--muted)}
+.hticks span{position:absolute;transform:translateX(-50%)}
+.hcap{margin-top:6px;font-size:12px;color:var(--muted);text-align:center}
+.vazio{color:var(--muted);text-align:center;padding:12px}
+.upd-box{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.btn-upd{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:var(--bg);background:var(--accent);border:none;border-radius:999px;padding:9px 16px;text-decoration:none;cursor:pointer}
+.btn-upd:hover{filter:brightness(1.08)}
+.btn-upd:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn-upd svg{width:16px;height:16px}
+.upd-ok{font-size:12px;color:var(--done)}
+footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a href="../" style="color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px">← Direcional Vendas CPS</a>
+      <div class="eyebrow">Direcional Vendas · Campinas · <span id="dia">—</span></div>
+      <h1>Placar do Corujão · Agendamentos</h1>
+    </div>
+    <div class="upd-box">
+      <a class="btn-upd" id="btn-upd" href="https://claude.ai/code/session_0172nLXY28TiKGBuvAfugnUo" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Atualizar
+      </a>
+      <div class="upd">Atualizado às <span id="upd">—</span></div>
+      <div class="upd-ok" id="upd-ok" hidden>"atualizar" copiado. Cole na conversa e envie.</div>
+    </div>
+  </header>
+
+  <section class="hero" id="hero" aria-live="polite">
+    <div>
+      <div class="bateu">Promessa cumprida!</div>
+      <div class="faltam-block">
+        <div class="lbl">Faltam</div>
+        <div class="big" id="faltam">—</div>
+        <div class="unit" id="faltam-unit">agendamentos</div>
+      </div>
+      <div class="sub">O time prometeu <b id="prometido">—</b> e já criou <b id="feito">—</b> no sistema hoje (<b id="pct">—</b>)</div>
+      <div class="bar" role="img" id="barra"><i id="barra-i" style="width:0"></i></div>
+    </div>
+    <div class="cal" id="cal" role="group" aria-label="Datas do corujão">
+      <div class="cal-top">
+        <button class="cal-nav" id="cal-prev" type="button" aria-label="Mês anterior">‹</button>
+        <div class="cal-mes" id="cal-mes">—</div>
+        <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-hint">Dias de corujão (🦉 = programado) · toque num dia com placar para abrir · <a href="#comparar" style="color:var(--accent)">comparar corujões</a></div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Resumo dos corretores">
+    <div class="stat g"><div class="n" id="s-ok">—</div><div class="t">corretores já cumpriram a promessa</div></div>
+    <div class="stat"><div class="n" id="s-and">—</div><div class="t">corretores no caminho</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ainda sem agendamento</div></div>
+  </section>
+
+  <section aria-label="Comparar corujões" id="comparar">
+    <h2>Comparar corujões</h2>
+    <div class="legend" style="margin:-6px 0 4px">Agendamentos criados em cada dia de corujão. Os dias com placar mostram também o que o time prometeu.</div>
+    <div class="cmp" id="cmp"></div>
+  </section>
+
+  <section aria-label="Placar por corretor">
+    <h2>Placar por corretor</h2>
+    <div class="legend"><span class="l1">Agendado</span><span class="l2">Falta agendar</span><span class="l3">Acima da promessa</span></div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <section aria-label="Gráfico de agendamentos do dia" id="grafico-sec">
+    <h2>Agendamentos do dia por corretor</h2>
+    <div class="legend"><span class="l1">Bateu a promessa</span><span style="--c:#4d7bff" class="lblue">Agendou</span></div>
+    <div class="chart-card">
+      <div id="grafico" role="img" aria-label="Gráfico de barras com quantos agendamentos cada corretor criou hoje"></div>
+    </div>
+  </section>
+
+  <section aria-label="Agendaram sem promessa" id="extras-sec">
+    <h2>Também agendaram hoje</h2>
+    <div class="legend" style="margin-top:-6px">Corretores que não estavam na lista de promessas do grupo. Os agendamentos deles contam para o time.</div>
+    <div class="list" id="extras"></div>
+  </section>
+
+  <section aria-label="Corretores por GR e GV" id="equipes-sec">
+    <h2>Quem está no corujão, por equipe</h2>
+    <div class="legend leg2"><span class="pill p-in">Na lista</span><span class="pill p-extra">Fora da lista, mas agendou</span><span class="pill p-out">Não colocou o nome</span></div>
+    <div class="grs" id="grs"></div>
+  </section>
+
+  <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
+</div>
+
+<script src="datas.js"></script>
+<script>
+// ===== Dados (atualizar a cada leitura do relatório) =====
+const DADOS = {
+  dia: "2026-11-12",
+  atualizado: "2026-11-12T23:59:00-03:00",
+  corretores: [
+    {nome: "Ana Luiza", prometido: 2, feito: 1},
+    {nome: "Sirlene", prometido: 5, feito: 0},
+    {nome: "João Gabriel", prometido: 2, feito: 1},
+    {nome: "Ellen", prometido: 3, feito: 2},
+    {nome: "Luís Fernando", prometido: 2, feito: 0},
+    {nome: "Roberto", prometido: 1, feito: 0},
+    {nome: "Benedito", prometido: 2, feito: 0},
+    {nome: "Wanderson", prometido: 3, feito: 3},
+    {nome: "Isabella", prometido: 2, feito: 0},
+    {nome: "Cláudio", prometido: 3, feito: 5},
+    {nome: "Amekion", prometido: 2, feito: 1},
+    {nome: "Guilherme", prometido: 3, feito: 3},
+    {nome: "Marcelo", prometido: 2, feito: 1},
+    {nome: "Custódio", prometido: 3, feito: 2},
+    {nome: "Aloísio", prometido: 3, feito: 2},
+    {nome: "Flavia", prometido: 3, feito: 3},
+    {nome: "Jorge", prometido: 3, feito: 3},
+    {nome: "Fer", prometido: 3, feito: 2},
+    {nome: "Ana Paula", prometido: 2, feito: 4},
+    {nome: "Mayara", prometido: 2, feito: 4},
+    {nome: "Paola", prometido: 3, feito: 2},
+    {nome: "Daniel", prometido: 2, feito: 2},
+    {nome: "Lincoln", prometido: 4, feito: 3},
+    {nome: "Taíssa", prometido: 2, feito: 0},
+    {nome: "Layane", prometido: 2, feito: 2},
+    {nome: "Rose T.", prometido: 2, feito: 0},
+    {nome: "Larissa", prometido: 3, feito: 3},
+    {nome: "Lúcia", prometido: 2, feito: 0},
+    {nome: "Fábio", prometido: 2, feito: 0},
+    {nome: "Sônia Maruki", prometido: 2, feito: 4},
+    {nome: "Fran", prometido: 2, feito: 1},
+    {nome: "Jow", prometido: 2, feito: 0},
+    {nome: "Kelly", prometido: 2, feito: 1},
+    {nome: "Fabi", prometido: 2, feito: 0},
+    {nome: "Marlene", prometido: 2, feito: 1}
+  ],
+  // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
+  equipe: [
+    {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi", lista: "Ana Luiza"},
+    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi", lista: "Benedito"},
+    {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi", lista: "Isabella"},
+    {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi", lista: "Luís Fernando"},
+    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi", lista: "Roberto"},
+    {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi", lista: "Wanderson"},
+    {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia", lista: "Guilherme"},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: "João Gabriel"},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: "Jow"},
+    {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia", lista: "Custódio"},
+    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia", lista: "Marlene"},
+    {nome: "Taline Fideles da Silva", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo", lista: null},
+    {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo", lista: "Sirlene"},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi", lista: "Rose T."},
+    {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi", lista: "Lúcia"},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo", lista: "Ana Paula"},
+    {nome: "Bianca Nascimento Sabino da Silva", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo", lista: "Daniel"},
+    {nome: "Emerson Gonçalves Pereira", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: "Larissa"},
+    {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo", lista: "Lincoln"},
+    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo", lista: "Marcelo"},
+    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo", lista: "Mayara"},
+    {nome: "Muller Gustavo dos Santos", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo", lista: "Kelly"},
+    {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo", lista: "Taíssa"},
+    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia", lista: "Aloísio"},
+    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia", lista: "Amekion"},
+    {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: "Cláudio"},
+    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia", lista: "Ellen"},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: "Fabi"},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: "Fábio"},
+    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia", lista: "Fer"},
+    {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia", lista: "Flavia"},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia", lista: "Fran"},
+    {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia", lista: "Jorge"},
+    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia", lista: "Layane"},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia", lista: "Sônia Maruki"},
+    {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia", lista: null},
+    {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi", lista: "Paola"},
+    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi", lista: null}
+  ],
+  // agendaram hoje sem ter feito promessa no grupo
+  extras: [
+    {nome: "Clarice Pereira", feito: 1},
+    {nome: "Luciana Lemes", feito: 1},
+    {nome: "Luciane Aparecida Gomes Barbosa Silva", feito: 1},
+    {nome: "Marli Teixeira da Costa", feito: 1}
+  ]
+};
+// ==========================================================
+
+const $ = (id) => document.getElementById(id);
+const plural = (n, s, p) => n === 1 ? s : p;
+const C = DADOS.corretores;
+const prometido = C.reduce((a, c) => a + c.prometido, 0);
+const E = DADOS.extras || [];
+const feito = C.reduce((a, c) => a + c.feito, 0) + E.reduce((a, c) => a + c.feito, 0);
+const faltam = Math.max(0, prometido - feito);
+const pct = Math.round(feito / prometido * 100);
+
+const d = new Date(DADOS.dia + "T12:00:00-03:00");
+$("dia").textContent = d.toLocaleDateString("pt-BR", {weekday: "long", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"});
+$("upd").textContent = new Date(DADOS.atualizado).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
+$("faltam").textContent = faltam;
+$("faltam-unit").textContent = plural(faltam, "agendamento", "agendamentos");
+$("prometido").textContent = prometido;
+$("feito").textContent = feito;
+$("pct").textContent = pct + "%";
+$("barra-i").style.width = Math.min(100, pct) + "%";
+$("barra").setAttribute("aria-label", feito + " de " + prometido + " agendamentos prometidos");
+if (faltam === 0) $("hero").classList.add("hit");
+
+$("s-ok").textContent = C.filter((c) => c.feito >= c.prometido).length;
+$("s-and").textContent = C.filter((c) => c.feito > 0 && c.feito < c.prometido).length;
+$("s-zero").textContent = C.filter((c) => c.feito === 0).length;
+
+// quem cumpriu primeiro, depois quem está mais perto; empate por nome
+const list = $("list");
+C.slice().sort((a, b) => (b.feito / b.prometido) - (a.feito / a.prometido) || b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
+  const f = Math.max(0, c.prometido - c.feito);
+  const row = document.createElement("div");
+  row.className = "row" + (f === 0 ? " ok" : "");
+  const nm = document.createElement("div"); nm.className = "nome"; nm.textContent = c.nome;
+  const tag = document.createElement("div"); tag.className = "tag";
+  tag.textContent = f === 0 ? "✓" : f;
+  const sm = document.createElement("small"); sm.textContent = f === 0 ? "cumpriu" : plural(f, "falta", "faltam");
+  tag.appendChild(sm);
+  const dots = document.createElement("div"); dots.className = "dots";
+  for (let i = 0; i < Math.max(c.prometido, c.feito); i++) {
+    const x = document.createElement("div");
+    x.className = "dot" + (i < c.feito ? (i >= c.prometido ? " extra" : " done") : "");
+    dots.appendChild(x);
+  }
+  const det = document.createElement("div"); det.className = "det";
+  det.append("Prometeu ");
+  const b1 = document.createElement("b"); b1.textContent = c.prometido; det.appendChild(b1);
+  det.append(" · Agendou ");
+  const b2 = document.createElement("b"); b2.textContent = c.feito; det.appendChild(b2);
+  row.append(nm, tag, dots, det);
+  list.appendChild(row);
+});
+
+const ex = $("extras");
+if (!E.length) $("extras-sec").hidden = true;
+E.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
+  const row = document.createElement("div"); row.className = "row ok";
+  const nm = document.createElement("div"); nm.className = "nome"; nm.textContent = c.nome;
+  const tag = document.createElement("div"); tag.className = "tag"; tag.textContent = "+" + c.feito;
+  const sm = document.createElement("small"); sm.textContent = plural(c.feito, "agendamento", "agendamentos"); tag.appendChild(sm);
+  row.append(nm, tag);
+  ex.appendChild(row);
+});
+
+// prometido x realizado de um grupo de corretores (GR ou GV)
+function BD_ag(lista) {
+  const prom = lista.reduce((a, p) => a + (p.promessa ? p.promessa.prometido : 0), 0);
+  const real = lista.reduce((a, p) => a + p.feito, 0);
+  const d = document.createElement("div"); d.className = "ag";
+  const b1 = document.createElement("b"); b1.textContent = prom;
+  const b2 = document.createElement("b"); b2.className = "real"; b2.textContent = real;
+  const pc = document.createElement("span"); pc.className = "pct"; pc.textContent = prom ? "(" + Math.round(real / prom * 100) + "%)" : "";
+  d.append("Prometido ", b1, " · Realizado no sistema ", b2, pc);
+  return d;
+}
+// ===== Painel por GR / GV =====
+(function equipes() {
+  const porLista = Object.fromEntries(C.map((c) => [c.nome, c]));
+  const porExtra = Object.fromEntries(E.map((c) => [c.nome, c]));
+  const pessoas = DADOS.equipe.map((p) => {
+    const promessa = p.lista ? porLista[p.lista] : null;
+    const feitoP = promessa ? promessa.feito : (porExtra[p.nome] ? porExtra[p.nome].feito : 0);
+    const status = promessa ? "in" : (feitoP > 0 ? "extra" : "out");
+    return {...p, promessa, feito: feitoP, status};
+  });
+  const ordem = {in: 0, extra: 1, out: 2};
+  const root = $("grs");
+  [...new Set(pessoas.map((p) => p.gr))].forEach((gr) => {
+    const doGr = pessoas.filter((p) => p.gr === gr);
+    const block = document.createElement("div");
+    const head = document.createElement("div"); head.className = "gr-head";
+    const gn = document.createElement("div"); gn.className = "gr-name"; gn.textContent = "GR " + gr;
+    const gs = document.createElement("div"); gs.className = "gr-sum";
+    const na = doGr.filter((p) => p.status === "in").length;
+    const b1 = document.createElement("b"); b1.textContent = na;
+    const b2 = document.createElement("b"); b2.textContent = doGr.length;
+    const b3 = document.createElement("b"); b3.textContent = Math.round(na / doGr.length * 100) + "%";
+    gs.append(b1, " de ", b2, " corretores na lista (", b3, ")");
+    head.append(gn, gs, BD_ag(doGr));
+    const gvs = document.createElement("div"); gvs.className = "gvs";
+    [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
+      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => ordem[a.status] - ordem[b.status] || a.nome.localeCompare(b.nome));
+      const nIn = doGv.filter((p) => p.status === "in").length;
+      const card = document.createElement("div"); card.className = "gv";
+      const top = document.createElement("div"); top.className = "gv-top";
+      const nm = document.createElement("div"); nm.className = "gv-name"; nm.textContent = "Equipe " + gv;
+      const ct = document.createElement("div"); ct.className = "gv-count";
+      const c1 = document.createElement("b"); c1.textContent = nIn;
+      ct.append(c1, " de " + doGv.length + " na lista");
+      top.append(nm, ct);
+      const mini = document.createElement("div"); mini.className = "mini";
+      const mi = document.createElement("i"); mi.style.width = (nIn / doGv.length * 100) + "%"; mini.appendChild(mi);
+      const ul = document.createElement("ul"); ul.className = "people";
+      doGv.forEach((p) => {
+        const li = document.createElement("li"); if (p.status === "out") li.className = "out";
+        const pn = document.createElement("span"); pn.className = "pn"; pn.textContent = p.nome;
+        const pill = document.createElement("span");
+        if (p.status === "in") { pill.className = "pill p-in"; pill.textContent = "Agendou " + p.feito + " de " + p.promessa.prometido; }
+        else if (p.status === "extra") { pill.className = "pill p-extra"; pill.textContent = "Fora da lista · agendou " + p.feito; }
+        else { pill.className = "pill p-out"; pill.textContent = "Não colocou o nome"; }
+        li.append(pn, pill); ul.appendChild(li);
+      });
+      const agv = BD_ag(doGv);
+      const mini2 = document.createElement("div"); mini2.className = "mini ag-bar";
+      const prom = doGv.reduce((a, p) => a + (p.promessa ? p.promessa.prometido : 0), 0);
+      const real = doGv.reduce((a, p) => a + p.feito, 0);
+      const m2 = document.createElement("i"); m2.style.width = Math.min(100, prom ? real / prom * 100 : (real ? 100 : 0)) + "%"; mini2.appendChild(m2);
+      card.append(top, mini, agv, mini2, ul);
+      gvs.appendChild(card);
+    });
+    block.append(head, gvs);
+    root.appendChild(block);
+  });
+})();
+
+// gráfico de barras: quem agendou hoje (inclui quem está fora da lista)
+(function grafico() {
+  const box = $("grafico");
+  const nomeCompleto = {};
+  (DADOS.equipe || []).forEach((p) => { if (p.lista) nomeCompleto[p.lista] = p; });
+  const rows = C.filter((c) => c.feito > 0).map((c) => ({nome: (nomeCompleto[c.nome] || {}).nome || c.nome, gv: (nomeCompleto[c.nome] || {}).gv, v: c.feito, bateu: c.feito >= c.prometido}))
+    .concat(E.filter((c) => c.feito > 0).map((c) => {
+      const p = (DADOS.equipe || []).find((x) => x.nome === c.nome) || {};
+      return {nome: c.nome, gv: p.gv, v: c.feito, bateu: false, fora: true};
+    }))
+    .sort((a, b) => b.v - a.v || a.nome.localeCompare(b.nome));
+  if (!rows.length) { const d = document.createElement("div"); d.className = "vazio"; d.textContent = "Ninguém agendou ainda hoje."; box.appendChild(d); return; }
+  const max = Math.max(...rows.map((r) => r.v));
+  const grid = document.createElement("div"); grid.className = "hbar";
+  rows.forEach((r) => {
+    const hn = document.createElement("div"); hn.className = "hn"; hn.textContent = r.nome;
+    const sm = document.createElement("small"); sm.textContent = (r.gv ? "Equipe " + r.gv : "") + (r.fora ? " · fora da lista" : ""); hn.appendChild(sm);
+    const ht = document.createElement("div"); ht.className = "ht";
+    const bar = document.createElement("i"); if (r.bateu) bar.className = "meta";
+    const w = r.v / max * 88; bar.style.width = w + "%";
+    const val = document.createElement("b"); val.textContent = r.v; val.style.left = "calc(" + w + "% + 8px)";
+    ht.append(bar, val);
+    grid.append(hn, ht);
+  });
+  box.appendChild(grid);
+  const g2 = document.createElement("div"); g2.className = "hgrid";
+  const vazio = document.createElement("div");
+  const ticks = document.createElement("div"); ticks.className = "hticks";
+  for (let t = 0; t <= max; t++) { const s = document.createElement("span"); s.style.left = (t / max * 88) + "%"; s.textContent = t; ticks.appendChild(s); }
+  g2.append(vazio, ticks); box.appendChild(g2);
+  const cap = document.createElement("div"); cap.className = "hcap"; cap.textContent = "Número de agendamentos criados hoje"; box.appendChild(cap);
+})();
+
+
+// ===== calendário dos corujões =====
+(function () {
+  const lista = typeof CORUJOES !== "undefined" ? CORUJOES : [];
+  const porDia = Object.fromEntries(lista.map((c) => [c.dia, c]));
+  const comPlacar = lista.filter((c) => c.placar).map((c) => c.dia).sort();
+  const ULTIMO = comPlacar[comPlacar.length - 1];
+  const HOJE = new Date().toLocaleDateString("en-CA", {timeZone: "America/Sao_Paulo"});
+  const meses = [...new Set(lista.map((c) => c.dia.slice(0, 7)))].sort();
+  const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  let visto = DADOS.dia.slice(0, 7);
+  function desenha() {
+    const [y, m] = visto.split("-").map(Number);
+    $("cal-mes").textContent = MESES[m - 1] + " " + y;
+    $("cal-prev").disabled = !meses.length || visto <= meses[0];
+    $("cal-next").disabled = !meses.length || visto >= meses[meses.length - 1];
+    const g = $("cal-grid"); g.textContent = "";
+    ["D", "S", "T", "Q", "Q", "S", "S"].forEach((w) => { const e = document.createElement("div"); e.className = "cal-w"; e.textContent = w; g.appendChild(e); });
+    const dow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+    for (let i = 0; i < dow; i++) g.appendChild(document.createElement("div"));
+    const n = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    for (let dd = 1; dd <= n; dd++) {
+      const iso = visto + "-" + String(dd).padStart(2, "0");
+      const c = porDia[iso];
+      const el = document.createElement(c && c.placar ? "a" : "div");
+      el.className = "cal-d" + (c ? " cor" : "") + (c && c.placar ? " tem" : "") + (iso === HOJE ? " hoje" : "") + (iso === DADOS.dia ? " sel" : "");
+      el.appendChild(document.createTextNode(dd));
+      if (c) {
+        const sm = document.createElement("small"); sm.textContent = c.placar || (c.feito != null ? c.feito : "🦉"); el.appendChild(sm);
+        el.title = c.rotulo + (c.placar ? " · " + c.placar + " agendamentos" : iso > HOJE ? " · programado" : " · sem placar salvo");
+        if (c.placar) { el.href = iso === ULTIMO ? "./" : iso + ".html"; if (iso === DADOS.dia) el.setAttribute("aria-current", "page"); }
+        el.setAttribute("aria-label", dd + "/" + m + ": " + el.title);
+      }
+      g.appendChild(el);
+    }
+  }
+  $("cal-prev").addEventListener("click", () => { const i = meses.indexOf(visto); visto = i > 0 ? meses[i - 1] : meses[0]; desenha(); });
+  $("cal-next").addEventListener("click", () => { const i = meses.indexOf(visto); visto = i >= 0 && i < meses.length - 1 ? meses[i + 1] : meses[meses.length - 1]; desenha(); });
+  desenha();
+})();
+
+
+// ===== comparação entre corujões =====
+(function () {
+  const lista = (typeof CORUJOES !== "undefined" ? CORUJOES : []).slice().sort((a, b) => a.dia.localeCompare(b.dia));
+  const box = $("cmp"); if (!box) return;
+  const comPlacar = lista.filter((c) => c.placar).map((c) => c.dia);
+  const ULTIMO = comPlacar[comPlacar.length - 1];
+  const mk = (t, cls, txt) => { const e = document.createElement(t); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  let anterior = null;
+  lista.forEach((c) => {
+    const card = mk(c.placar ? "a" : "div", "cmp-c" + (c.dia === DADOS.dia ? " sel" : "") + (c.feito == null ? " prog" : ""));
+    if (c.placar) card.href = c.dia === ULTIMO ? "./" : c.dia + ".html";
+    const dt = new Date(c.dia + "T12:00:00-03:00");
+    const d = mk("div", "cmp-d", dt.toLocaleDateString("pt-BR", {weekday: "short", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"}));
+    d.appendChild(mk("small", null, c.rotulo));
+    card.appendChild(d);
+    if (c.feito == null) { card.appendChild(mk("div", "cmp-t", "Programado")); box.appendChild(card); return; }
+    const n = mk("div", "cmp-n", c.feito); n.appendChild(mk("small", null, c.prometido ? "de " + c.prometido + " (" + Math.round(c.feito / c.prometido * 100) + "%)" : "agendamentos"));
+    card.appendChild(n);
+    if (anterior) {
+      const dif = c.feito - anterior.feito;
+      card.appendChild(mk("div", "cmp-v " + (dif >= 0 ? "up" : "down"), (dif >= 0 ? "▲ +" : "▼ ") + dif + " vs " + anterior.dia.slice(8, 10) + "/" + anterior.dia.slice(5, 7)));
+    }
+    const t = mk("div", "cmp-t");
+    t.append(mk("b", null, c.corretores), " corretores agendaram");
+    if (c.prometeram) t.append(" · ", mk("b", null, c.cumpriram), " de ", mk("b", null, c.prometeram), " cumpriram a promessa");
+    else t.append(" · sem lista de promessas");
+    card.appendChild(t);
+    const max = Math.max(...Object.values(c.gr || {}).map((v) => v[1] || v[0]), 1);
+    Object.entries(c.gr || {}).forEach(([gr, v]) => {
+      const row = mk("div", "cmp-gr");
+      const b = mk("div", "b"); const i = mk("i"); i.style.width = (v[1] ? v[0] / v[1] * 100 : v[0] / max * 100) + "%"; b.appendChild(i);
+      const val = mk("span"); val.append(mk("b", null, v[0])); if (v[1]) val.append("/" + v[1]);
+      row.append(mk("span", null, "GR " + gr), b, val);
+      card.appendChild(row);
+    });
+    box.appendChild(card);
+    anterior = c;
+  });
+})();
+
+// botão Atualizar: abre a conversa do Claude e copia a palavra "atualizar" para colar
+(function () {
+  const b = document.getElementById("btn-upd");
+  if (!b) return;
+  b.addEventListener("click", () => {
+    try {
+      navigator.clipboard.writeText("atualizar").then(() => { document.getElementById("upd-ok").hidden = false; }).catch(() => {});
+    } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

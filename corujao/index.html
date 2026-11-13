@@ -42,7 +42,39 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);l
 .hit .faltam-block{display:none}
 .bateu{display:none;font-family:var(--display);font-weight:900;color:var(--done);font-size:clamp(56px,9vw,100px);line-height:.9;text-transform:uppercase}
 .hit .bateu{display:block}
-.owl{width:100%;max-width:260px;justify-self:center}
+.cal{justify-self:end;width:100%;max-width:330px;background:#0f1d40;border:1px solid var(--line);border-radius:18px;padding:14px}
+@media (max-width:700px){.cal{justify-self:center}}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.cal-nav{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 16px var(--body);cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-nav:focus-visible,.cal-d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-w{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal-d{aspect-ratio:1;border-radius:9px;border:1px solid transparent;background:transparent;color:#3a5190;font:600 13px var(--body);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font-variant-numeric:tabular-nums;text-decoration:none}
+.cal-d small{font-size:10px;font-weight:700;line-height:1}
+.cal-d.cor{background:var(--panel);color:var(--ink)}
+.cal-d.cor small{color:var(--muted)}
+.cal-d.tem{cursor:pointer}
+.cal-d.tem small{color:var(--done)}
+.cal-d.tem:hover{border-color:var(--accent)}
+.cal-d.hoje{border-color:var(--muted)}
+.cal-d.sel{background:var(--accent);color:var(--bg)}
+.cal-d.sel small{color:var(--bg)}
+.cmp{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.cmp-c{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;color:var(--ink);text-decoration:none}
+a.cmp-c:hover{border-color:var(--accent)}
+.cmp-c.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.cmp-c.prog{border-style:dashed;opacity:.7}
+.cmp-d{font-weight:700;font-size:14px}.cmp-d small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.cmp-n{font-family:var(--display);font-weight:900;font-size:46px;line-height:.9;color:var(--accent)}
+.cmp-n small{font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted);margin-left:6px}
+.cmp-t{font-size:13px;color:var(--muted)}.cmp-t b{color:var(--ink)}
+.cmp-v{font-size:12px;font-weight:700}.cmp-v.up{color:var(--done)}.cmp-v.down{color:#ff7a7a}
+.cmp-gr{display:grid;grid-template-columns:70px 1fr auto;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.cmp-gr .b{height:6px;border-radius:3px;background:#0f1d40;overflow:hidden}.cmp-gr .b i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.cmp-gr b{color:var(--ink);font-variant-numeric:tabular-nums}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.4}
 .bar{height:14px;border-radius:7px;background:#0f1d40;border:1px solid var(--line);overflow:hidden;margin-top:16px}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd27a);border-radius:7px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
@@ -150,28 +182,27 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
       <div class="sub">O time prometeu <b id="prometido">—</b> e já criou <b id="feito">—</b> no sistema hoje (<b id="pct">—</b>)</div>
       <div class="bar" role="img" id="barra"><i id="barra-i" style="width:0"></i></div>
     </div>
-    <svg class="owl" viewBox="0 0 200 210" role="img" aria-label="Coruja do corujão">
-      <circle cx="160" cy="34" r="16" fill="#ffe7a8" opacity=".85"/>
-      <circle cx="30" cy="22" r="1.6" fill="#c9d6f5"/><circle cx="58" cy="48" r="1.3" fill="#c9d6f5"/><circle cx="182" cy="86" r="1.4" fill="#c9d6f5"/>
-      <rect x="10" y="182" width="180" height="10" rx="5" fill="#5a4630"/>
-      <path d="M58 70 L66 38 L84 60 Z" fill="#6b5a8e"/><path d="M142 70 L134 38 L116 60 Z" fill="#6b5a8e"/>
-      <ellipse cx="100" cy="122" rx="56" ry="64" fill="#7a68a3"/>
-      <ellipse cx="100" cy="140" rx="36" ry="42" fill="#c9bfe0"/>
-      <path d="M84 132 q6 6 12 0 M104 132 q6 6 12 0 M84 148 q6 6 12 0 M104 148 q6 6 12 0 M94 164 q6 6 12 0" stroke="#9a8cc0" stroke-width="2" fill="none"/>
-      <circle cx="76" cy="92" r="24" fill="#fff"/><circle cx="124" cy="92" r="24" fill="#fff"/>
-      <circle cx="78" cy="94" r="12" fill="#ffb627"/><circle cx="122" cy="94" r="12" fill="#ffb627"/>
-      <circle cx="80" cy="95" r="6" fill="#0b1630"/><circle cx="120" cy="95" r="6" fill="#0b1630"/>
-      <circle cx="83" cy="91" r="2" fill="#fff"/><circle cx="123" cy="91" r="2" fill="#fff"/>
-      <path d="M94 108 L100 122 L106 108 Z" fill="#ffb627"/>
-      <path d="M44 120 q-12 30 8 56 q10 -26 6 -50 Z" fill="#6b5a8e"/><path d="M156 120 q12 30 -8 56 q-10 -26 -6 -50 Z" fill="#6b5a8e"/>
-      <path d="M78 184 l-6 8 M84 184 l0 9 M90 184 l6 8 M110 184 l-6 8 M116 184 l0 9 M122 184 l6 8" stroke="#ffb627" stroke-width="3" stroke-linecap="round"/>
-    </svg>
+    <div class="cal" id="cal" role="group" aria-label="Datas do corujão">
+      <div class="cal-top">
+        <button class="cal-nav" id="cal-prev" type="button" aria-label="Mês anterior">‹</button>
+        <div class="cal-mes" id="cal-mes">—</div>
+        <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-hint">Dias de corujão (🦉 = programado) · toque num dia com placar para abrir · <a href="#comparar" style="color:var(--accent)">comparar corujões</a></div>
+    </div>
   </section>
 
   <section class="stats" aria-label="Resumo dos corretores">
     <div class="stat g"><div class="n" id="s-ok">—</div><div class="t">corretores já cumpriram a promessa</div></div>
     <div class="stat"><div class="n" id="s-and">—</div><div class="t">corretores no caminho</div></div>
     <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ainda sem agendamento</div></div>
+  </section>
+
+  <section aria-label="Comparar corujões" id="comparar">
+    <h2>Comparar corujões</h2>
+    <div class="legend" style="margin:-6px 0 4px">Agendamentos criados em cada dia de corujão. Os dias com placar mostram também o que o time prometeu.</div>
+    <div class="cmp" id="cmp"></div>
   </section>
 
   <section aria-label="Placar por corretor">
@@ -203,6 +234,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
 </div>
 
+<script src="datas.js"></script>
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
@@ -476,6 +508,88 @@ function BD_ag(lista) {
   for (let t = 0; t <= max; t++) { const s = document.createElement("span"); s.style.left = (t / max * 88) + "%"; s.textContent = t; ticks.appendChild(s); }
   g2.append(vazio, ticks); box.appendChild(g2);
   const cap = document.createElement("div"); cap.className = "hcap"; cap.textContent = "Número de agendamentos criados hoje"; box.appendChild(cap);
+})();
+
+
+// ===== calendário dos corujões =====
+(function () {
+  const lista = typeof CORUJOES !== "undefined" ? CORUJOES : [];
+  const porDia = Object.fromEntries(lista.map((c) => [c.dia, c]));
+  const comPlacar = lista.filter((c) => c.placar).map((c) => c.dia).sort();
+  const ULTIMO = comPlacar[comPlacar.length - 1];
+  const HOJE = new Date().toLocaleDateString("en-CA", {timeZone: "America/Sao_Paulo"});
+  const meses = [...new Set(lista.map((c) => c.dia.slice(0, 7)))].sort();
+  const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  let visto = DADOS.dia.slice(0, 7);
+  function desenha() {
+    const [y, m] = visto.split("-").map(Number);
+    $("cal-mes").textContent = MESES[m - 1] + " " + y;
+    $("cal-prev").disabled = !meses.length || visto <= meses[0];
+    $("cal-next").disabled = !meses.length || visto >= meses[meses.length - 1];
+    const g = $("cal-grid"); g.textContent = "";
+    ["D", "S", "T", "Q", "Q", "S", "S"].forEach((w) => { const e = document.createElement("div"); e.className = "cal-w"; e.textContent = w; g.appendChild(e); });
+    const dow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+    for (let i = 0; i < dow; i++) g.appendChild(document.createElement("div"));
+    const n = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    for (let dd = 1; dd <= n; dd++) {
+      const iso = visto + "-" + String(dd).padStart(2, "0");
+      const c = porDia[iso];
+      const el = document.createElement(c && c.placar ? "a" : "div");
+      el.className = "cal-d" + (c ? " cor" : "") + (c && c.placar ? " tem" : "") + (iso === HOJE ? " hoje" : "") + (iso === DADOS.dia ? " sel" : "");
+      el.appendChild(document.createTextNode(dd));
+      if (c) {
+        const sm = document.createElement("small"); sm.textContent = c.placar || (c.feito != null ? c.feito : "🦉"); el.appendChild(sm);
+        el.title = c.rotulo + (c.placar ? " · " + c.placar + " agendamentos" : iso > HOJE ? " · programado" : " · sem placar salvo");
+        if (c.placar) { el.href = iso === ULTIMO ? "./" : iso + ".html"; if (iso === DADOS.dia) el.setAttribute("aria-current", "page"); }
+        el.setAttribute("aria-label", dd + "/" + m + ": " + el.title);
+      }
+      g.appendChild(el);
+    }
+  }
+  $("cal-prev").addEventListener("click", () => { const i = meses.indexOf(visto); visto = i > 0 ? meses[i - 1] : meses[0]; desenha(); });
+  $("cal-next").addEventListener("click", () => { const i = meses.indexOf(visto); visto = i >= 0 && i < meses.length - 1 ? meses[i + 1] : meses[meses.length - 1]; desenha(); });
+  desenha();
+})();
+
+
+// ===== comparação entre corujões =====
+(function () {
+  const lista = (typeof CORUJOES !== "undefined" ? CORUJOES : []).slice().sort((a, b) => a.dia.localeCompare(b.dia));
+  const box = $("cmp"); if (!box) return;
+  const comPlacar = lista.filter((c) => c.placar).map((c) => c.dia);
+  const ULTIMO = comPlacar[comPlacar.length - 1];
+  const mk = (t, cls, txt) => { const e = document.createElement(t); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  let anterior = null;
+  lista.forEach((c) => {
+    const card = mk(c.placar ? "a" : "div", "cmp-c" + (c.dia === DADOS.dia ? " sel" : "") + (c.feito == null ? " prog" : ""));
+    if (c.placar) card.href = c.dia === ULTIMO ? "./" : c.dia + ".html";
+    const dt = new Date(c.dia + "T12:00:00-03:00");
+    const d = mk("div", "cmp-d", dt.toLocaleDateString("pt-BR", {weekday: "short", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"}));
+    d.appendChild(mk("small", null, c.rotulo));
+    card.appendChild(d);
+    if (c.feito == null) { card.appendChild(mk("div", "cmp-t", "Programado")); box.appendChild(card); return; }
+    const n = mk("div", "cmp-n", c.feito); n.appendChild(mk("small", null, c.prometido ? "de " + c.prometido + " (" + Math.round(c.feito / c.prometido * 100) + "%)" : "agendamentos"));
+    card.appendChild(n);
+    if (anterior) {
+      const dif = c.feito - anterior.feito;
+      card.appendChild(mk("div", "cmp-v " + (dif >= 0 ? "up" : "down"), (dif >= 0 ? "▲ +" : "▼ ") + dif + " vs " + anterior.dia.slice(8, 10) + "/" + anterior.dia.slice(5, 7)));
+    }
+    const t = mk("div", "cmp-t");
+    t.append(mk("b", null, c.corretores), " corretores agendaram");
+    if (c.prometeram) t.append(" · ", mk("b", null, c.cumpriram), " de ", mk("b", null, c.prometeram), " cumpriram a promessa");
+    else t.append(" · sem lista de promessas");
+    card.appendChild(t);
+    const max = Math.max(...Object.values(c.gr || {}).map((v) => v[1] || v[0]), 1);
+    Object.entries(c.gr || {}).forEach(([gr, v]) => {
+      const row = mk("div", "cmp-gr");
+      const b = mk("div", "b"); const i = mk("i"); i.style.width = (v[1] ? v[0] / v[1] * 100 : v[0] / max * 100) + "%"; b.appendChild(i);
+      const val = mk("span"); val.append(mk("b", null, v[0])); if (v[1]) val.append("/" + v[1]);
+      row.append(mk("span", null, "GR " + gr), b, val);
+      card.appendChild(row);
+    });
+    box.appendChild(card);
+    anterior = c;
+  });
 })();
 
 // botão Atualizar: abre a conversa do Claude e copia a palavra "atualizar" para colar
