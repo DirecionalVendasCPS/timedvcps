@@ -36,8 +36,8 @@ h1 span{display:block}
 .h-verm{color:#ff3b45}
 .tag{font-size:16px;color:var(--muted);margin:0}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-@media (min-width:780px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (min-width:780px){a.tile.nova-linha{grid-column:1}}
+/* telas largas: 3 por linha; linhas com 2 painéis ficam centralizadas */
+@media (min-width:780px){.tiles{grid-template-columns:repeat(6,minmax(0,1fr))}a.tile{grid-column:span 2}a.tile.nova-linha{grid-column:2 / span 2}}
 a.tile{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:30px 22px 26px;border-radius:24px;background:var(--panel);border:1.5px solid var(--line);color:var(--ink);text-decoration:none;transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease}
 a.tile:hover{border-color:var(--accent);box-shadow:0 10px 40px rgba(255,182,39,.15)}
 a.tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -115,7 +115,7 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       <p>Quantos agendamentos do mês viraram visita: ranking de corretores, GVs e GRs.</p>
       <span class="go">Abrir ranking →</span>
     </a>
-    <a class="tile" href="vendas/">
+    <a class="tile nova-linha" href="vendas/">
       <div class="icon">
         <svg viewBox="0 0 84 84" aria-hidden="true">
           <rect x="22" y="12" width="40" height="62" rx="4" fill="#1d3366" stroke="#2f4c8f" stroke-width="2"/>
