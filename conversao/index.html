@@ -150,7 +150,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:75ch}
 
   <section aria-label="Ranking dos corretores">
     <h2>Ranking de conversão dos corretores</h2>
-    <div class="legend"><span>Barra verde: acima da média do time · cinza: abaixo · linha tracejada: média do time (<b id="media-txt">—</b>)</span></div>
+    <div class="legend"><span>Ordem: quem fez mais visitas · barra verde: conversão acima da média do time (<b id="media-txt">—</b>) · cinza: abaixo</span></div>
     <div class="chart-card"><div id="rk-cor" role="img" aria-label="Ranking de conversão de visitas por corretor"></div></div>
   </section>
 
@@ -160,7 +160,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:75ch}
     <div class="grs" id="grs"></div>
   </section>
 
-  <footer>Agendamentos = todos os agendamentos e visitas criados no mês (data de criação), a mesma contagem da página Agendamentos do dia. Visitas = desses, os que têm a Data de comparecimento (coluna H) preenchida. Conversão = visitas ÷ agendamentos. Fonte: planilha "Contadores do mês e corujão", aba "agendamentos normal". No mês em andamento, agendamentos para dias que ainda não chegaram contam como sem visita. Empate na conversão: fica na frente quem fez mais visitas.</footer>
+  <footer>Agendamentos = todos os agendamentos e visitas criados no mês (data de criação), a mesma contagem da página Agendamentos do dia. Visitas = desses, os que têm a Data de comparecimento (coluna H) preenchida. Conversão = visitas ÷ agendamentos. Fonte: planilha "Contadores do mês e corujão", aba "agendamentos normal". No mês em andamento, agendamentos para dias que ainda não chegaram contam como sem visita. Rankings ordenados por quem fez mais visitas realizadas; no empate, fica na frente quem tem a maior conversão.</footer>
 </div>
 
 <script>
@@ -233,7 +233,8 @@ const plural = (n, s, p) => n === 1 ? s : p;
 const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 const fmtPct = (x) => (Math.round(x * 1000) / 10).toLocaleString("pt-BR", {maximumFractionDigits: 1});
 const conv = (o) => o.ag ? o.vi / o.ag : 0;
-const ordem = (a, b) => conv(b) - conv(a) || b.vi - a.vi || b.ag - a.ag || a.nome.localeCompare(b.nome);
+// ranking: mais visitas realizadas primeiro; empate → maior conversão
+const ordem = (a, b) => b.vi - a.vi || conv(b) - conv(a) || a.nome.localeCompare(b.nome);
 const somar = (lst) => ({ag: lst.reduce((s, p) => s + p.ag, 0), vi: lst.reduce((s, p) => s + p.vi, 0)});
 const GV_GR = {}; DADOS.equipe.forEach((p) => { GV_GR[p.gv] = p.gr; });
 
@@ -275,9 +276,9 @@ function cards(box, lst, titulo, sub) {
     const top = el("div", "rtop");
     const nm = el("div"); nm.appendChild(el("div", "rname", titulo(g))); if (sub) nm.appendChild(el("div", "rdet", sub(g)));
     top.append(nm, el("div", "rpos", (i + 1) + "º"));
-    const p = el("div", "rpct"); p.append(fmtPct(conv(g))); p.appendChild(el("small", null, "%"));
+    const p = el("div", "rpct"); p.append(g.vi); p.appendChild(el("small", null, " " + plural(g.vi, "visita", "visitas")));
     const mini = el("div", "mini"); const mi = el("i"); mi.style.width = (conv(g) * 100) + "%"; mini.appendChild(mi);
-    const det = el("div", "rdet"); det.append(el("b", null, g.vi), " " + plural(g.vi, "visita", "visitas") + " de ", el("b", null, g.ag), " " + plural(g.ag, "agendamento", "agendamentos"));
+    const det = el("div", "rdet"); det.append(el("b", null, fmtPct(conv(g)) + "%"), " de conversão · " + g.vi + " de " + g.ag + " " + plural(g.ag, "agendamento", "agendamentos"));
     c.append(top, p, mini, det); box.appendChild(c);
   });
 }
@@ -286,19 +287,20 @@ function ranking(rows, media) {
   const box = $("rk-cor"); box.textContent = "";
   if (!rows.length) { box.appendChild(el("div", "vazio", "Sem agendamentos neste mês.")); return; }
   const grid = el("div", "rk");
-  const W = 78; // % da largura usada pela barra de 100%
+  const W = 78; // % da largura usada pela maior barra
+  const maxV = Math.max(1, ...rows.map((r) => r.vi));
   rows.forEach((r, i) => {
     const c = conv(r);
     const pos = el("div", "pos" + (i === 0 ? " p1" : ""), (i + 1) + "º");
     const hn = el("div", "hn", r.nome); hn.appendChild(el("small", null, r.gv ? "Equipe " + r.gv + " · GR " + r.gr : ""));
     const ht = el("div", "ht");
-    const bar = el("i", i === 0 && c > 0 ? "top" : (c >= media ? "acima" : "abaixo")); bar.style.width = (c * W) + "%";
-    const val = el("b"); val.append(fmtPct(c) + "%"); val.appendChild(el("span", null, r.vi + "/" + r.ag)); val.style.left = "calc(" + (c * W) + "% + 8px)";
-    const ml = el("div", "media-line"); ml.style.left = (media * W) + "%";
-    ht.append(bar, ml, val); grid.append(pos, hn, ht);
+    const w = r.vi / maxV * W;
+    const bar = el("i", i === 0 && r.vi > 0 ? "top" : (c >= media ? "acima" : "abaixo")); bar.style.width = w + "%";
+    const val = el("b"); val.append(r.vi + " " + plural(r.vi, "visita", "visitas")); val.appendChild(el("span", null, fmtPct(c) + "% · " + r.vi + "/" + r.ag)); val.style.left = "calc(" + w + "% + 8px)";
+    ht.append(bar, val); grid.append(pos, hn, ht);
   });
   box.appendChild(grid);
-  box.appendChild(el("div", "hcap", "Visitas realizadas ÷ agendamentos criados no mês (visitas/agendamentos ao lado da %)"));
+  box.appendChild(el("div", "hcap", "Barra = visitas realizadas no mês · ao lado: conversão (visitas ÷ agendamentos) e visitas/agendamentos"));
 }
 
 function equipes(pessoas, media) {
