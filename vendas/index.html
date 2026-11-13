@@ -535,5 +535,6 @@ $("cal-hoje").addEventListener("click", () => escolher(VIGENTE));
 const pedido = location.hash.slice(1);
 escolher(/^\d{4}-\d{2}$/.test(pedido) && pedido >= PRIMEIRO && pedido <= VIGENTE ? pedido : VIGENTE);
 </script>
+<script src="../auto-refresh.js" defer></script>
 </body>
 </html>
