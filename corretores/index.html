@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Gestão Semanal dos Corretores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Gestão semanal dos corretores: mesmo visual das páginas de agendamentos */
+:root{
+  --bg:#0b1630;
+  --panel:#12224a;
+  --line:#22376b;
+  --ink:#eef2fb;
+  --muted:#93a3c8;
+  --accent:#ffb627;
+  --done:#3ddc97;
+  --low:#ff8a8a;
+  --blue:#4d7bff;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.back{color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;text-wrap:balance}
+.upd{font-size:13px;color:var(--muted);text-align:right;line-height:1.5}
+.upd b{color:var(--ink)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.legend{display:flex;gap:10px 16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:-4px 0 12px;align-items:center}
+/* funil */
+.funil{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px 20px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:stretch}
+@media (max-width:760px){.funil{grid-template-columns:repeat(2,1fr)}}
+.fs{background:#0f1d40;border:1px solid var(--line);border-radius:16px;padding:14px 12px;text-align:center;position:relative}
+.fs .k{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fs .m{font-family:var(--display);font-weight:900;font-size:56px;line-height:1;color:var(--accent);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.fs.vn .m{color:var(--done)}
+.fs .t{font-size:12px;color:var(--muted)}
+.fs .r{margin-top:8px;font-size:13px;color:var(--muted)}
+.fs .r b{color:var(--ink);font-variant-numeric:tabular-nums}
+.funil-cap{grid-column:1/-1;font-size:14px;color:var(--muted);text-align:center;margin-top:4px}
+.funil-cap b{color:var(--ink)}
+/* resumo */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+.stat.a .n{color:var(--accent)}
+/* filtros */
+.filtros{display:flex;gap:8px;flex-wrap:wrap}
+.fbtn{font:700 14px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.fbtn[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.fbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+/* ranking */
+.rk{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.rk-head,.rk-row{display:grid;grid-template-columns:44px minmax(170px,1.6fr) repeat(5,minmax(58px,.55fr)) minmax(170px,1.5fr);gap:8px;align-items:center;padding:10px 14px}
+.rk-head{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);background:#0f1d40}
+.rk-head span{text-align:center}
+.rk-head span:nth-child(2){text-align:left}
+.rk-row{border-bottom:1px solid #1a2d5c}
+.rk-row:last-child{border-bottom:none}
+.rk-row.sold{background:linear-gradient(90deg,rgba(61,220,151,.10),transparent 70%)}
+.pos{font-family:var(--display);font-weight:800;font-size:22px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.rk-row:nth-child(-n+4) .pos{color:var(--accent)}
+.nm{min-width:0}
+.nm b{display:block;font-size:15px;overflow-wrap:anywhere}
+.nm small{display:block;font-size:12px;color:var(--muted)}
+.nm .sem{margin-top:3px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nm .sem i{font-style:normal;color:var(--ink)}
+.cel{text-align:center;font-variant-numeric:tabular-nums}
+.cel b{font-family:var(--display);font-weight:800;font-size:22px;line-height:1}
+.cel small{display:block;font-size:11px;color:var(--muted)}
+.cel.ok b{color:var(--done)}
+.cel.zero b{color:#4a5a86}
+.cel .lbl{display:none}
+.chance{display:flex;align-items:center;gap:10px}
+.track{flex:1;height:16px;border-radius:8px;background:#0f1d40;border:1px solid var(--line);overflow:hidden;position:relative}
+.track i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#4d7bff,#7c9bff)}
+.track i.m{background:linear-gradient(90deg,var(--accent),#ffd27a)}
+.track i.h{background:linear-gradient(90deg,#2fbf80,var(--done))}
+.pct{font-family:var(--display);font-weight:900;font-size:24px;min-width:56px;text-align:right;font-variant-numeric:tabular-nums}
+.pct.h{color:var(--done)}
+.pct.m{color:var(--accent)}
+@media (max-width:860px){
+  .rk-head{display:none}
+  .rk-row{grid-template-columns:36px 1fr;grid-template-areas:"p n" "p c" "p x";padding:12px}
+  .rk-row .pos{grid-area:p;align-self:start;padding-top:2px}
+  .rk-row .nm{grid-area:n}
+  .rk-row .cels{grid-area:c;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .rk-row .chance{grid-area:x}
+  .cel .lbl{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+}
+@media (min-width:861px){.cels{display:contents}}
+.vazio{color:var(--muted);text-align:center;padding:16px}
+/* equipes */
+.grs{display:flex;flex-direction:column;gap:22px}
+.gr-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.gr-name{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.gr-sum{font-size:14px;color:var(--muted)}
+.gr-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+.gvs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.gv{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gv-name{font-weight:700;font-size:17px}
+.gv-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gv-count b{color:var(--ink)}
+.gv-fun{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gv-fun b{color:var(--ink)}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.people li{display:grid;grid-template-columns:1fr 90px 40px;align-items:center;gap:8px;font-size:14px;padding:6px 8px;border-radius:8px;background:#0f1d40}
+.people .pn{min-width:0;overflow-wrap:anywhere}
+.people .pn small{display:block;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.people .track{height:10px}
+.people .pp{font-family:var(--display);font-weight:800;font-size:17px;text-align:right;font-variant-numeric:tabular-nums}
+.pill{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.p-vn{color:var(--bg);background:var(--done)}
+footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:80ch}
+footer b{color:var(--ink)}
+.aviso{background:#14264f;border:1px dashed var(--line);border-radius:14px;padding:12px 14px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="back" href="../">← Direcional Vendas CPS</a>
+      <div class="eyebrow">Direcional Vendas · Campinas · <span id="mes-nome">—</span></div>
+      <h1>Gestão Semanal dos Corretores</h1>
+    </div>
+    <div class="upd">Dados da planilha até <b id="refresh">—</b><br>Página atualizada em <span id="upd">—</span></div>
+  </header>
+
+  <section aria-label="Funil para 1 venda">
+    <h2>O caminho para 1 venda no mês</h2>
+    <div class="funil" id="funil"></div>
+  </section>
+
+  <div class="aviso" id="aviso" hidden></div>
+
+  <section class="stats" aria-label="Resumo dos corretores">
+    <div class="stat g"><div class="n" id="s-vn">—</div><div class="t">corretores já venderam no mês</div></div>
+    <div class="stat a"><div class="n" id="s-50">—</div><div class="t">corretores com 50% ou mais de chance</div></div>
+    <div class="stat"><div class="n" id="s-pas">—</div><div class="t">corretores com pasta no mês</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores sem nenhuma oportunidade</div></div>
+  </section>
+
+  <section aria-label="Ranking de possibilidade de venda">
+    <h2>Ranking: quem está mais perto de 1 venda</h2>
+    <div class="legend">
+      <div class="filtros" id="filtros" role="group" aria-label="Filtrar por GR"></div>
+    </div>
+    <div class="legend"><span>Números do mês contra o funil de 1 venda · embaixo do nome: a semana atual · barra: possibilidade de 1 venda no mês (0 a 100%)</span></div>
+    <div class="rk" id="rk"></div>
+  </section>
+
+  <section aria-label="Por GR e GV">
+    <h2>Por equipe</h2>
+    <div class="grs" id="grs"></div>
+  </section>
+
+  <footer id="rodape"></footer>
+</div>
+
+<script>
+// ===== Dados (gerados por tools/corretores_atualizar.py) =====
+const DADOS = {
+  mes: "2026-11",
+  atualizado: "2026-11-13T19:01:00-03:00",
+  refresh: "12/11 13:18",
+  funil: {ops: 60, ag: 30, vis: 10, pas: 4, vn: 1}, // para 1 venda
+  pesos: {ops: 10, ag: 20, vis: 30, pas: 40},        // peso de cada etapa na possibilidade (soma 100)
+  // semanas: domingo que inicia cada semana
+  semanas: ["2026-11-01", "2026-11-08"],
+  // por corretor: {ops:[sem1,sem2,...], ag:[...], vis:[...], pas:[...]}
+  dados: {"Aloisio Antonio Mache Tavares":{"ops":[22,4],"ag":[7,4],"vis":[1,1],"pas":[0,1]},"Amekion Ferreira Cruz":{"ops":[14,3],"ag":[3,4],"vis":[2,2],"pas":[1,1]},"Ana Lucia Menezes de Paula":{"ops":[6,9],"ag":[0,2],"vis":[0,2],"pas":[0,0]},"Ana Luiza Martins":{"ops":[23,18],"ag":[2,1],"vis":[0,0],"pas":[0,0]},"Ana Paula de Souza Leite Aguiar":{"ops":[15,14],"ag":[0,6],"vis":[0,0],"pas":[0,0]},"Benedito Thomaz Siqueira":{"ops":[17,2],"ag":[4,1],"vis":[0,0],"pas":[0,0]},"Claudio Sena Borges":{"ops":[24,11],"ag":[8,7],"vis":[1,2],"pas":[1,1]},"Daniel Alves Silva":{"ops":[17,18],"ag":[3,3],"vis":[2,0],"pas":[0,0]},"Ellen Cassia Pereira Cassemiro de Campos":{"ops":[22,5],"ag":[0,3],"vis":[0,1],"pas":[1,0]},"Emerson Gonçalves Pereira":{"ops":[3,7],"ag":[1,1],"vis":[1,0],"pas":[0,0]},"Fabiana Sertori de Oliveira":{"ops":[0,6],"ag":[0,1],"vis":[0,0],"pas":[0,0]},"Fabio Carlo da Silva":{"ops":[27,4],"ag":[8,2],"vis":[3,1],"pas":[0,0]},"Fernanda Guilherme dos Santos":{"ops":[38,3],"ag":[4,1],"vis":[2,0],"pas":[0,2]},"Flavia Maria Ramos":{"ops":[20,7],"ag":[4,4],"vis":[1,1],"pas":[1,1]},"Franciely Gomes":{"ops":[20,2],"ag":[3,2],"vis":[1,0],"pas":[0,0]},"Guilherme Garcia":{"ops":[43,17],"ag":[8,7],"vis":[2,5],"pas":[1,0]},"Isabella Garcia Silva":{"ops":[27,11],"ag":[7,2],"vis":[5,1],"pas":[0,0]},"Jonathan Pereira da Silva":{"ops":[22,6],"ag":[1,2],"vis":[1,0],"pas":[0,0]},"Jorge Luiz de Lima":{"ops":[23,5],"ag":[5,4],"vis":[3,0],"pas":[0,0]},"José Raimundo da Silva":{"ops":[12,0],"ag":[0,0],"vis":[0,0],"pas":[0,0]},"João Gabriel Campos Carvalho da Silva":{"ops":[23,21],"ag":[2,2],"vis":[0,0],"pas":[0,0]},"Larissa Gabriele Vitor":{"ops":[14,10],"ag":[2,5],"vis":[0,2],"pas":[0,0]},"Layane Silva Santos Bispo":{"ops":[10,4],"ag":[1,1],"vis":[0,1],"pas":[2,0]},"Lincoln Farah":{"ops":[58,29],"ag":[4,6],"vis":[0,0],"pas":[0,0]},"Lucas Vinícius Ferreira Chaves":{"ops":[3,0],"ag":[0,0],"vis":[0,0],"pas":[0,0]},"Luciana Lemes":{"ops":[16,5],"ag":[7,2],"vis":[3,0],"pas":[0,0]},"Luis Fernando Maestro":{"ops":[68,26],"ag":[6,0],"vis":[3,0],"pas":[0,0]},"Marcelo Vicentini Coelho":{"ops":[12,18],"ag":[1,0],"vis":[1,0],"pas":[0,0]},"Marlene Santana Corrêa dos Santos":{"ops":[10,7],"ag":[2,1],"vis":[0,0],"pas":[0,0]},"Marli Teixeira da Costa":{"ops":[1,1],"ag":[1,1],"vis":[1,0],"pas":[0,0]},"Mayara Soares Diogo":{"ops":[1,2],"ag":[0,2],"vis":[0,0],"pas":[0,0]},"Márcio Antônio Custódio":{"ops":[0,20],"ag":[0,2],"vis":[0,1],"pas":[0,0]},"Paola Cassanelli da Rocha":{"ops":[12,12],"ag":[16,9],"vis":[3,0],"pas":[0,0]},"Rickelle Quirino de Oliveira":{"ops":[3,5],"ag":[0,0],"vis":[0,0],"pas":[0,0]},"Roberto Oliveira da Silva Souza":{"ops":[22,2],"ag":[1,2],"vis":[0,1],"pas":[0,0]},"Roseli Martim Tibiriça":{"ops":[6,4],"ag":[2,3],"vis":[1,2],"pas":[0,0]},"Roseli Sampaio Bastos Ferreira":{"ops":[32,19],"ag":[4,3],"vis":[4,2],"pas":[0,0]},"Sirlene Aparecida da Silva":{"ops":[0,5],"ag":[0,0],"vis":[0,0],"pas":[0,0]},"Sonia Maria de Oliveira Maruki":{"ops":[13,5],"ag":[4,4],"vis":[1,2],"pas":[1,0]},"Taline Fideles da Silva":{"ops":[8,1],"ag":[0,0],"vis":[0,0],"pas":[0,0]},"Taíssa Ayane Oliveira da Silva":{"ops":[4,7],"ag":[0,1],"vis":[0,0],"pas":[0,0]},"Teresinha Aparecida Crivelaro Lopes":{"ops":[44,17],"ag":[4,3],"vis":[2,3],"pas":[0,1]},"Vanderlucia de Oliveira Batista Pereira":{"ops":[17,14],"ag":[5,2],"vis":[0,0],"pas":[0,0]},"Wanderson de Carvalho Coutinho":{"ops":[4,5],"ag":[0,3],"vis":[0,0],"pas":[0,0]}},
+  // vendas do mês por corretor (mesmas do Contador de vendas)
+  vendas: {"Roseli Martim Tibiriça": 1},
+  equipe: [
+    {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi"},
+    {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi"},
+    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi"},
+    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi"},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia"},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia"},
+    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia"},
+    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia"},
+    {nome: "Taline Fideles da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia"},
+    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia"},
+    {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia"},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia"},
+    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia"},
+    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia"},
+    {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia"},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia"},
+    {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia"},
+    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia"},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia"},
+    {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia"},
+    {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo"},
+    {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo"},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Emerson Gonçalves Pereira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo"}
+  ],
+};
+// ==========================================================
+
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const plural = (n, s, p) => n === 1 ? s : p;
+const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+const ETAPAS = [["ops", "OPs"], ["ag", "AG"], ["vis", "VIS"], ["pas", "PAS"]];
+const F = DADOS.funil, W = DADOS.pesos;
+const soma = (a) => (a || []).reduce((s, n) => s + n, 0);
+const ultima = DADOS.semanas.length - 1;
+const fmtD = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
+
+const pessoas = DADOS.equipe.map((p) => {
+  const d = DADOS.dados[p.nome] || {};
+  const r = {...p, vn: DADOS.vendas[p.nome] || 0, sem: {}};
+  ETAPAS.forEach(([k]) => { r[k] = soma(d[k]); r.sem[k] = (d[k] || [])[ultima] || 0; });
+  r.chance = r.vn >= F.vn ? 100 : Math.round(ETAPAS.reduce((s, [k]) => s + W[k] * Math.min(1, r[k] / F[k]), 0));
+  return r;
+});
+const ordem = (a, b) => b.chance - a.chance || b.pas - a.pas || b.vis - a.vis || b.ag - a.ag || b.ops - a.ops || a.nome.localeCompare(b.nome);
+pessoas.sort(ordem);
+const nivel = (c) => c >= 70 ? "h" : c >= 40 ? "m" : "";
+
+// cabeçalho
+const [y, m] = DADOS.mes.split("-").map(Number);
+$("mes-nome").textContent = MESES[m - 1] + " de " + y;
+$("refresh").textContent = DADOS.refresh || "—";
+$("upd").textContent = new Date(DADOS.atualizado).toLocaleString("pt-BR", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
+
+// funil
+(function funil() {
+  const box = $("funil");
+  const nomes = {ops: "Oportunidades", ag: "Agendamentos", vis: "Visitas", pas: "Pastas", vn: "Venda"};
+  [...ETAPAS.map(([k]) => k), "vn"].forEach((k) => {
+    const n = pessoas.filter((p) => p[k] >= F[k]).length;
+    const c = el("div", "fs" + (k === "vn" ? " vn" : ""));
+    c.append(el("div", "k", nomes[k]), el("div", "m", F[k]), el("div", "t", k === "vn" ? "venda no mês" : "no mês por corretor"));
+    const r = el("div", "r"); r.append(el("b", null, n), " " + plural(n, "corretor bateu", "corretores bateram"));
+    c.appendChild(r); box.appendChild(c);
+  });
+  const cap = el("div", "funil-cap");
+  cap.append("Funil de referência: ", el("b", null, "60 OPs → 30 agendamentos → 10 visitas → 4 pastas → 1 venda"), " por corretor no mês.");
+  box.appendChild(cap);
+})();
+
+// resumo
+$("s-vn").textContent = pessoas.filter((p) => p.vn > 0).length;
+$("s-50").textContent = pessoas.filter((p) => p.chance >= 50).length;
+$("s-pas").textContent = pessoas.filter((p) => p.pas > 0).length;
+$("s-zero").textContent = pessoas.filter((p) => !p.ops).length;
+if (!Object.keys(DADOS.dados).length) { $("aviso").hidden = false; $("aviso").textContent = "Ainda não há números do mês na planilha."; }
+
+// ranking
+let filtro = "Todos";
+function barra(c) { const t = el("div", "track"); const i = el("i", nivel(c)); i.style.width = c + "%"; t.appendChild(i); return t; }
+function ranking() {
+  const box = $("rk"); box.textContent = "";
+  const head = el("div", "rk-head");
+  ["#", "Corretor", "OPs", "AG", "VIS", "PAS", "Venda", "Possibilidade de 1 venda"].forEach((t) => head.appendChild(el("span", null, t)));
+  box.appendChild(head);
+  const lst = pessoas.filter((p) => filtro === "Todos" || p.gr === filtro);
+  if (!lst.length) { box.appendChild(el("div", "vazio", "Nenhum corretor.")); return; }
+  lst.forEach((p, i) => {
+    const row = el("div", "rk-row" + (p.vn ? " sold" : ""));
+    const nm = el("div", "nm"); nm.append(el("b", null, p.nome), el("small", null, "Equipe " + p.gv + " · GR " + p.gr));
+    if (ultima >= 0) {
+      const s = el("div", "sem"); s.append("Semana " + fmtD(DADOS.semanas[ultima]) + ": ");
+      ETAPAS.forEach(([k, lbl], j) => { if (j) s.append(" · "); s.append(lbl + " "); s.appendChild(el("i", null, p.sem[k])); });
+      nm.appendChild(s);
+    }
+    const cels = el("div", "cels");
+    [...ETAPAS, ["vn", "Venda"]].forEach(([k, lbl]) => {
+      const c = el("div", "cel" + (p[k] >= F[k] ? " ok" : (!p[k] ? " zero" : "")));
+      c.append(el("span", "lbl", lbl), el("b", null, p[k]), el("small", null, "de " + F[k]));
+      cels.appendChild(c);
+    });
+    const ch = el("div", "chance"); ch.append(barra(p.chance), el("div", "pct " + nivel(p.chance), p.chance + "%"));
+    ch.setAttribute("aria-label", "Possibilidade de 1 venda: " + p.chance + "%");
+    row.append(el("div", "pos", (i + 1) + "º"), nm, cels, ch);
+    box.appendChild(row);
+  });
+}
+(function filtros() {
+  const box = $("filtros");
+  const lista = ["Todos", ...new Set(DADOS.equipe.map((p) => p.gr))];
+  const pintar = () => [...box.children].forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === filtro ? "true" : "false"));
+  lista.forEach((g) => {
+    const b = el("button", "fbtn", g === "Todos" ? "Todos" : "GR " + g); b.type = "button"; b.dataset.v = g;
+    b.addEventListener("click", () => { filtro = g; pintar(); ranking(); });
+    box.appendChild(b);
+  });
+  pintar();
+})();
+ranking();
+
+// por equipe
+(function equipes() {
+  const root = $("grs");
+  [...new Set(pessoas.map((p) => p.gr))].forEach((gr) => {
+    const doGr = pessoas.filter((p) => p.gr === gr);
+    const block = el("div"); const head = el("div", "gr-head");
+    const gs = el("div", "gr-sum");
+    const n50 = doGr.filter((p) => p.chance >= 50).length;
+    gs.append(el("b", null, n50), " de ", el("b", null, doGr.length), " corretores com 50% ou mais · ", el("b", null, doGr.reduce((s, p) => s + p.vn, 0)), " " + plural(doGr.reduce((s, p) => s + p.vn, 0), "venda", "vendas"));
+    head.append(el("div", "gr-name", "GR " + gr), gs);
+    const gvs = el("div", "gvs");
+    [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
+      const lst = doGr.filter((p) => p.gv === gv);
+      const card = el("div", "gv"); const top = el("div", "gv-top");
+      const media = Math.round(lst.reduce((s, p) => s + p.chance, 0) / lst.length);
+      const ct = el("div", "gv-count"); ct.append("média ", el("b", null, media + "%"));
+      top.append(el("div", "gv-name", "Equipe " + gv), ct);
+      const fun = el("div", "gv-fun");
+      [...ETAPAS, ["vn", "VN"]].forEach(([k, lbl], j) => { if (j) fun.append(" · "); fun.append(lbl + " "); fun.appendChild(el("b", null, lst.reduce((s, p) => s + p[k], 0))); });
+      const ul = el("ul", "people");
+      lst.forEach((p) => {
+        const li = el("li"); const pn = el("span", "pn", p.nome);
+        pn.appendChild(el("small", null, ETAPAS.map(([k, lbl]) => lbl + " " + p[k]).join(" · ")));
+        const pp = el("span", "pp", p.chance + "%"); if (nivel(p.chance)) pp.style.color = p.chance >= 70 ? "var(--done)" : "var(--accent)";
+        li.append(pn, p.vn ? el("span", "pill p-vn", p.vn + " " + plural(p.vn, "venda", "vendas")) : barra(p.chance), pp);
+        ul.appendChild(li);
+      });
+      card.append(top, fun, ul); gvs.appendChild(card);
+    });
+    block.append(head, gvs); root.appendChild(block);
+  });
+})();
+
+// rodapé
+(function () {
+  const f = $("rodape");
+  f.append("Como a possibilidade é calculada: cada etapa do funil vale um peso — ",
+    el("b", null, "OPs 10%, agendamentos 20%, visitas 30% e pastas 40%"),
+    ". O corretor ganha a parte de cada etapa proporcional ao quanto já fez do funil (no máximo 100% da etapa). Quem já vendeu no mês fica com 100%. ",
+    "Fonte: planilha \"BURDIM - Gestão Semanal - GVs - CAMPINAS\" (abas Oportunidades, Agendamentos, Visitas e Pastas; visitas pela data de comparecimento). Vendas iguais às do Contador de vendas. ",
+    "Só aparecem os corretores ativos da base de corretores. Semanas começam no domingo.");
+})();
+</script>
+</body>
+</html>
