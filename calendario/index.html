@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Black November CPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Calendário de ações no azul-noite dos placares; cada tipo de ação tem a sua cor, como no calendário original */
+:root{
+  --bg:#0b1630; --panel:#12224a; --panel2:#0f1d40; --line:#22376b;
+  --ink:#eef2fb; --muted:#93a3c8; --accent:#ffb627;
+  --black:#05070d; --stand:#ffd23f; --coruja:#a9c8ea; --divul:#9fdcb4; --outro:#c7b8ff;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 460px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 20px 48px;display:flex;flex-direction:column;gap:20px}
+a.back{color:var(--muted);font-size:13px;text-decoration:none}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(36px,6vw,60px);line-height:.95;margin:6px 0 4px;text-transform:uppercase}
+.sub{color:var(--muted);font-size:15px;margin:0}
+.btn{display:inline-flex;align-items:center;gap:8px;font:700 15px var(--body);border:none;border-radius:999px;padding:11px 18px;cursor:pointer}
+.btn-add{background:var(--accent);color:var(--bg)}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:14px;border-radius:4px;display:inline-block}
+.cal{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.dow,.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.dow div{background:#070f22;font-weight:700;font-size:14px;text-align:center;padding:10px 4px;border-right:1px solid var(--line)}
+.dow div:last-child{border-right:none}
+.day{min-height:118px;border-top:1px solid var(--line);border-right:1px solid var(--line);padding:8px;display:flex;flex-direction:column;gap:5px;position:relative}
+.week .day:last-child{border-right:none}
+.day .num{font-weight:700;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.day.hoje{background:rgba(255,182,39,.08);box-shadow:inset 0 0 0 2px var(--accent)}
+.day.hoje .num{color:var(--accent)}
+.day.hoje .num::after{content:" · hoje";font-weight:600;font-size:11px}
+.day .addday{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:6px;border:1px dashed var(--line);background:transparent;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;opacity:0}
+.day:hover .addday,.day .addday:focus-visible{opacity:1}
+.ev{font-size:13px;line-height:1.25;padding:5px 7px;border-radius:7px;color:#0b1630;font-weight:600;position:relative;word-break:break-word}
+.ev.t-black{background:var(--black);color:#fff;border:1px solid #3a4a72}
+.ev.t-stand{background:var(--stand)}
+.ev.t-coruja{background:var(--coruja)}
+.ev.t-divul{background:var(--divul)}
+.ev.t-outro{background:var(--outro)}
+.ev .del{position:absolute;top:2px;right:3px;border:none;background:rgba(0,0,0,.25);color:#fff;border-radius:4px;width:18px;height:18px;font-size:12px;line-height:18px;padding:0;cursor:pointer}
+.ev.nova{padding-right:24px}
+.agenda{display:none;flex-direction:column;gap:10px}
+.ag-day{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.ag-day.hoje{border-color:var(--accent)}
+.ag-day h3{margin:0;font-size:15px}
+@media (max-width:760px){.cal{display:none}.agenda{display:flex}}
+.note{font-size:13px;color:var(--muted);line-height:1.5;max-width:80ch}
+dialog{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(420px,92vw)}
+dialog::backdrop{background:rgba(3,7,18,.7)}
+dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 14px;text-transform:uppercase}
+.f{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.f label{font-size:13px;color:var(--muted);font-weight:600}
+.f input,.f select{font:500 15px var(--body);color:var(--ink);background:var(--panel2);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+.f input:focus-visible,.f select:focus-visible{outline:2px solid var(--accent)}
+.acts{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.msg{font-size:13px;color:var(--accent);min-height:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← Direcional Vendas CPS</a>
+  <header>
+    <div>
+      <h1>Black November CPS</h1>
+      <p class="sub">Calendário de ações · 01/11 a 12/12/2026</p>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost" id="btn-copiar" type="button">Copiar atividades novas</button>
+      <button class="btn btn-add" id="btn-add" type="button">+ Adicionar atividade</button>
+    </div>
+  </header>
+  <div class="legend" aria-label="Legenda">
+    <span><i style="background:var(--black);border:1px solid #3a4a72"></i>Evento Black</span>
+    <span><i style="background:var(--stand)"></i>Evento Stand</span>
+    <span><i style="background:var(--coruja)"></i>Corujão</span>
+    <span><i style="background:var(--divul)"></i>Divulgação</span>
+    <span><i style="background:var(--outro)"></i>Outra atividade</span>
+  </div>
+  <div class="msg" id="msg" role="status"></div>
+
+  <div class="cal" id="cal">
+    <div class="dow"><div>Domingo</div><div>Segunda</div><div>Terça</div><div>Quarta</div><div>Quinta</div><div>Sexta</div><div>Sábado</div></div>
+    <div id="weeks"></div>
+  </div>
+  <div class="agenda" id="agenda"></div>
+
+  <p class="note">As atividades novas ficam salvas neste navegador. Para que todo o time veja, toque em <b>Copiar atividades novas</b> e mande para o Claude, que publica no site.</p>
+</div>
+
+<dialog id="dlg">
+  <form id="form" method="dialog">
+    <h2>Nova atividade</h2>
+    <div class="f"><label for="f-data">Data</label><input id="f-data" type="date" min="2026-11-01" max="2026-12-12" required></div>
+    <div class="f"><label for="f-titulo">Atividade</label><input id="f-titulo" type="text" maxlength="80" placeholder="Ex.: Corujão p/ 05/12" required></div>
+    <div class="f"><label for="f-tipo">Tipo</label>
+      <select id="f-tipo">
+        <option value="black">Evento Black</option>
+        <option value="stand">Evento Stand</option>
+        <option value="coruja">Corujão</option>
+        <option value="divul">Divulgação</option>
+        <option value="outro">Outra atividade</option>
+      </select>
+    </div>
+    <div class="acts">
+      <button class="btn btn-ghost" type="button" id="btn-cancel">Cancelar</button>
+      <button class="btn btn-add" type="submit" id="btn-save">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+// Atividades oficiais (publicadas no site)
+const ATIVIDADES = [
+  {data: "2026-11-05", titulo: "Corujão p/ 07/11", tipo: "coruja"},
+  {data: "2026-11-07", titulo: "Evento Stand", tipo: "stand"},
+  {data: "2026-11-07", titulo: "Bingo Paróquia S. Benedito", tipo: "divul"},
+  {data: "2026-11-10", titulo: "Corujão p/ 11/11", tipo: "coruja"},
+  {data: "2026-11-10", titulo: "Divulgação", tipo: "divul"},
+  {data: "2026-11-11", titulo: "Divulgação", tipo: "divul"},
+  {data: "2026-11-11", titulo: "Evento Black 11/11 18H", tipo: "black"},
+  {data: "2026-11-12", titulo: "Corujão p/ 14/11", tipo: "coruja"},
+  {data: "2026-11-14", titulo: "Evento Stand", tipo: "stand"},
+  {data: "2026-11-19", titulo: "Corujão p/ 21/11", tipo: "coruja"},
+  {data: "2026-11-19", titulo: "Filipeta Black (preparar panfletos)", tipo: "divul"},
+  {data: "2026-11-20", titulo: "PaP Agência", tipo: "divul"},
+  {data: "2026-11-21", titulo: "Evento Stand", tipo: "stand"},
+  {data: "2026-11-26", titulo: "Corujão p/ 28/11", tipo: "coruja"},
+  {data: "2026-11-27", titulo: "Carro de som", tipo: "divul"},
+  {data: "2026-11-28", titulo: "Evento Black Principal > Visita à obra", tipo: "black"}
+];
+const ORDEM = {black: 0, stand: 1, coruja: 2, divul: 3, outro: 4};
+const NOMES = {black: "Evento Black", stand: "Evento Stand", coruja: "Corujão", divul: "Divulgação", outro: "Outra atividade"};
+const CHAVE = "dvcps-calendario-novas";
+const $ = (id) => document.getElementById(id);
+const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+
+function lerNovas() { try { return JSON.parse(localStorage.getItem(CHAVE) || "[]"); } catch (e) { return []; } }
+function salvarNovas(l) { try { localStorage.setItem(CHAVE, JSON.stringify(l)); return true; } catch (e) { return false; } }
+let novas = lerNovas();
+
+const iso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const ddmm = (s) => s.slice(8, 10) + "/" + s.slice(5, 7);
+const DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+const hoje = iso(new Date());
+
+function doDia(d) {
+  const of = ATIVIDADES.filter((a) => a.data === d).map((a) => ({...a, nova: false}));
+  const nv = novas.map((a, i) => ({...a, nova: true, idx: i})).filter((a) => a.data === d);
+  return of.concat(nv).sort((a, b) => ORDEM[a.tipo] - ORDEM[b.tipo]);
+}
+function chip(a) {
+  const c = el("div", "ev t-" + a.tipo + (a.nova ? " nova" : ""), a.titulo);
+  c.title = NOMES[a.tipo];
+  if (a.nova) {
+    const x = el("button", "del", "×"); x.type = "button"; x.setAttribute("aria-label", "Remover " + a.titulo);
+    x.addEventListener("click", () => { novas.splice(a.idx, 1); salvarNovas(novas); desenhar(); });
+    c.appendChild(x);
+  }
+  return c;
+}
+function desenhar() {
+  const weeks = $("weeks"); weeks.replaceChildren();
+  const ag = $("agenda"); ag.replaceChildren();
+  const d = new Date(2026, 10, 1);
+  for (let w = 0; w < 6; w++) {
+    const row = el("div", "week");
+    for (let i = 0; i < 7; i++) {
+      const s = iso(d);
+      const cell = el("div", "day" + (s === hoje ? " hoje" : ""));
+      cell.appendChild(el("div", "num", ddmm(s)));
+      const evs = doDia(s);
+      evs.forEach((a) => cell.appendChild(chip(a)));
+      const add = el("button", "addday", "+"); add.type = "button"; add.setAttribute("aria-label", "Adicionar atividade em " + ddmm(s));
+      add.addEventListener("click", () => abrir(s)); cell.appendChild(add);
+      row.appendChild(cell);
+      if (evs.length) {
+        const box = el("div", "ag-day" + (s === hoje ? " hoje" : ""));
+        box.appendChild(el("h3", null, DIAS[d.getDay()] + ", " + ddmm(s) + (s === hoje ? " · hoje" : "")));
+        evs.forEach((a) => box.appendChild(chip(a)));
+        ag.appendChild(box);
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    weeks.appendChild(row);
+  }
+}
+
+const dlg = $("dlg");
+function abrir(data) {
+  $("f-data").value = data || (hoje >= "2026-11-01" && hoje <= "2026-12-12" ? hoje : "2026-11-01");
+  $("f-titulo").value = ""; $("f-tipo").value = "divul";
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+  $("f-titulo").focus();
+}
+$("btn-add").addEventListener("click", () => abrir());
+$("btn-cancel").addEventListener("click", () => dlg.close());
+$("form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const data = $("f-data").value, titulo = $("f-titulo").value.trim(), tipo = $("f-tipo").value;
+  if (!data || !titulo) return;
+  novas.push({data, titulo, tipo});
+  const ok = salvarNovas(novas);
+  dlg.close(); desenhar();
+  $("msg").textContent = ok ? "Atividade adicionada em " + ddmm(data) + "." : "Atividade adicionada, mas este navegador não deixou salvar: ela some ao recarregar.";
+});
+$("btn-copiar").addEventListener("click", () => {
+  if (!novas.length) { $("msg").textContent = "Nenhuma atividade nova para copiar."; return; }
+  const txt = "Novas atividades do calendário Black November CPS:\n" + novas.slice().sort((a, b) => a.data.localeCompare(b.data)).map((a) => "- " + ddmm(a.data) + " · " + NOMES[a.tipo] + " · " + a.titulo).join("\n");
+  navigator.clipboard.writeText(txt).then(() => { $("msg").textContent = "Copiado! Cole na conversa com o Claude para publicar para todos."; })
+    .catch(() => { $("msg").textContent = txt; });
+});
+desenhar();
+</script>
+</body>
+</html>

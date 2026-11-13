@@ -27,7 +27,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--body)}
 body{background:radial-gradient(1000px 460px at 50% -8%, rgba(255,182,39,.12), transparent 60%),var(--bg)}
-.wrap{max-width:900px;margin:0 auto;padding:48px 20px 40px;display:flex;flex-direction:column;gap:36px}
+.wrap{max-width:1180px;margin:0 auto;padding:48px 20px 40px;display:flex;flex-direction:column;gap:36px}
 header{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
 .logo{width:clamp(75px,15vw,100px);height:auto;background:#fff;border-radius:14px;padding:5px;box-shadow:0 10px 40px rgba(0,0,0,.35)}
 h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,8vw,72px);line-height:.95;letter-spacing:.02em;text-transform:uppercase;margin:0;text-wrap:balance}
@@ -35,7 +35,7 @@ h1 span{display:block}
 .h-azul{color:#5b7cff}
 .h-verm{color:#ff3b45}
 .tag{font-size:16px;color:var(--muted);margin:0}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
 a.tile{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:30px 22px 26px;border-radius:24px;background:var(--panel);border:1.5px solid var(--line);color:var(--ink);text-decoration:none;transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease}
 a.tile:hover{border-color:var(--accent);box-shadow:0 10px 40px rgba(255,182,39,.15)}
 a.tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -44,7 +44,7 @@ a.tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .icon svg{width:84px;height:84px}
 .tile h2{font-family:var(--display);font-weight:800;font-size:34px;letter-spacing:.03em;text-transform:uppercase;margin:0;line-height:1}
 .tile p{margin:0;color:var(--muted);font-size:15px;line-height:1.45;max-width:30ch}
-.go{margin-top:4px;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--bg);background:var(--accent);padding:10px 18px;border-radius:999px}
+.go{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--bg);background:var(--accent);padding:10px 18px;border-radius:999px}
 .som{position:fixed;right:16px;bottom:16px;z-index:10;display:flex;align-items:center;gap:10px;padding:10px 16px 10px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);font:600 14px var(--body);cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,.35)}
 .som:hover{border-color:var(--accent)}
 .som:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -112,6 +112,24 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       <h2>Gestão Semanal</h2>
       <p>Resultado de cada GR e GV contra a meta: semana a semana, funil e ranking.</p>
       <span class="go">Abrir painel →</span>
+    </a>
+    <a class="tile" href="calendario/">
+      <div class="icon">
+        <svg viewBox="0 0 84 84" aria-hidden="true">
+          <rect x="12" y="16" width="60" height="56" rx="7" fill="#1d3366" stroke="#2f4c8f" stroke-width="2"/>
+          <rect x="12" y="16" width="60" height="14" rx="7" fill="#05070d"/>
+          <rect x="24" y="10" width="5" height="12" rx="2.5" fill="#93a3c8"/><rect x="55" y="10" width="5" height="12" rx="2.5" fill="#93a3c8"/>
+          <rect x="19" y="36" width="12" height="9" rx="2" fill="#a9c8ea"/>
+          <rect x="36" y="36" width="12" height="9" rx="2" fill="#9fdcb4"/>
+          <rect x="53" y="36" width="12" height="9" rx="2" fill="#ffd23f"/>
+          <rect x="19" y="50" width="12" height="9" rx="2" fill="#0f1d40"/>
+          <rect x="36" y="50" width="12" height="9" rx="2" fill="#a9c8ea"/>
+          <rect x="53" y="50" width="12" height="9" rx="2" fill="#05070d" stroke="#ffb627" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <h2>Calendário Black November</h2>
+      <p>Corujões, eventos Black, eventos no stand e ações de divulgação do mês.</p>
+      <span class="go">Abrir calendário →</span>
     </a>
   </nav>
 
