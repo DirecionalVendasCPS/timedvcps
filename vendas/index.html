@@ -47,8 +47,8 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,38px);let
 .cal-ano{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;min-width:64px;text-align:center}
 .cal-nav{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:700 16px var(--body);cursor:pointer}
 .cal-nav:disabled{opacity:.3;cursor:default}
-.cal-meses{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
-@media (max-width:860px){.cal-meses{grid-template-columns:repeat(6,1fr)}}
+.cal-meses{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+@media (max-width:860px){.cal-meses{grid-template-columns:repeat(4,1fr)}}
 @media (max-width:420px){.cal-meses{grid-template-columns:repeat(4,1fr)}}
 .cal-m{border-radius:12px;border:1px solid transparent;background:var(--bg);color:var(--ink);cursor:pointer;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 13px var(--body)}
 .cal-m-nome{text-transform:uppercase;letter-spacing:.06em;font-size:12px;color:var(--muted)}
@@ -232,7 +232,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 const DADOS = {
   mes: "2026-11",          // mês vigente
   atualizado: "2026-11-13T14:58:00-03:00",
-  inicio: "2026-01",    // primeiro mês com vendas na aba
+  inicio: "2026-09",    // primeiro mês que aparece no calendário
   // metas por mês e equipe (só os meses com meta no painel de Gestão Semanal)
   metas: {
     "2026-11": [
@@ -526,6 +526,7 @@ function calendario() {
   const g = $("cal-meses"); g.textContent = "";
   for (let mm = 1; mm <= 12; mm++) {
     const ym = anoVisto + "-" + String(mm).padStart(2, "0");
+    if (ym < PRIMEIRO) continue; // só a partir do primeiro mês
     const b = mk("button", "cal-m"); b.type = "button";
     b.appendChild(mk("span", "cal-m-nome", MES_CURTO[mm - 1]));
     const ok = ym >= PRIMEIRO && ym <= VIGENTE;
