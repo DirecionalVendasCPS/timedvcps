@@ -37,6 +37,7 @@ h1 span{display:block}
 .tag{font-size:16px;color:var(--muted);margin:0}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
 @media (min-width:780px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:780px){a.tile.nova-linha{grid-column:1}}
 a.tile{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:30px 22px 26px;border-radius:24px;background:var(--panel);border:1.5px solid var(--line);color:var(--ink);text-decoration:none;transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease}
 a.tile:hover{border-color:var(--accent);box-shadow:0 10px 40px rgba(255,182,39,.15)}
 a.tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -145,7 +146,7 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       <p>Corujões, eventos Black, eventos no stand e ações de divulgação do mês.</p>
       <span class="go">Abrir calendário →</span>
     </a>
-    <a class="tile" href="gestao/">
+    <a class="tile nova-linha" href="gestao/">
       <div class="icon">
         <svg viewBox="0 0 84 84" aria-hidden="true">
           <rect x="12" y="14" width="60" height="56" rx="6" fill="#1d3366" stroke="#2f4c8f" stroke-width="2"/>
