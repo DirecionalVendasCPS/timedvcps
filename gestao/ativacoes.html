@@ -6,7 +6,7 @@
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="../favicon.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<title>Histórico de ativações e descredenciamentos 2026</title>
+<title>Histórico de credenciados e descredenciamentos 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -63,30 +63,30 @@ footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:85ch}
   <header>
     <a class="back" href="./">← Gestão Semanal dos GVs</a>
     <div class="eyebrow">Direcional Vendas · Campinas · 2026 · dados de <span id="upd">—</span></div>
-    <h1>Histórico de ativações e descredenciamentos</h1>
+    <h1>Histórico de credenciados e descredenciamentos</h1>
   </header>
 
   <section class="stats" aria-label="Resumo do período">
     <div class="stat at"><div class="n" id="s-at">—</div><div class="t" id="s-at-t">corretores ativos hoje</div></div>
-    <div class="stat in"><div class="n" id="s-in">—</div><div class="t">corretores ativados (credenciados ou reativados)</div></div>
+    <div class="stat in"><div class="n" id="s-in">—</div><div class="t">corretores credenciados (inclui reativados)</div></div>
     <div class="stat out"><div class="n" id="s-out">—</div><div class="t">corretores descredenciados</div></div>
-    <div class="stat"><div class="n" id="s-saldo">—</div><div class="t">saldo do período (ativados − descredenciados)</div></div>
+    <div class="stat"><div class="n" id="s-saldo">—</div><div class="t">saldo do período (credenciados − descredenciados)</div></div>
   </section>
 
   <section>
-    <h2>Ativos x inativados mês a mês</h2>
+    <h2>Credenciados x descredenciados mês a mês</h2>
     <p class="sub">Linha para cima: corretores que entraram no time no mês. Linha para baixo: corretores descredenciados no mês. Embaixo de cada mês, em azul: quantos corretores ativos o time tinha no fim do mês. Toque num mês para filtrar os números e os gráficos abaixo.</p>
     <div class="filtros" id="meses" role="group" aria-label="Escolha o período"></div>
     <div class="card" style="margin-top:12px">
-      <div class="legend"><span style="--c:var(--in)">Ativados</span><span style="--c:var(--out)">Descredenciados</span><span style="--c:var(--accent)">Saldo do mês</span><span style="--c:#7c9bff">Ativos no fim do mês</span></div>
-      <div id="linha" role="img" aria-label="Gráfico de linhas de ativações e descredenciamentos por mês em 2026"></div>
+      <div class="legend"><span style="--c:var(--in)">Credenciados</span><span style="--c:var(--out)">Descredenciados</span><span style="--c:var(--accent)">Saldo do mês</span><span style="--c:#7c9bff">Ativos no fim do mês</span></div>
+      <div id="linha" role="img" aria-label="Gráfico de linhas de credenciados e descredenciamentos por mês em 2026"></div>
     </div>
   </section>
 
   <section class="grid3" aria-label="Ranking de contratações">
     <div>
       <h2>Contratações por GV</h2>
-      <p class="sub">Corretores ativados (credenciados ou reativados) no período. Só GVs ativos hoje.</p>
+      <p class="sub">Corretores credenciados (inclui reativados) no período. Só GVs ativos hoje.</p>
       <div class="card"><div id="c-gv"></div></div>
     </div>
     <div>
@@ -119,7 +119,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:85ch}
 </div>
 
 <script>
-// ===== Dados (sem nomes): t = "e" ativação | "s" descredenciamento; m = mês (AAAA-MM) =====
+// ===== Dados (sem nomes): t = "e" credenciamento | "s" descredenciamento; m = mês (AAAA-MM) =====
 const DADOS = {
   atualizado: "14/11/2026",
   ativosHoje: 53, // corretores ativos na base de corretores (Ativo ou Reativado) na data acima
