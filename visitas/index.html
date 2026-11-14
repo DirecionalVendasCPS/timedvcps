@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Visitas do dia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Visitas do dia: mesmo visual da página de agendamentos do dia */
+:root{
+  --bg:#0b1630;
+  --panel:#12224a;
+  --line:#22376b;
+  --ink:#eef2fb;
+  --muted:#93a3c8;
+  --accent:#ffb627;
+  --done:#3ddc97;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;text-wrap:balance}
+.upd{font-size:13px;color:var(--muted);text-align:right}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center;overflow:hidden}
+@media (max-width:700px){.hero{grid-template-columns:1fr;text-align:center}}
+.lbl{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.6vw,38px);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;line-height:1}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(130px,20vw,220px);line-height:.85;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(255,182,39,.25);margin:6px 0}
+.unit{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.sub{margin-top:14px;font-size:17px;color:var(--muted)}
+.sub b{color:var(--ink)}
+.hit .faltam-block{display:none}
+.bateu{display:none;font-family:var(--display);font-weight:900;color:var(--done);font-size:clamp(56px,9vw,100px);line-height:.9;text-transform:uppercase}
+.hit .bateu{display:block}
+.owl{width:100%;max-width:260px;justify-self:center}
+.bar{height:14px;border-radius:7px;background:#0f1d40;border:1px solid var(--line);overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd27a);border-radius:7px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.row.ok{border-color:rgba(61,220,151,.55);background:linear-gradient(0deg,rgba(61,220,151,.08),rgba(61,220,151,.08)),var(--panel)}
+.nome{font-weight:700;font-size:16px}
+.tag{font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums;text-align:right;line-height:1}
+.tag small{display:block;font-family:var(--body);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.row.ok .tag{color:var(--done)}
+.dots{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
+.dot{width:16px;height:16px;border-radius:4px;border:1.5px dashed #3a5190}
+.dot.done{background:var(--done);border:1.5px solid var(--done)}
+.dot.extra{background:var(--accent);border:1.5px solid var(--accent)}
+.det{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.det b{color:var(--ink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:-4px 0 12px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.l1::before{background:var(--done)}
+.l2::before{border:1.5px dashed var(--muted)}
+.l3::before{background:var(--accent)}
+.lblue::before{background:#4d7bff}
+.grs{display:flex;flex-direction:column;gap:22px}
+.gr-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.gr-name{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.gr-sum{font-size:14px;color:var(--muted)}
+.gr-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+.gvs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.gv{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gv-name{font-weight:700;font-size:17px}
+.gv-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gv-count b{color:var(--ink)}
+.mini{height:8px;border-radius:4px;background:#0f1d40;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--done)}
+.ag{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.ag b{font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ag b.real{color:var(--accent)}
+.ag .pct{font-weight:700;color:var(--ink)}
+.gr-head .ag{width:100%}
+.mini.ag-bar i{background:var(--accent)}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.people li{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:6px 8px;border-radius:8px;background:#0f1d40}
+.people .pn{min-width:0;overflow-wrap:anywhere}
+.pill{flex:none;font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.p-in{color:var(--done);background:rgba(61,220,151,.14)}
+.p-extra{color:var(--accent);background:rgba(255,182,39,.16)}
+.p-out{color:#ff8a8a;background:rgba(255,107,107,.14)}
+.people li.out .pn{color:var(--muted)}
+.leg2 span::before{display:none}
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+.hbar{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:8px 12px;align-items:center}
+.hbar .hn{font-size:14px;text-align:right;line-height:1.2}
+.hbar .hn small{display:block;font-size:11px;color:var(--muted)}
+.hbar .ht{position:relative;height:26px;border-left:1.5px solid #3a5190}
+.hbar .ht i{position:absolute;left:0;top:2px;bottom:2px;background:#4d7bff;border-radius:0 6px 6px 0;min-width:6px}
+.hbar .ht i.meta{background:var(--done)}
+.hbar .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.hgrid{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:12px;margin-top:6px}
+.hticks{position:relative;height:18px;font-size:11px;color:var(--muted)}
+.hticks span{position:absolute;transform:translateX(-50%)}
+.hcap{margin-top:6px;font-size:12px;color:var(--muted);text-align:center}
+.vazio{color:var(--muted);text-align:center;padding:12px}
+.upd-box{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.btn-upd{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:var(--bg);background:var(--accent);border:none;border-radius:999px;padding:9px 16px;text-decoration:none;cursor:pointer}
+.btn-upd:hover{filter:brightness(1.08)}
+.btn-upd:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn-upd svg{width:16px;height:16px}
+.upd-ok{font-size:12px;color:var(--done)}
+footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
+.cal{justify-self:end;width:100%;max-width:330px;background:#0f1d40;border:1px solid var(--line);border-radius:18px;padding:14px}
+@media (max-width:700px){.cal{justify-self:center}}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.cal-nav{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 16px var(--body);cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-nav:focus-visible,.cal-d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-w{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal-d{aspect-ratio:1;border-radius:9px;border:1px solid transparent;background:var(--panel);color:var(--ink);font:600 13px var(--body);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font-variant-numeric:tabular-nums}
+.cal-d small{font-size:10px;font-weight:700;color:var(--done);line-height:1}
+.cal-d.z small{color:var(--muted)}
+.cal-d:hover:not(:disabled){border-color:var(--accent)}
+.cal-d:disabled{background:transparent;color:#3a5190;cursor:default}
+.cal-d.hoje{border-color:var(--muted)}
+.cal-d.sel{background:var(--accent);color:var(--bg)}
+.cal-d.sel small{color:var(--bg)}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.cal-hoje{background:none;border:none;color:var(--accent);font:600 12px var(--body);cursor:pointer;text-decoration:underline;padding:0}
+.big.zero{color:var(--muted);text-shadow:none}
+.p-n{color:var(--done);background:rgba(61,220,151,.14)}
+.p-top{color:var(--bg);background:var(--accent)}
+.hbar .ht i.top{background:var(--accent)}
+.aviso{background:#14264f;border:1px dashed var(--line);border-radius:14px;padding:12px 14px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a href="../" style="color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px">← Direcional Vendas CPS</a>
+      <div class="eyebrow">Direcional Vendas · Campinas · <span id="dia">—</span></div>
+      <h1>Visitas do dia</h1>
+    </div>
+    <div class="upd-box">
+      <a class="btn-upd" id="btn-upd" href="https://claude.ai/code/session_0172nLXY28TiKGBuvAfugnUo" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Atualizar
+      </a>
+      <div class="upd">Atualizado às <span id="upd">—</span></div>
+      <div class="upd-ok" id="upd-ok" hidden>"atualizar visitas" copiado. Cole na conversa e envie.</div>
+    </div>
+  </header>
+
+  <section class="hero" id="hero" aria-live="polite">
+    <div>
+      <div class="lbl" id="lbl">Hoje o time fez</div>
+      <div class="big" id="total">—</div>
+      <div class="unit" id="total-unit">visitas</div>
+      <div class="sub"><b id="n-ag">—</b> de <b id="n-eq">—</b> corretores fizeram visita <span id="quando">hoje</span> (<b id="pct">—</b>)<span id="meta-txt"></span></div>
+      <div class="bar" role="img" id="barra"><i id="barra-i" style="width:0"></i></div>
+    </div>
+    <div class="cal" id="cal" role="group" aria-label="Escolha um dia para ver o resultado">
+      <div class="cal-top">
+        <button class="cal-nav" id="cal-prev" type="button" aria-label="Mês anterior">‹</button>
+        <div class="cal-mes" id="cal-mes">—</div>
+        <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-hint">Toque num dia para ver o resultado · <button class="cal-hoje" id="cal-hoje" type="button">voltar para hoje</button></div>
+    </div>
+  </section>
+
+  <div class="aviso" id="aviso" hidden></div>
+
+  <section class="stats" aria-label="Resumo dos corretores">
+    <div class="stat g"><div class="n" id="s-ag">—</div><div class="t">corretores fizeram visita no dia</div></div>
+    <div class="stat"><div class="n" id="s-media">—</div><div class="t">visitas por corretor que visitou</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ainda sem visita</div></div>
+  </section>
+
+  <section aria-label="Ranking do dia" id="grafico-sec">
+    <h2>Ranking de visitas do dia</h2>
+    <div class="legend"><span class="l3">Líder do dia</span><span class="lblue">Fez visita</span></div>
+    <div class="chart-card">
+      <div id="grafico" role="img" aria-label="Gráfico de barras com quantas visitas cada corretor fez hoje"></div>
+    </div>
+  </section>
+
+  <section aria-label="Visitas por GR e GV" id="equipes-sec">
+    <h2>Visitas por equipe</h2>
+    <div class="legend leg2"><span class="pill p-n">Fez visita</span><span class="pill p-out">Sem visita hoje</span></div>
+    <div class="grs" id="grs"></div>
+  </section>
+
+  <section aria-label="Fora da base" id="fora-sec" hidden>
+    <h2>Também fizeram visita no dia</h2>
+    <div class="legend" style="margin-top:-6px">Nomes do relatório que não estão na base de corretores por GR e GV.</div>
+    <div class="list" id="fora"></div>
+  </section>
+
+  <footer>Visitas realizadas contadas pela data de comparecimento (planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", aba "Visitas"). Dados da planilha até <b id="refresh-txt">—</b>. Só entram na equipe os corretores ativos da base de corretores; quem não está na base aparece em "Também fizeram visita no dia".</footer>
+</div>
+
+<script>
+// ===== Dados (atualizar a cada leitura do relatório) =====
+const DADOS = {
+  hoje: "2026-11-14",
+  atualizado: "2026-11-14T10:33:00-03:00",
+  inicio: "2026-10-01", // primeiro dia do trimestre na planilha
+  meta: null, // meta de visitas do dia (opcional)
+  refresh: "12/11 13:18", // horário dos dados na planilha de gestão
+  // visitas por dia (data de comparecimento): {"AAAA-MM-DD": {"Nome do corretor": quantidade}}
+  dias: {"2026-10-01":{"Fabio Carlo da Silva":1,"Sonia Maria de Oliveira Maruki":1},"2026-10-02":{"Amekion Ferreira Cruz":1,"Claudio Sena Borges":3,"Isabella Garcia Silva":1,"Jonathan Pereira da Silva":2},"2026-10-03":{"Aloisio Antonio Mache Tavares":1,"Ana Luiza Martins":1,"Claudio Sena Borges":2,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Flavia Maria Ramos":2,"Guilherme Garcia":2,"Jonathan Pereira da Silva":1,"Larissa Gabriele Vitor":1,"Luciana Lemes":1,"Rickelle Quirino de Oliveira":1},"2026-10-04":{"Ana Paula de Souza Leite Aguiar":1,"Fabio Carlo da Silva":1,"Larissa Gabriele Vitor":2,"Rickelle Quirino de Oliveira":2},"2026-10-05":{"Aloisio Antonio Mache Tavares":2,"Ana Luiza Martins":1,"Bruno Miccoli de Oliveira":1,"Fabio Carlo da Silva":1,"Franciely Gomes":1,"Ivan de Aguiar Nascimento":1},"2026-10-06":{"Cláudia Maria Carvalho Lopes":1,"Fernanda Guilherme dos Santos":1,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1},"2026-10-07":{"Claudio Sena Borges":1,"Isabella Garcia Silva":1,"Madeleine Kassia de Campos Sena Borges":1,"Roseli Martim Tibiriça":1,"Ícaro Zivko Miranda":1},"2026-10-08":{"Amekion Ferreira Cruz":2,"Claudio Sena Borges":1,"Conceição Aparecida de Oliveira da Silva":1,"Luciana Lemes":1,"Roseli Martim Tibiriça":1},"2026-10-09":{"Ellen Cassia Pereira Cassemiro de Campos":2,"Jorge Luiz de Lima":2,"Luciana Lemes":1,"Wesley Matheus Riviera de Carvalho":1},"2026-10-10":{"Ana Lucia Menezes de Paula":1,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":1,"Jorge Luiz de Lima":1,"Marlene Santana Corrêa dos Santos":2,"Roseli Martim Tibiriça":1,"Taíssa Ayane Oliveira da Silva":1},"2026-10-11":{"Claudio Sena Borges":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Guilherme Garcia":1},"2026-10-12":{"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1},"2026-10-13":{"Amekion Ferreira Cruz":1,"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Jorge Luiz de Lima":2,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-15":{"Claudio Sena Borges":1,"Fabio Carlo da Silva":1,"Hellen Caroline Pinheiro":1,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1,"Marcelo Vicentini Coelho":1},"2026-10-16":{"Amekion Ferreira Cruz":1,"Fabio Carlo da Silva":1,"Layane Silva Santos Bispo":1},"2026-10-17":{"Amekion Ferreira Cruz":1,"Ana Lucia Menezes de Paula":1,"Claudio Sena Borges":4,"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Jonathan Pereira da Silva":1,"Jorge Luiz de Lima":1,"Luciana Lemes":1,"Madeleine Kassia de Campos Sena Borges":1,"Marlene Santana Corrêa dos Santos":1,"Ícaro Zivko Miranda":1},"2026-10-18":{"Ana Lucia Menezes de Paula":1,"Lucas Vinícius Ferreira Chaves":1,"Shirley do Nascimento Pina":1},"2026-10-20":{"Flavia Maria Ramos":2,"Larissa Gabriele Vitor":1,"Marlene Santana Corrêa dos Santos":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-21":{"Aloisio Antonio Mache Tavares":1,"Fabio Carlo da Silva":1,"Luciana Lemes":2},"2026-10-22":{"Amekion Ferreira Cruz":1,"Ana Luiza Martins":1,"Elisabeth Sueli Velardi":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-23":{"Ana Paula de Souza Leite Aguiar":1,"Guilherme Garcia":1,"Ícaro Zivko Miranda":1},"2026-10-24":{"Amekion Ferreira Cruz":2,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":3,"Claudio Sena Borges":5,"Daniel Alves Silva":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":2,"Fernanda Guilherme dos Santos":3,"Flavia Maria Ramos":2,"Guilherme Garcia":3,"José Raimundo da Silva":2,"Larissa Gabriele Vitor":1,"Luciana Lemes":3,"Madeleine Kassia de Campos Sena Borges":1,"Marli Teixeira da Costa":2,"Roseli Martim Tibiriça":1,"Sonia Maria de Oliveira Maruki":2,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-25":{"Ana Paula de Souza Leite Aguiar":1,"Marlene Santana Corrêa dos Santos":1},"2026-10-26":{"Ana Luiza Martins":1,"Luciana Lemes":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-27":{"Amekion Ferreira Cruz":1,"Julia Chiosini":1},"2026-10-28":{"Bianca Nascimento Sabino da Silva":2},"2026-10-29":{"Amekion Ferreira Cruz":1,"Bianca Nascimento Sabino da Silva":1,"Julia Chiosini":1,"Taíssa Ayane Oliveira da Silva":2},"2026-10-30":{"Bianca Nascimento Sabino da Silva":1,"Claudio Sena Borges":1,"Paola Cassanelli da Rocha":2,"Taíssa Ayane Oliveira da Silva":1},"2026-10-31":{"Daniel Alves Silva":1,"Daniel Aparecido Santos":1,"Elisabeth Sueli Velardi":1,"Ellen Cassia Pereira Cassemiro de Campos":2,"Fernanda Guilherme dos Santos":1,"Lincoln Farah":1,"Luciana Lemes":1,"Marcelo Vicentini Coelho":3,"Marli Teixeira da Costa":1,"Mayara Soares Diogo":3,"Roseli Martim Tibiriça":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-11-01":{"Amekion Ferreira Cruz":1,"Franciely Gomes":1},"2026-11-02":{"Isabella Garcia Silva":1,"Jorge Luiz de Lima":2,"Luis Fernando Maestro":1,"Sonia Maria de Oliveira Maruki":1},"2026-11-03":{"Fabio Carlo da Silva":1,"Luis Fernando Maestro":1,"Paola Cassanelli da Rocha":1},"2026-11-04":{"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Jonathan Pereira da Silva":1,"Luciana Lemes":1,"Luis Fernando Maestro":1,"Roseli Sampaio Bastos Ferreira":2},"2026-11-05":{"Emerson Gonçalves Pereira":1,"Flavia Maria Ramos":1,"Isabella Garcia Silva":1,"Luciana Lemes":1},"2026-11-06":{"Amekion Ferreira Cruz":1,"Daniel Alves Silva":1,"Guilherme Garcia":1,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1,"Roseli Sampaio Bastos Ferreira":1},"2026-11-07":{"Aloisio Antonio Mache Tavares":1,"Claudio Sena Borges":1,"Daniel Alves Silva":1,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Guilherme Garcia":1,"Isabella Garcia Silva":2,"Luciana Lemes":1,"Madeleine Kassia de Campos Sena Borges":1,"Marcelo Vicentini Coelho":1,"Marli Teixeira da Costa":1,"Paola Cassanelli da Rocha":2,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1,"Teresinha Aparecida Crivelaro Lopes":2},"2026-11-08":{"Claudio Sena Borges":2,"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Guilherme Garcia":2,"Roberto Oliveira da Silva Souza":1,"Roseli Martim Tibiriça":1,"Ícaro Zivko Miranda":1},"2026-11-09":{"Aloisio Antonio Mache Tavares":1,"Amekion Ferreira Cruz":1,"Ana Lucia Menezes de Paula":1,"Isabella Garcia Silva":1,"Roseli Sampaio Bastos Ferreira":1,"Teresinha Aparecida Crivelaro Lopes":3},"2026-11-10":{"Ellen Cassia Pereira Cassemiro de Campos":1,"Guilherme Garcia":1,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1},"2026-11-11":{"Amekion Ferreira Cruz":1,"Ana Lucia Menezes de Paula":1,"Guilherme Garcia":2,"Larissa Gabriele Vitor":2,"Márcio Antônio Custódio":1,"Sonia Maria de Oliveira Maruki":2},"2026-11-12":{"Layane Silva Santos Bispo":1}},
+  equipe: [
+    {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi"},
+    {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi"},
+    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi"},
+    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi"},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "José Carlos de Faria", gv: "A definir", gr: "Takeashi"},
+    {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia"},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia"},
+    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia"},
+    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia"},
+    {nome: "Taline Fideles da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia"},
+    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia"},
+    {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia"},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia"},
+    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia"},
+    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia"},
+    {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia"},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia"},
+    {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia"},
+    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia"},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia"},
+    {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia"},
+    {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo"},
+    {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo"},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Emerson Gonçalves Pereira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo"}
+  ],
+};
+// ==========================================================
+
+const $ = (id) => document.getElementById(id);
+const plural = (n, s, p) => n === 1 ? s : p;
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const NA_BASE = new Set(DADOS.equipe.map((p) => p.nome));
+const DIAS = Object.keys(DADOS.dias).sort();
+const PRIMEIRO = DADOS.inicio || DIAS[0];
+const HOJE = DADOS.hoje;
+const fmtCurto = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
+const totalDia = (iso) => Object.values(DADOS.dias[iso] || {}).reduce((a, n) => a + n, 0);
+
+$("upd").textContent = new Date(DADOS.atualizado).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
+$("refresh-txt").textContent = DADOS.refresh || "—";
+
+function render(iso) {
+  const A = DADOS.dias[iso] || {};
+  const ehHoje = iso === HOJE;
+  const pessoas = DADOS.equipe.map((p) => ({...p, feito: A[p.nome] || 0}));
+  const F = Object.entries(A).filter(([n]) => !NA_BASE.has(n)).map(([nome, feito]) => ({nome, feito}));
+  const total = pessoas.reduce((a, p) => a + p.feito, 0) + F.reduce((a, c) => a + c.feito, 0);
+  const nAg = pessoas.filter((p) => p.feito > 0).length;
+  const nEq = pessoas.length;
+  const pct = Math.round(nAg / nEq * 100);
+  const d = new Date(iso + "T12:00:00-03:00");
+  $("dia").textContent = d.toLocaleDateString("pt-BR", {weekday: "long", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"});
+  $("lbl").textContent = ehHoje ? "Hoje o time fez" : "Em " + fmtCurto(iso) + " o time fez";
+  $("quando").textContent = ehHoje ? "hoje" : "neste dia";
+  $("total").textContent = total;
+  $("total").classList.toggle("zero", !total);
+  $("total-unit").textContent = plural(total, "visita", "visitas");
+  $("n-ag").textContent = nAg; $("n-eq").textContent = nEq; $("pct").textContent = pct + "%";
+  $("barra-i").style.width = pct + "%";
+  $("barra").setAttribute("aria-label", nAg + " de " + nEq + " corretores fizeram visita");
+  $("meta-txt").textContent = "";
+  if (DADOS.meta && ehHoje) {
+    const m = el("span"); m.append(" · Meta do dia "); m.appendChild(el("b", null, DADOS.meta));
+    m.append(" (" + Math.round(total / DADOS.meta * 100) + "%)"); $("meta-txt").appendChild(m);
+  }
+  $("aviso").hidden = !!total;
+  $("aviso").textContent = ehHoje ? "Ainda não há visitas registradas hoje no relatório. Os números aparecem assim que a planilha for atualizada." : "Nenhuma visita registrada neste dia.";
+  $("s-ag").textContent = nAg;
+  $("s-media").textContent = nAg ? (pessoas.reduce((a, p) => a + p.feito, 0) / nAg).toLocaleString("pt-BR", {maximumFractionDigits: 1}) : "0";
+  $("s-zero").textContent = nEq - nAg;
+  equipes(pessoas);
+  fora(F);
+  grafico(pessoas, F, ehHoje);
+}
+
+function equipes(pessoas) {
+  const root = $("grs"); root.textContent = "";
+  [...new Set(pessoas.map((p) => p.gr))].forEach((gr) => {
+    const doGr = pessoas.filter((p) => p.gr === gr);
+    const block = el("div");
+    const head = el("div", "gr-head");
+    const gs = el("div", "gr-sum");
+    const na = doGr.filter((p) => p.feito > 0).length;
+    gs.append(el("b", null, na), " de ", el("b", null, doGr.length), " corretores fizeram visita (", el("b", null, Math.round(na / doGr.length * 100) + "%"), ")");
+    const tg = doGr.reduce((a, p) => a + p.feito, 0);
+    const ag = el("div", "ag"); ag.append(el("b", "real", tg), " " + plural(tg, "visita", "visitas") + " no dia");
+    head.append(el("div", "gr-name", "GR " + gr), gs, ag);
+    const gvs = el("div", "gvs");
+    [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
+      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome));
+      const nIn = doGv.filter((p) => p.feito > 0).length;
+      const tot = doGv.reduce((a, p) => a + p.feito, 0);
+      const card = el("div", "gv");
+      const top = el("div", "gv-top");
+      const ct = el("div", "gv-count"); ct.append(el("b", null, nIn), " de " + doGv.length + " fizeram visita");
+      top.append(el("div", "gv-name", "Equipe " + gv), ct);
+      const mini = el("div", "mini"); const mi = el("i"); mi.style.width = (nIn / doGv.length * 100) + "%"; mini.appendChild(mi);
+      const agv = el("div", "ag"); agv.append(el("b", "real", tot), " " + plural(tot, "visita", "visitas") + " no dia");
+      const ul = el("ul", "people");
+      doGv.forEach((p) => {
+        const li = el("li", p.feito ? null : "out");
+        const pill = p.feito ? el("span", "pill p-n", p.feito + " " + plural(p.feito, "visita", "visitas")) : el("span", "pill p-out", "Sem visita");
+        li.append(el("span", "pn", p.nome), pill); ul.appendChild(li);
+      });
+      card.append(top, mini, agv, ul);
+      gvs.appendChild(card);
+    });
+    block.append(head, gvs);
+    root.appendChild(block);
+  });
+}
+
+function fora(F) {
+  const box = $("fora"); box.textContent = "";
+  $("fora-sec").hidden = !F.length;
+  F.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
+    const row = el("div", "row ok");
+    const tag = el("div", "tag", c.feito); tag.appendChild(el("small", null, plural(c.feito, "visita", "visitas")));
+    row.append(el("div", "nome", c.nome), tag); box.appendChild(row);
+  });
+}
+
+function grafico(pessoas, F, ehHoje) {
+  const box = $("grafico"); box.textContent = "";
+  const rows = pessoas.filter((p) => p.feito > 0).map((p) => ({nome: p.nome, gv: p.gv, v: p.feito}))
+    .concat(F.map((c) => ({nome: c.nome, gv: null, v: c.feito})))
+    .sort((a, b) => b.v - a.v || a.nome.localeCompare(b.nome));
+  if (!rows.length) { box.appendChild(el("div", "vazio", ehHoje ? "Ninguém fez visita ainda hoje." : "Ninguém fez visita neste dia.")); return; }
+  const max = Math.max(...rows.map((r) => r.v));
+  const grid = el("div", "hbar");
+  rows.forEach((r) => {
+    const hn = el("div", "hn", r.nome); hn.appendChild(el("small", null, r.gv ? "Equipe " + r.gv : "fora da base"));
+    const ht = el("div", "ht");
+    const bar = el("i", r.v === max ? "top" : null); const w = r.v / max * 88; bar.style.width = w + "%";
+    const val = el("b", null, r.v); val.style.left = "calc(" + w + "% + 8px)";
+    ht.append(bar, val); grid.append(hn, ht);
+  });
+  box.appendChild(grid);
+  const g2 = el("div", "hgrid"); const ticks = el("div", "hticks");
+  for (let t = 0; t <= max; t++) { const s = el("span", null, t); s.style.left = (t / max * 88) + "%"; ticks.appendChild(s); }
+  g2.append(el("div"), ticks); box.appendChild(g2);
+  box.appendChild(el("div", "hcap", "Número de visitas realizadas no dia"));
+}
+
+// ===== calendário =====
+let sel = HOJE;
+let mesVisto = HOJE.slice(0, 7);
+const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+const addMes = (ym, k) => { let [y, m] = ym.split("-").map(Number); m += k; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return y + "-" + String(m).padStart(2, "0"); };
+function calendario() {
+  const [y, m] = mesVisto.split("-").map(Number);
+  $("cal-mes").textContent = MESES[m - 1] + " " + y;
+  $("cal-prev").disabled = mesVisto <= PRIMEIRO.slice(0, 7);
+  $("cal-next").disabled = mesVisto >= HOJE.slice(0, 7);
+  const g = $("cal-grid"); g.textContent = "";
+  ["D", "S", "T", "Q", "Q", "S", "S"].forEach((w) => g.appendChild(el("div", "cal-w", w)));
+  const primeiroDow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  for (let i = 0; i < primeiroDow; i++) g.appendChild(el("div"));
+  const nDias = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  for (let dd = 1; dd <= nDias; dd++) {
+    const iso = mesVisto + "-" + String(dd).padStart(2, "0");
+    const b = el("button", "cal-d"); b.type = "button";
+    b.appendChild(document.createTextNode(dd));
+    const ok = iso >= PRIMEIRO && iso <= HOJE;
+    if (!ok) { b.disabled = true; }
+    else {
+      const t = totalDia(iso);
+      const sm = el("small", null, t); b.appendChild(sm); if (!t) b.classList.add("z");
+      b.setAttribute("aria-label", dd + "/" + m + ": " + t + " " + plural(t, "visita", "visitas"));
+      b.addEventListener("click", () => escolher(iso));
+    }
+    if (iso === HOJE) b.classList.add("hoje");
+    if (iso === sel) { b.classList.add("sel"); b.setAttribute("aria-pressed", "true"); }
+    g.appendChild(b);
+  }
+}
+function escolher(iso) {
+  sel = iso; mesVisto = iso.slice(0, 7);
+  try { history.replaceState(null, "", iso === HOJE ? location.pathname : "#" + iso); } catch (e) {}
+  render(iso); calendario();
+}
+$("cal-prev").addEventListener("click", () => { mesVisto = addMes(mesVisto, -1); calendario(); });
+$("cal-next").addEventListener("click", () => { mesVisto = addMes(mesVisto, 1); calendario(); });
+$("cal-hoje").addEventListener("click", () => escolher(HOJE));
+const pedido = location.hash.slice(1);
+escolher(/^\d{4}-\d{2}-\d{2}$/.test(pedido) && pedido >= PRIMEIRO && pedido <= HOJE ? pedido : HOJE);
+
+// botão Atualizar: abre a conversa do Claude e copia o pedido para colar
+$("btn-upd").addEventListener("click", () => {
+  try { navigator.clipboard.writeText("atualizar visitas").then(() => { $("upd-ok").hidden = false; }).catch(() => {}); } catch (e) {}
+});
+</script>
+<script src="../auto-refresh.js" defer></script>
+</body>
+</html>

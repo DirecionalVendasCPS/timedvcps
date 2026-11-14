@@ -36,7 +36,7 @@ h1 span{display:block}
 .h-verm{color:#ff3b45}
 .tag{font-size:16px;color:var(--muted);margin:0}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-/* telas largas: 3 por linha; linhas com 2 painéis ficam centralizadas */
+/* telas largas: 2 painéis por linha, centralizados */
 @media (min-width:780px){.tiles{grid-template-columns:repeat(6,minmax(0,1fr))}a.tile{grid-column:span 2}a.tile.nova-linha{grid-column:2 / span 2}}
 a.tile{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:30px 22px 26px;border-radius:24px;background:var(--panel);border:1.5px solid var(--line);color:var(--ink);text-decoration:none;transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease}
 a.tile:hover{border-color:var(--accent);box-shadow:0 10px 40px rgba(255,182,39,.15)}
@@ -67,7 +67,7 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
   </header>
 
   <nav class="tiles" aria-label="Placares">
-    <a class="tile" href="agendamentos/">
+    <a class="tile nova-linha" href="agendamentos/">
       <div class="icon">
         <svg viewBox="0 0 84 84" aria-hidden="true">
           <g stroke="#ffb627" stroke-width="3" stroke-linecap="round"><path d="M64 6 v6 M64 34 v6 M47 23 h6 M75 23 h6 M52 11 l4 4 M72 31 l4 4 M76 11 l-4 4 M56 31 l-4 4"/></g>
@@ -99,6 +99,20 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       </div>
       <h2>Placar do Corujão</h2>
       <p>Agendamentos prometidos e realizados no corujão, por corretor e por equipe.</p>
+      <span class="go">Abrir placar →</span>
+    </a>
+    <a class="tile nova-linha" href="visitas/">
+      <div class="icon">
+        <svg viewBox="0 0 84 84" aria-hidden="true">
+          <path d="M14 40 L42 16 L70 40" fill="none" stroke="#93a3c8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="22" y="38" width="40" height="32" rx="4" fill="#4d7bff"/>
+          <rect x="36" y="50" width="12" height="20" rx="2" fill="#0f1d40"/>
+          <circle cx="64" cy="62" r="13" fill="#3ddc97"/>
+          <path d="M57 62 l5 5 l9 -10" fill="none" stroke="#0b1630" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>Visitas do Dia</h2>
+      <p>Quantas visitas o time fez hoje, ranking dos corretores e resultado por GR e GV.</p>
       <span class="go">Abrir placar →</span>
     </a>
     <a class="tile" href="conversao/">
