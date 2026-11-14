@@ -5,8 +5,8 @@
 #   ## D   -> select A,D (mesmo where)      ## P -> select A,P (mesmo where)      ## M -> select A,M (mesmo where)
 # INICIO = primeiro mês do calendário (DADOS.inicio, hoje 2026-09-01).
 # Regras do usuário: 1) se o mês da confirmação (W) existir, a venda conta nesse mês; senão no mês da venda (U);
-# 2) o placar mostra o mês vigente (o calendário mostra os outros); 3) com FID (S) = Comercial;
-# 4) sem FID = Facilitada; 5) Data Confirmação Venda 2.0 (T) em branco = Facilitada.
+# 2) o placar mostra o mês vigente (o calendário mostra os outros); 3) com FID (S) OU com
+# Data Confirmação Venda 2.0 (T) = Comercial; 4) Facilitada só quando FID e T estão ambos em branco.
 import re, sys, json
 sys.path.insert(0, 'tools'); from comum import *
 P = 'vendas/index.html'
@@ -38,7 +38,7 @@ for op, resto in partes['SW'].items():
     fid, t, u, w = m.groups()
     ym = mes(w) or mes(u)
     if not ym or ym < inicio: continue
-    tipo = 'Comercial' if fid and t else 'Facilitada'
+    tipo = 'Comercial' if fid or t else 'Facilitada'
     dono = partes['D'].get(op, '')
     gv = DONO.get(norm(dono), dono.split()[0].title() if dono else '?')
     v = {'mes': ym, 'nome': nome_bonito(partes['P'].get(op, '?'), base), 'gv': gv, 'projeto': partes['M'].get(op, '?'), 'tipo': tipo}

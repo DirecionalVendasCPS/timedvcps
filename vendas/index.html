@@ -223,7 +223,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   </section>
 
   <footer>
-    Meta do mês tirada da planilha de Gestão Semanal dos GVs; vendas da aba "contador de vendas". A venda conta no mês da confirmação; com FID é Comercial, sem FID ou sem data de confirmação é Facilitada. Amarelo = Comercial, azul = Facilitada.
+    Meta do mês tirada da planilha de Gestão Semanal dos GVs; vendas da aba "contador de vendas". A venda conta no mês da confirmação; com FID ou com Data Confirmação Venda 2.0 é Comercial; só é Facilitada quando os dois estão em branco. Amarelo = Comercial, azul = Facilitada.
   </footer>
 </div>
 
@@ -231,7 +231,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 // ===== Dados (atualizar a cada leitura da planilha) =====
 const DADOS = {
   mes: "2026-11",          // mês vigente
-  atualizado: "2026-11-14T14:15:00-03:00",
+  atualizado: "2026-11-14T14:23:00-03:00",
   inicio: "2026-09",    // primeiro mês que aparece no calendário
   // metas por mês e equipe (só os meses com meta no painel de Gestão Semanal)
   metas: {
@@ -251,43 +251,43 @@ const DADOS = {
     "2026-10": {meta: 21, conta: "Comercial", banner: "banner-2026-10.jpg", alt: "Banner da campanha de outubro: 21 vendas comerciais, bateu a meta tem churrasco especial"}
   },
   // aba "contador de vendas": a venda conta no mês da confirmação (W) quando houver, senão no mês da venda (U);
-  // com FID (S) e com Data Confirmação Venda 2.0 (T) = Comercial; sem FID ou com T em branco = Facilitada.
+  // com FID (S) ou com Data Confirmação Venda 2.0 (T) = Comercial; Facilitada só com S e T em branco.
   vendas: [
     {"mes": "2026-09", "nome": "Ana Luiza Martins", "gv": "Aldinei", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Takeashi"},
     {"mes": "2026-09", "nome": "Guilherme Garcia", "gv": "Bruno", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-09", "nome": "Amekion Ferreira Cruz", "gv": "Gianlucca", "projeto": "Alta Vista Mangará", "tipo": "Comercial"},
     {"mes": "2026-09", "nome": "Larissa Gabriele Vitor", "gv": "Ivan", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Gustavo"},
     {"mes": "2026-09", "nome": "Aloisio Antonio Mache Tavares", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
-    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Facilitada", "gr": "Patricia"},
-    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
-    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
-    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-09", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-09", "nome": "Ellen Cassia Pereira Cassemiro de Campos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
-    {"mes": "2026-09", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-09", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-09", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-09", "nome": "Roseli Martim Tibiriça", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
     {"mes": "2026-09", "nome": "Teresinha Aparecida Crivelaro Lopes", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
     {"mes": "2026-10", "nome": "Isabella Garcia Silva", "gv": "Aldinei", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
-    {"mes": "2026-10", "nome": "Bruno Miccoli de Oliveira", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Facilitada", "gr": "Patricia"},
-    {"mes": "2026-10", "nome": "Guilherme Garcia", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Bruno Miccoli de Oliveira", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Guilherme Garcia", "gv": "Bruno", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Guilherme Garcia", "gv": "Bruno", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
-    {"mes": "2026-10", "nome": "Aloisio Antonio Mache Tavares", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Aloisio Antonio Mache Tavares", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Amekion Ferreira Cruz", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
-    {"mes": "2026-10", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Claudio Sena Borges", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
-    {"mes": "2026-10", "nome": "Ellen Cassia Pereira Cassemiro de Campos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
-    {"mes": "2026-10", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Ellen Cassia Pereira Cassemiro de Campos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Fabio Carlo da Silva", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Fernanda Guilherme dos Santos", "gv": "Mada", "projeto": "Seleto Amoreiras", "tipo": "Comercial", "gr": "Patricia"},
-    {"mes": "2026-10", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-10", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Rise Parque Prado", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Flavia Maria Ramos", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Jorge Luiz de Lima", "gv": "Mada", "projeto": "Cores da Mata Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-10", "nome": "Ana Lucia Menezes de Paula", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Takeashi"},
-    {"mes": "2026-11", "nome": "Aloisio Antonio Mache Tavares", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Patricia"},
+    {"mes": "2026-11", "nome": "Aloisio Antonio Mache Tavares", "gv": "Mada", "projeto": "Alta Vista Mangará", "tipo": "Comercial", "gr": "Patricia"},
     {"mes": "2026-11", "nome": "Roseli Martim Tibiriça", "gv": "Ícaro", "projeto": "Alta Vista Mangará", "tipo": "Facilitada", "gr": "Takeashi"}
   ]
 };
