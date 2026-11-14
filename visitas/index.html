@@ -139,6 +139,43 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 .cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
 .cal-hoje{background:none;border:none;color:var(--accent);font:600 12px var(--body);cursor:pointer;text-decoration:underline;padding:0}
 .big.zero{color:var(--muted);text-shadow:none}
+/* visitas: agendadas = vermelho, realizadas = verde */
+:root{--ag:#ff6b6b;--vi:#3ddc97}
+.big{color:var(--vi);text-shadow:0 0 40px rgba(61,220,151,.25)}
+.big-row{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.big-ag{font-family:var(--display);font-weight:900;font-size:clamp(56px,8vw,90px);line-height:.85;color:var(--ag);font-variant-numeric:tabular-nums;margin-bottom:10px}
+.big-ag small{display:block;font-family:var(--display);font-weight:800;font-size:clamp(16px,2vw,20px);letter-spacing:.06em;text-transform:uppercase;color:var(--ag)}
+.unit .vi{color:var(--vi)}
+.bar i{background:linear-gradient(90deg,#2fbf80,var(--vi))!important}
+.stats{grid-template-columns:repeat(4,1fr)}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat.r .n{color:var(--ag)}
+.stat.g .n{color:var(--vi)}
+.lag::before{background:var(--ag)}
+.lvi::before{background:var(--vi)}
+.p-ag{color:var(--ag);background:rgba(255,107,107,.14)}
+.p-vi{color:var(--vi);background:rgba(61,220,151,.14)}
+.p-none{color:var(--muted);background:rgba(147,163,200,.10)}
+.pills{display:flex;gap:6px;flex:none}
+.ag b.r{color:var(--ag)}
+.ag b.g{color:var(--vi)}
+.ag .sep{color:var(--muted)}
+.mini.vi-bar{background:rgba(255,107,107,.18)}
+.mini.vi-bar i{background:var(--vi)}
+.hbar .ht{height:34px}
+.hbar .ht i{top:3px;bottom:auto;height:13px}
+.hbar .ht i.ag{background:var(--ag);top:3px}
+.hbar .ht i.vi{background:var(--vi);top:18px}
+.hbar .ht b{font-size:15px;transform:none}
+.hbar .ht b.ag{top:0;color:var(--ag)}
+.hbar .ht b.vi{top:16px;color:var(--vi)}
+.cal-d small{display:flex;gap:2px}
+.cal-d small .r{color:var(--ag)}
+.cal-d small .g{color:var(--vi)}
+.cal-d.sel small .r,.cal-d.sel small .g{color:var(--bg)}
+.row .tags{display:flex;gap:14px}
+.tag.r{color:var(--ag)}
+.tag.g{color:var(--vi)}
 .p-n{color:var(--done);background:rgba(61,220,151,.14)}
 .p-top{color:var(--bg);background:var(--accent)}
 .hbar .ht i.top{background:var(--accent)}
@@ -166,9 +203,11 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <section class="hero" id="hero" aria-live="polite">
     <div>
       <div class="lbl" id="lbl">Hoje o time fez</div>
-      <div class="big" id="total">—</div>
-      <div class="unit" id="total-unit">visitas</div>
-      <div class="sub"><b id="n-ag">—</b> de <b id="n-eq">—</b> corretores fizeram visita <span id="quando">hoje</span> (<b id="pct">—</b>)<span id="meta-txt"></span></div>
+      <div class="big-row">
+        <div><div class="big" id="total">—</div><div class="unit"><span class="vi" id="total-unit">visitas realizadas</span></div></div>
+        <div class="big-ag" id="ag-box"><span id="total-ag">—</span><small id="ag-unit">agendadas para o dia</small></div>
+      </div>
+      <div class="sub"><b id="n-ag">—</b> de <b id="n-eq">—</b> das visitas agendadas para <span id="quando">hoje</span> foram realizadas (<b id="pct">—</b>)<span id="meta-txt"></span></div>
       <div class="bar" role="img" id="barra"><i id="barra-i" style="width:0"></i></div>
     </div>
     <div class="cal" id="cal" role="group" aria-label="Escolha um dia para ver o resultado">
@@ -178,50 +217,53 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
         <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
       </div>
       <div class="cal-grid" id="cal-grid"></div>
-      <div class="cal-hint">Toque num dia para ver o resultado · <button class="cal-hoje" id="cal-hoje" type="button">voltar para hoje</button></div>
+      <div class="cal-hint"><span style="color:#3ddc97">realizadas</span>/<span style="color:#ff6b6b">agendadas</span> · toque num dia · <button class="cal-hoje" id="cal-hoje" type="button">voltar para hoje</button></div>
     </div>
   </section>
 
   <div class="aviso" id="aviso" hidden></div>
 
   <section class="stats" aria-label="Resumo dos corretores">
-    <div class="stat g"><div class="n" id="s-ag">—</div><div class="t">corretores fizeram visita no dia</div></div>
-    <div class="stat"><div class="n" id="s-media">—</div><div class="t">visitas por corretor que visitou</div></div>
-    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ainda sem visita</div></div>
+    <div class="stat r"><div class="n" id="s-agc">—</div><div class="t">corretores com visita agendada para o dia</div></div>
+    <div class="stat g"><div class="n" id="s-vic">—</div><div class="t">corretores com visita realizada</div></div>
+    <div class="stat"><div class="n" id="s-pend">—</div><div class="t">visitas agendadas ainda não realizadas</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores sem visita agendada nem realizada</div></div>
   </section>
 
   <section aria-label="Ranking do dia" id="grafico-sec">
     <h2>Ranking de visitas do dia</h2>
-    <div class="legend"><span class="l3">Líder do dia</span><span class="lblue">Fez visita</span></div>
+    <div class="legend"><span class="lag">Visitas agendadas para o dia</span><span class="lvi">Visitas realizadas</span></div>
     <div class="chart-card">
-      <div id="grafico" role="img" aria-label="Gráfico de barras com quantas visitas cada corretor fez hoje"></div>
+      <div id="grafico" role="img" aria-label="Gráfico de barras com visitas agendadas e realizadas por corretor no dia"></div>
     </div>
   </section>
 
   <section aria-label="Visitas por GR e GV" id="equipes-sec">
     <h2>Visitas por equipe</h2>
-    <div class="legend leg2"><span class="pill p-n">Fez visita</span><span class="pill p-out">Sem visita hoje</span></div>
+    <div class="legend leg2"><span class="pill p-ag">Agendadas para o dia</span><span class="pill p-vi">Realizadas</span><span class="pill p-none">Sem visita no dia</span></div>
     <div class="grs" id="grs"></div>
   </section>
 
   <section aria-label="Fora da base" id="fora-sec" hidden>
-    <h2>Também fizeram visita no dia</h2>
+    <h2>Fora da base de corretores</h2>
     <div class="legend" style="margin-top:-6px">Nomes do relatório que não estão na base de corretores por GR e GV.</div>
     <div class="list" id="fora"></div>
   </section>
 
-  <footer>Visitas realizadas contadas pela data de comparecimento (planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", aba "Visitas"). Dados da planilha até <b id="refresh-txt">—</b>. Só entram na equipe os corretores ativos da base de corretores; quem não está na base aparece em "Também fizeram visita no dia".</footer>
+  <footer>Visitas agendadas (vermelho) = agendamentos marcados para o dia (aba "Agendamentos", coluna Data). Visitas realizadas (verde) = visitas pela data de comparecimento (aba "Visitas"). Planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", dados até <b id="refresh-txt">—</b>. Só entram nas equipes os corretores ativos da base de corretores; os demais aparecem em "Fora da base de corretores".</footer>
 </div>
 
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   hoje: "2026-11-14",
-  atualizado: "2026-11-14T10:33:00-03:00",
+  atualizado: "2026-11-14T10:54:00-03:00",
   inicio: "2026-10-01", // primeiro dia do trimestre na planilha
   meta: null, // meta de visitas do dia (opcional)
   refresh: "12/11 13:18", // horário dos dados na planilha de gestão
   // visitas por dia (data de comparecimento): {"AAAA-MM-DD": {"Nome do corretor": quantidade}}
+  // visitas agendadas para cada dia (aba Agendamentos, coluna Data): {"AAAA-MM-DD": {"Nome": quantidade}}
+  agendados: {"2026-10-01":{"Fabio Carlo da Silva":2,"Fernanda Guilherme dos Santos":1,"Guilherme Garcia":1,"Jorge Luiz de Lima":1,"Sonia Maria de Oliveira Maruki":1},"2026-10-02":{"Amekion Ferreira Cruz":2,"Ana Laura Oliveira de Queiroz":1,"Claudio Sena Borges":3,"Guilherme Garcia":1,"Isabella Garcia Silva":1,"Jonathan Pereira da Silva":2,"Larissa Gabriele Vitor":1,"Lincoln Farah":1},"2026-10-03":{"Alan Rocha Conceição":1,"Aloisio Antonio Mache Tavares":6,"Amekion Ferreira Cruz":1,"Ana Laura Oliveira de Queiroz":1,"Ana Lucia Menezes de Paula":1,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":3,"Bianca Nascimento Sabino da Silva":1,"Claudio Sena Borges":4,"Daniela Caroza Aleixo Rodrigues de Carvalho":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":2,"Fernanda Guilherme dos Santos":4,"Flavia Maria Ramos":2,"Franciely Gomes":2,"Guilherme Garcia":4,"Jonathan Pereira da Silva":1,"Larissa Gabriele Vitor":2,"Lincoln Farah":1,"Lucas Vinícius Ferreira Chaves":1,"Luciana Lemes":2,"Marlene Santana Corrêa dos Santos":1,"Mayara Soares Diogo":3,"Rickelle Quirino de Oliveira":2,"Roseli Martim Tibiriça":2,"Sonia Maria de Oliveira Maruki":1,"Teresinha Aparecida Crivelaro Lopes":2},"2026-10-04":{"Ana Paula de Souza Leite Aguiar":1,"Bianca Nascimento Sabino da Silva":1,"Fabio Carlo da Silva":1,"Larissa Gabriele Vitor":2,"Mayara Soares Diogo":1,"Rickelle Quirino de Oliveira":2,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-05":{"Aloisio Antonio Mache Tavares":1,"Ana Luiza Martins":1,"Bruno Miccoli de Oliveira":1,"Daniel Alves Silva":1,"Fabio Carlo da Silva":2,"Franciely Gomes":1,"Isabella Garcia Silva":1,"Ivan de Aguiar Nascimento":1,"Larissa Gabriele Vitor":1},"2026-10-06":{"Cláudia Maria Carvalho Lopes":1,"Conceição Aparecida de Oliveira da Silva":1,"Fernanda Guilherme dos Santos":2,"Rickelle Quirino de Oliveira":1,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1},"2026-10-07":{"Claudio Sena Borges":1,"Conceição Aparecida de Oliveira da Silva":1,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":2,"João Gabriel Campos Carvalho da Silva":1,"Madeleine Kassia de Campos Sena Borges":1,"Roseli Martim Tibiriça":1,"Ícaro Zivko Miranda":1},"2026-10-08":{"Amekion Ferreira Cruz":2,"Ana Lucia Menezes de Paula":1,"Claudio Sena Borges":1,"Conceição Aparecida de Oliveira da Silva":1,"Daniel Alves Silva":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Jorge Luiz de Lima":1,"Layane Silva Santos Bispo":1,"Lincoln Farah":1,"Luciana Lemes":2,"Roseli Martim Tibiriça":1},"2026-10-09":{"Aloisio Antonio Mache Tavares":1,"Claudio Sena Borges":1,"Ellen Cassia Pereira Cassemiro de Campos":3,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":2,"João Gabriel Campos Carvalho da Silva":1,"Layane Silva Santos Bispo":1,"Luciana Lemes":1,"Teresinha Aparecida Crivelaro Lopes":1,"Wesley Matheus Riviera de Carvalho":1},"2026-10-10":{"Aloisio Antonio Mache Tavares":4,"Amekion Ferreira Cruz":2,"Ana Lucia Menezes de Paula":1,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":3,"Bianca Nascimento Sabino da Silva":2,"Claudio Sena Borges":2,"Conceição Aparecida de Oliveira da Silva":1,"Daniel Alves Silva":4,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":3,"Flavia Maria Ramos":2,"Franciely Gomes":1,"Guilherme Garcia":1,"Hellen Caroline Pinheiro":1,"Isabella Garcia Silva":2,"Jonathan Pereira da Silva":1,"Jorge Luiz de Lima":2,"Larissa Gabriele Vitor":1,"Layane Silva Santos Bispo":1,"Lincoln Farah":2,"Marlene Santana Corrêa dos Santos":4,"Mayara Soares Diogo":5,"Roseli Martim Tibiriça":1,"Taíssa Ayane Oliveira da Silva":3,"Vanderlucia de Oliveira Batista Pereira":1},"2026-10-11":{"Ana Paula de Souza Leite Aguiar":1,"Claudio Sena Borges":2,"Ellen Cassia Pereira Cassemiro de Campos":1,"Guilherme Garcia":2,"Taíssa Ayane Oliveira da Silva":1},"2026-10-12":{"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1},"2026-10-13":{"Amekion Ferreira Cruz":1,"Daniel Alves Silva":2,"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Jorge Luiz de Lima":2,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-15":{"Ana Paula de Souza Leite Aguiar":2,"Fabio Carlo da Silva":1,"Hellen Caroline Pinheiro":1,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":2,"Marcelo Vicentini Coelho":1,"Mayara Soares Diogo":1},"2026-10-16":{"Amekion Ferreira Cruz":1,"Claudio Sena Borges":1,"Fabio Carlo da Silva":1,"Jonathan Pereira da Silva":1,"Julia Chiosini":1,"Larissa Gabriele Vitor":1,"Layane Silva Santos Bispo":1,"Mayara Soares Diogo":1},"2026-10-17":{"Alan Rocha Conceição":1,"Aloisio Antonio Mache Tavares":5,"Amekion Ferreira Cruz":2,"Ana Lucia Menezes de Paula":3,"Bianca Nascimento Sabino da Silva":1,"Claudio Sena Borges":7,"Ellen Cassia Pereira Cassemiro de Campos":3,"Fabio Carlo da Silva":4,"Fernanda Guilherme dos Santos":2,"Flavia Maria Ramos":4,"Guilherme Garcia":6,"Jonathan Pereira da Silva":3,"Jorge Luiz de Lima":2,"João Gabriel Campos Carvalho da Silva":3,"Larissa Gabriele Vitor":2,"Layane Silva Santos Bispo":1,"Lincoln Farah":1,"Luciana Lemes":3,"Madeleine Kassia de Campos Sena Borges":1,"Marlene Santana Corrêa dos Santos":4,"Mayara Soares Diogo":3,"Muller Gustavo dos Santos":1,"Roseli Sampaio Bastos Ferreira":1,"Shirley do Nascimento Pina":1,"Vanderlucia de Oliveira Batista Pereira":2,"Ícaro Zivko Miranda":1},"2026-10-18":{"Ana Lucia Menezes de Paula":1,"Jonathan Pereira da Silva":2,"Lucas Vinícius Ferreira Chaves":2,"Luciana Lemes":2,"Mayara Soares Diogo":1,"Shirley do Nascimento Pina":1,"Taíssa Ayane Oliveira da Silva":1},"2026-10-19":{"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Larissa Gabriele Vitor":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-20":{"Flavia Maria Ramos":2,"Guilherme Garcia":1,"Larissa Gabriele Vitor":1,"Marlene Santana Corrêa dos Santos":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-21":{"Aloisio Antonio Mache Tavares":1,"Amekion Ferreira Cruz":1,"Ana Paula de Souza Leite Aguiar":1,"Bianca Nascimento Sabino da Silva":1,"Conceição Aparecida de Oliveira da Silva":1,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Flavia Maria Ramos":1,"Guilherme Garcia":1,"Isabella Garcia Silva":1,"Luciana Lemes":2},"2026-10-22":{"Amekion Ferreira Cruz":1,"Ana Laura Oliveira de Queiroz":1,"Ana Luiza Martins":1,"Elisabeth Sueli Velardi":1,"Luciana Lemes":2,"Marli Teixeira da Costa":1,"Rickelle Quirino de Oliveira":1,"Roseli Martim Tibiriça":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-23":{"Amekion Ferreira Cruz":1,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":1,"Bianca Nascimento Sabino da Silva":1,"Elisabeth Sueli Velardi":2,"Guilherme Garcia":1,"Luciana Lemes":1,"Teresinha Aparecida Crivelaro Lopes":1,"Ícaro Zivko Miranda":1},"2026-10-24":{"Aloisio Antonio Mache Tavares":2,"Amekion Ferreira Cruz":5,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":6,"Bianca Nascimento Sabino da Silva":4,"Caroline Resteo":1,"Casa Broker Imoveis":1,"Claudio Sena Borges":11,"Daniel Alves Silva":5,"Elisabeth Sueli Velardi":2,"Ellen Cassia Pereira Cassemiro de Campos":7,"Fabio Carlo da Silva":3,"Fernanda Guilherme dos Santos":8,"Flavia Maria Ramos":6,"Guilherme Garcia":9,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1,"José Raimundo da Silva":2,"João Gabriel Campos Carvalho da Silva":2,"Larissa Gabriele Vitor":5,"Layane Silva Santos Bispo":1,"Lucas Vinícius Ferreira Chaves":1,"Luciana Lemes":10,"Madeleine Kassia de Campos Sena Borges":1,"Marcelo Vicentini Coelho":1,"Marli Teixeira da Costa":2,"Mayara Soares Diogo":2,"Rickelle Quirino de Oliveira":1,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1,"Sonia Maria de Oliveira Maruki":2,"Taíssa Ayane Oliveira da Silva":1,"Teresinha Aparecida Crivelaro Lopes":5},"2026-10-25":{"Ana Paula de Souza Leite Aguiar":3,"Larissa Gabriele Vitor":1,"Lincoln Farah":1,"Marlene Santana Corrêa dos Santos":2},"2026-10-26":{"Ana Luiza Martins":1,"Caroline Resteo":1,"Jonathan Pereira da Silva":1,"Luciana Lemes":1,"Rickelle Quirino de Oliveira":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-27":{"Amekion Ferreira Cruz":1,"Ana Luiza Martins":1,"Guilherme Garcia":1,"Julia Chiosini":1,"Leonardo Velardi de Aguiar":5,"Mayara Soares Diogo":1},"2026-10-28":{"Aloisio Antonio Mache Tavares":1,"Bianca Nascimento Sabino da Silva":2,"Claudio Sena Borges":1,"Daniel Alves Silva":1,"Guilherme Garcia":1,"Jonathan Pereira da Silva":1,"Julia Chiosini":2,"Leonardo Velardi de Aguiar":1},"2026-10-29":{"Amekion Ferreira Cruz":2,"Bianca Nascimento Sabino da Silva":2,"Flavia Maria Ramos":1,"Guilherme Garcia":1,"Jonathan Pereira da Silva":1,"Luciana Lemes":1,"Rickelle Quirino de Oliveira":1,"Taíssa Ayane Oliveira da Silva":2},"2026-10-30":{"Aloisio Antonio Mache Tavares":1,"Ana Paula de Souza Leite Aguiar":1,"Bianca Nascimento Sabino da Silva":2,"Claudio Sena Borges":1,"Elisabeth Sueli Velardi":1,"Fernanda Guilherme dos Santos":1,"Isabella Garcia Silva":2,"Jonathan Pereira da Silva":2,"Larissa Gabriele Vitor":1,"Mayara Soares Diogo":1,"Paola Cassanelli da Rocha":2,"Taíssa Ayane Oliveira da Silva":1},"2026-10-31":{"Aloisio Antonio Mache Tavares":1,"Ana Paula de Souza Leite Aguiar":2,"Claudio Sena Borges":4,"Daniel Alves Silva":1,"Daniel Aparecido Santos":2,"Elisabeth Sueli Velardi":3,"Ellen Cassia Pereira Cassemiro de Campos":2,"Fabio Carlo da Silva":2,"Fernanda Guilherme dos Santos":1,"Guilherme Garcia":5,"Jonathan Pereira da Silva":1,"Jorge Luiz de Lima":3,"Larissa Gabriele Vitor":1,"Layane Silva Santos Bispo":1,"Lincoln Farah":10,"Lucas Vinícius Ferreira Chaves":1,"Luciana Lemes":5,"Luis Fernando Maestro":1,"Marcelo Vicentini Coelho":3,"Marlene Santana Corrêa dos Santos":2,"Marli Teixeira da Costa":1,"Mayara Soares Diogo":5,"Paola Cassanelli da Rocha":2,"Rickelle Quirino de Oliveira":1,"Roseli Martim Tibiriça":2,"Teresinha Aparecida Crivelaro Lopes":3,"Wanderson de Carvalho Coutinho":1},"2026-11-01":{"Aloisio Antonio Mache Tavares":1,"Amekion Ferreira Cruz":1,"Ana Paula de Souza Leite Aguiar":1,"Fabio Carlo da Silva":1,"Franciely Gomes":1,"Lucas Vinícius Ferreira Chaves":1},"2026-11-02":{"Fernanda Guilherme dos Santos":1,"Isabella Garcia Silva":2,"Jonathan Pereira da Silva":1,"Jorge Luiz de Lima":2,"Larissa Gabriele Vitor":1,"Luis Fernando Maestro":1,"Paola Cassanelli da Rocha":1,"Sonia Maria de Oliveira Maruki":1},"2026-11-03":{"Ana Paula de Souza Leite Aguiar":1,"Fabio Carlo da Silva":1,"Jorge Luiz de Lima":1,"Luis Fernando Maestro":1,"Paola Cassanelli da Rocha":3,"Roseli Sampaio Bastos Ferreira":1},"2026-11-04":{"Aloisio Antonio Mache Tavares":1,"Ana Luiza Martins":1,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Jonathan Pereira da Silva":1,"João Gabriel Campos Carvalho da Silva":1,"Luciana Lemes":2,"Luis Fernando Maestro":2,"Paola Cassanelli da Rocha":3,"Roseli Sampaio Bastos Ferreira":2},"2026-11-05":{"Emerson Gonçalves Pereira":1,"Flavia Maria Ramos":1,"Guilherme Garcia":2,"Isabella Garcia Silva":1,"Luciana Lemes":1,"Paola Cassanelli da Rocha":1,"Vanderlucia de Oliveira Batista Pereira":3},"2026-11-06":{"Amekion Ferreira Cruz":2,"Claudio Sena Borges":1,"Daniel Alves Silva":1,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Flavia Maria Ramos":1,"Guilherme Garcia":3,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1,"Roseli Sampaio Bastos Ferreira":1},"2026-11-07":{"Aloisio Antonio Mache Tavares":6,"Ana Luiza Martins":1,"Benedito Thomaz Siqueira":3,"Claudio Sena Borges":7,"Daniel Alves Silva":2,"Fabio Carlo da Silva":4,"Fernanda Guilherme dos Santos":1,"Flavia Maria Ramos":2,"Franciely Gomes":2,"Guilherme Garcia":3,"Isabella Garcia Silva":3,"Jorge Luiz de Lima":2,"João Gabriel Campos Carvalho da Silva":2,"Larissa Gabriele Vitor":1,"Layane Silva Santos Bispo":1,"Lincoln Farah":4,"Luciana Lemes":2,"Luis Fernando Maestro":1,"Madeleine Kassia de Campos Sena Borges":2,"Marcelo Vicentini Coelho":1,"Marlene Santana Corrêa dos Santos":2,"Marli Teixeira da Costa":1,"Paola Cassanelli da Rocha":7,"Roberto Oliveira da Silva Souza":1,"Roseli Martim Tibiriça":2,"Roseli Sampaio Bastos Ferreira":1,"Sonia Maria de Oliveira Maruki":3,"Teresinha Aparecida Crivelaro Lopes":4,"Vanderlucia de Oliveira Batista Pereira":2},"2026-11-08":{"Benedito Thomaz Siqueira":1,"Claudio Sena Borges":2,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Flavia Maria Ramos":1,"Guilherme Garcia":1,"Larissa Gabriele Vitor":1,"Luciana Lemes":1,"Paola Cassanelli da Rocha":1,"Roberto Oliveira da Silva Souza":1,"Roseli Martim Tibiriça":1,"Ícaro Zivko Miranda":1},"2026-11-09":{"Aloisio Antonio Mache Tavares":1,"Amekion Ferreira Cruz":1,"Ana Lucia Menezes de Paula":1,"Isabella Garcia Silva":1,"Luciana Lemes":1,"Luis Fernando Maestro":1,"Roseli Sampaio Bastos Ferreira":1,"Teresinha Aparecida Crivelaro Lopes":3},"2026-11-10":{"Ellen Cassia Pereira Cassemiro de Campos":1,"Guilherme Garcia":1,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1},"2026-11-11":{"Aloisio Antonio Mache Tavares":3,"Amekion Ferreira Cruz":3,"Ana Lucia Menezes de Paula":1,"Ana Paula de Souza Leite Aguiar":3,"Claudio Sena Borges":5,"Ellen Cassia Pereira Cassemiro de Campos":2,"Fabio Carlo da Silva":2,"Fernanda Guilherme dos Santos":1,"Flavia Maria Ramos":3,"Guilherme Garcia":5,"Isabella Garcia Silva":1,"Jonathan Pereira da Silva":1,"Jorge Luiz de Lima":2,"João Gabriel Campos Carvalho da Silva":2,"Larissa Gabriele Vitor":4,"Márcio Antônio Custódio":2,"Paola Cassanelli da Rocha":4,"Roberto Oliveira da Silva Souza":1,"Roseli Martim Tibiriça":1,"Sonia Maria de Oliveira Maruki":3,"Vanderlucia de Oliveira Batista Pereira":2},"2026-11-12":{"Daniel Alves Silva":1,"Larissa Gabriele Vitor":1,"Layane Silva Santos Bispo":1,"Luciana Lemes":2,"Paola Cassanelli da Rocha":3},"2026-11-13":{"Ana Luiza Martins":1,"Jonathan Pereira da Silva":1,"Sonia Maria de Oliveira Maruki":1},"2026-11-14":{"Ana Paula de Souza Leite Aguiar":3,"Benedito Thomaz Siqueira":1,"Daniel Alves Silva":1,"Fabiana Sertori de Oliveira":1,"Franciely Gomes":2,"Jorge Luiz de Lima":2,"João Gabriel Campos Carvalho da Silva":1,"Lincoln Farah":6,"Mayara Soares Diogo":1,"Paola Cassanelli da Rocha":2,"Wanderson de Carvalho Coutinho":3},"2026-11-15":{"Emerson Gonçalves Pereira":1,"Marli Teixeira da Costa":1,"Mayara Soares Diogo":1},"2026-11-16":{"Taíssa Ayane Oliveira da Silva":1},"2026-11-17":{"Marlene Santana Corrêa dos Santos":1},"2026-11-18":{"Daniel Alves Silva":1}},
   dias: {"2026-10-01":{"Fabio Carlo da Silva":1,"Sonia Maria de Oliveira Maruki":1},"2026-10-02":{"Amekion Ferreira Cruz":1,"Claudio Sena Borges":3,"Isabella Garcia Silva":1,"Jonathan Pereira da Silva":2},"2026-10-03":{"Aloisio Antonio Mache Tavares":1,"Ana Luiza Martins":1,"Claudio Sena Borges":2,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Flavia Maria Ramos":2,"Guilherme Garcia":2,"Jonathan Pereira da Silva":1,"Larissa Gabriele Vitor":1,"Luciana Lemes":1,"Rickelle Quirino de Oliveira":1},"2026-10-04":{"Ana Paula de Souza Leite Aguiar":1,"Fabio Carlo da Silva":1,"Larissa Gabriele Vitor":2,"Rickelle Quirino de Oliveira":2},"2026-10-05":{"Aloisio Antonio Mache Tavares":2,"Ana Luiza Martins":1,"Bruno Miccoli de Oliveira":1,"Fabio Carlo da Silva":1,"Franciely Gomes":1,"Ivan de Aguiar Nascimento":1},"2026-10-06":{"Cláudia Maria Carvalho Lopes":1,"Fernanda Guilherme dos Santos":1,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1},"2026-10-07":{"Claudio Sena Borges":1,"Isabella Garcia Silva":1,"Madeleine Kassia de Campos Sena Borges":1,"Roseli Martim Tibiriça":1,"Ícaro Zivko Miranda":1},"2026-10-08":{"Amekion Ferreira Cruz":2,"Claudio Sena Borges":1,"Conceição Aparecida de Oliveira da Silva":1,"Luciana Lemes":1,"Roseli Martim Tibiriça":1},"2026-10-09":{"Ellen Cassia Pereira Cassemiro de Campos":2,"Jorge Luiz de Lima":2,"Luciana Lemes":1,"Wesley Matheus Riviera de Carvalho":1},"2026-10-10":{"Ana Lucia Menezes de Paula":1,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":1,"Jorge Luiz de Lima":1,"Marlene Santana Corrêa dos Santos":2,"Roseli Martim Tibiriça":1,"Taíssa Ayane Oliveira da Silva":1},"2026-10-11":{"Claudio Sena Borges":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Guilherme Garcia":1},"2026-10-12":{"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1},"2026-10-13":{"Amekion Ferreira Cruz":1,"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Jorge Luiz de Lima":2,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-15":{"Claudio Sena Borges":1,"Fabio Carlo da Silva":1,"Hellen Caroline Pinheiro":1,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1,"Marcelo Vicentini Coelho":1},"2026-10-16":{"Amekion Ferreira Cruz":1,"Fabio Carlo da Silva":1,"Layane Silva Santos Bispo":1},"2026-10-17":{"Amekion Ferreira Cruz":1,"Ana Lucia Menezes de Paula":1,"Claudio Sena Borges":4,"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Jonathan Pereira da Silva":1,"Jorge Luiz de Lima":1,"Luciana Lemes":1,"Madeleine Kassia de Campos Sena Borges":1,"Marlene Santana Corrêa dos Santos":1,"Ícaro Zivko Miranda":1},"2026-10-18":{"Ana Lucia Menezes de Paula":1,"Lucas Vinícius Ferreira Chaves":1,"Shirley do Nascimento Pina":1},"2026-10-20":{"Flavia Maria Ramos":2,"Larissa Gabriele Vitor":1,"Marlene Santana Corrêa dos Santos":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-21":{"Aloisio Antonio Mache Tavares":1,"Fabio Carlo da Silva":1,"Luciana Lemes":2},"2026-10-22":{"Amekion Ferreira Cruz":1,"Ana Luiza Martins":1,"Elisabeth Sueli Velardi":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-23":{"Ana Paula de Souza Leite Aguiar":1,"Guilherme Garcia":1,"Ícaro Zivko Miranda":1},"2026-10-24":{"Amekion Ferreira Cruz":2,"Ana Luiza Martins":1,"Ana Paula de Souza Leite Aguiar":3,"Claudio Sena Borges":5,"Daniel Alves Silva":1,"Ellen Cassia Pereira Cassemiro de Campos":1,"Fabio Carlo da Silva":2,"Fernanda Guilherme dos Santos":3,"Flavia Maria Ramos":2,"Guilherme Garcia":3,"José Raimundo da Silva":2,"Larissa Gabriele Vitor":1,"Luciana Lemes":3,"Madeleine Kassia de Campos Sena Borges":1,"Marli Teixeira da Costa":2,"Roseli Martim Tibiriça":1,"Sonia Maria de Oliveira Maruki":2,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-25":{"Ana Paula de Souza Leite Aguiar":1,"Marlene Santana Corrêa dos Santos":1},"2026-10-26":{"Ana Luiza Martins":1,"Luciana Lemes":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-10-27":{"Amekion Ferreira Cruz":1,"Julia Chiosini":1},"2026-10-28":{"Bianca Nascimento Sabino da Silva":2},"2026-10-29":{"Amekion Ferreira Cruz":1,"Bianca Nascimento Sabino da Silva":1,"Julia Chiosini":1,"Taíssa Ayane Oliveira da Silva":2},"2026-10-30":{"Bianca Nascimento Sabino da Silva":1,"Claudio Sena Borges":1,"Paola Cassanelli da Rocha":2,"Taíssa Ayane Oliveira da Silva":1},"2026-10-31":{"Daniel Alves Silva":1,"Daniel Aparecido Santos":1,"Elisabeth Sueli Velardi":1,"Ellen Cassia Pereira Cassemiro de Campos":2,"Fernanda Guilherme dos Santos":1,"Lincoln Farah":1,"Luciana Lemes":1,"Marcelo Vicentini Coelho":3,"Marli Teixeira da Costa":1,"Mayara Soares Diogo":3,"Roseli Martim Tibiriça":1,"Teresinha Aparecida Crivelaro Lopes":1},"2026-11-01":{"Amekion Ferreira Cruz":1,"Franciely Gomes":1},"2026-11-02":{"Isabella Garcia Silva":1,"Jorge Luiz de Lima":2,"Luis Fernando Maestro":1,"Sonia Maria de Oliveira Maruki":1},"2026-11-03":{"Fabio Carlo da Silva":1,"Luis Fernando Maestro":1,"Paola Cassanelli da Rocha":1},"2026-11-04":{"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Jonathan Pereira da Silva":1,"Luciana Lemes":1,"Luis Fernando Maestro":1,"Roseli Sampaio Bastos Ferreira":2},"2026-11-05":{"Emerson Gonçalves Pereira":1,"Flavia Maria Ramos":1,"Isabella Garcia Silva":1,"Luciana Lemes":1},"2026-11-06":{"Amekion Ferreira Cruz":1,"Daniel Alves Silva":1,"Guilherme Garcia":1,"Isabella Garcia Silva":1,"Jorge Luiz de Lima":1,"Roseli Sampaio Bastos Ferreira":1},"2026-11-07":{"Aloisio Antonio Mache Tavares":1,"Claudio Sena Borges":1,"Daniel Alves Silva":1,"Fabio Carlo da Silva":1,"Fernanda Guilherme dos Santos":1,"Guilherme Garcia":1,"Isabella Garcia Silva":2,"Luciana Lemes":1,"Madeleine Kassia de Campos Sena Borges":1,"Marcelo Vicentini Coelho":1,"Marli Teixeira da Costa":1,"Paola Cassanelli da Rocha":2,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1,"Teresinha Aparecida Crivelaro Lopes":2},"2026-11-08":{"Claudio Sena Borges":2,"Fabio Carlo da Silva":1,"Flavia Maria Ramos":1,"Guilherme Garcia":2,"Roberto Oliveira da Silva Souza":1,"Roseli Martim Tibiriça":1,"Ícaro Zivko Miranda":1},"2026-11-09":{"Aloisio Antonio Mache Tavares":1,"Amekion Ferreira Cruz":1,"Ana Lucia Menezes de Paula":1,"Isabella Garcia Silva":1,"Roseli Sampaio Bastos Ferreira":1,"Teresinha Aparecida Crivelaro Lopes":3},"2026-11-10":{"Ellen Cassia Pereira Cassemiro de Campos":1,"Guilherme Garcia":1,"Roseli Martim Tibiriça":1,"Roseli Sampaio Bastos Ferreira":1},"2026-11-11":{"Amekion Ferreira Cruz":1,"Ana Lucia Menezes de Paula":1,"Guilherme Garcia":2,"Larissa Gabriele Vitor":2,"Márcio Antônio Custódio":1,"Sonia Maria de Oliveira Maruki":2},"2026-11-12":{"Layane Silva Santos Bispo":1}},
   equipe: [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
@@ -290,42 +332,46 @@ const PRIMEIRO = DADOS.inicio || DIAS[0];
 const HOJE = DADOS.hoje;
 const fmtCurto = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 const totalDia = (iso) => Object.values(DADOS.dias[iso] || {}).reduce((a, n) => a + n, 0);
+const totalAg = (iso) => Object.values((DADOS.agendados || {})[iso] || {}).reduce((a, n) => a + n, 0);
+// dá para olhar também os próximos dias que já têm visitas agendadas
+const ULTIMO = [DADOS.hoje, ...Object.keys(DADOS.agendados || {})].sort().pop();
 
 $("upd").textContent = new Date(DADOS.atualizado).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
 $("refresh-txt").textContent = DADOS.refresh || "—";
 
 function render(iso) {
-  const A = DADOS.dias[iso] || {};
+  const V = DADOS.dias[iso] || {}, G = (DADOS.agendados || {})[iso] || {};
   const ehHoje = iso === HOJE;
-  const pessoas = DADOS.equipe.map((p) => ({...p, feito: A[p.nome] || 0}));
-  const F = Object.entries(A).filter(([n]) => !NA_BASE.has(n)).map(([nome, feito]) => ({nome, feito}));
-  const total = pessoas.reduce((a, p) => a + p.feito, 0) + F.reduce((a, c) => a + c.feito, 0);
-  const nAg = pessoas.filter((p) => p.feito > 0).length;
-  const nEq = pessoas.length;
-  const pct = Math.round(nAg / nEq * 100);
+  const pessoas = DADOS.equipe.map((p) => ({...p, vi: V[p.nome] || 0, ag: G[p.nome] || 0}));
+  const nomesFora = [...new Set([...Object.keys(V), ...Object.keys(G)])].filter((n) => !NA_BASE.has(n));
+  const F = nomesFora.map((nome) => ({nome, vi: V[nome] || 0, ag: G[nome] || 0}));
+  const todos = pessoas.concat(F);
+  const tv = todos.reduce((a, p) => a + p.vi, 0), ta = todos.reduce((a, p) => a + p.ag, 0);
+  const pct = ta ? Math.round(tv / ta * 100) : 0;
   const d = new Date(iso + "T12:00:00-03:00");
   $("dia").textContent = d.toLocaleDateString("pt-BR", {weekday: "long", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"});
-  $("lbl").textContent = ehHoje ? "Hoje o time fez" : "Em " + fmtCurto(iso) + " o time fez";
-  $("quando").textContent = ehHoje ? "hoje" : "neste dia";
-  $("total").textContent = total;
-  $("total").classList.toggle("zero", !total);
-  $("total-unit").textContent = plural(total, "visita", "visitas");
-  $("n-ag").textContent = nAg; $("n-eq").textContent = nEq; $("pct").textContent = pct + "%";
-  $("barra-i").style.width = pct + "%";
-  $("barra").setAttribute("aria-label", nAg + " de " + nEq + " corretores fizeram visita");
+  $("lbl").textContent = ehHoje ? "Hoje o time fez" : (iso > HOJE ? "Em " + fmtCurto(iso) + " o time tem" : "Em " + fmtCurto(iso) + " o time fez");
+  $("quando").textContent = ehHoje ? "hoje" : "o dia";
+  $("total").textContent = tv; $("total").classList.toggle("zero", !tv);
+  $("total-unit").textContent = plural(tv, "visita realizada", "visitas realizadas");
+  $("total-ag").textContent = ta; $("ag-unit").textContent = plural(ta, "agendada para o dia", "agendadas para o dia");
+  $("n-ag").textContent = tv; $("n-eq").textContent = ta; $("pct").textContent = pct + "%";
+  $("barra-i").style.width = Math.min(100, pct) + "%";
+  $("barra").setAttribute("aria-label", tv + " de " + ta + " visitas agendadas realizadas");
   $("meta-txt").textContent = "";
-  if (DADOS.meta && ehHoje) {
-    const m = el("span"); m.append(" · Meta do dia "); m.appendChild(el("b", null, DADOS.meta));
-    m.append(" (" + Math.round(total / DADOS.meta * 100) + "%)"); $("meta-txt").appendChild(m);
-  }
-  $("aviso").hidden = !!total;
-  $("aviso").textContent = ehHoje ? "Ainda não há visitas registradas hoje no relatório. Os números aparecem assim que a planilha for atualizada." : "Nenhuma visita registrada neste dia.";
-  $("s-ag").textContent = nAg;
-  $("s-media").textContent = nAg ? (pessoas.reduce((a, p) => a + p.feito, 0) / nAg).toLocaleString("pt-BR", {maximumFractionDigits: 1}) : "0";
-  $("s-zero").textContent = nEq - nAg;
+  $("aviso").hidden = !!(tv || ta);
+  $("aviso").textContent = ehHoje ? "Ainda não há visitas agendadas nem realizadas hoje no relatório. Os números aparecem assim que a planilha for atualizada." : "Nenhuma visita agendada ou realizada neste dia.";
+  $("s-agc").textContent = pessoas.filter((p) => p.ag > 0).length;
+  $("s-vic").textContent = pessoas.filter((p) => p.vi > 0).length;
+  $("s-pend").textContent = Math.max(0, ta - tv);
+  $("s-zero").textContent = pessoas.filter((p) => !p.ag && !p.vi).length;
   equipes(pessoas);
   fora(F);
-  grafico(pessoas, F, ehHoje);
+  grafico(todos, ehHoje);
+}
+
+function pares(box, ag, vi) {
+  box.append(el("b", "r", ag), " " + plural(ag, "agendada", "agendadas"), el("span", "sep", " · "), el("b", "g", vi), " " + plural(vi, "realizada", "realizadas"));
 }
 
 function equipes(pessoas) {
@@ -334,28 +380,29 @@ function equipes(pessoas) {
     const doGr = pessoas.filter((p) => p.gr === gr);
     const block = el("div");
     const head = el("div", "gr-head");
+    const ta = doGr.reduce((a, p) => a + p.ag, 0), tv = doGr.reduce((a, p) => a + p.vi, 0);
     const gs = el("div", "gr-sum");
-    const na = doGr.filter((p) => p.feito > 0).length;
-    gs.append(el("b", null, na), " de ", el("b", null, doGr.length), " corretores fizeram visita (", el("b", null, Math.round(na / doGr.length * 100) + "%"), ")");
-    const tg = doGr.reduce((a, p) => a + p.feito, 0);
-    const ag = el("div", "ag"); ag.append(el("b", "real", tg), " " + plural(tg, "visita", "visitas") + " no dia");
+    gs.append(el("b", null, doGr.filter((p) => p.vi > 0).length), " de ", el("b", null, doGr.length), " corretores com visita realizada");
+    const ag = el("div", "ag"); pares(ag, ta, tv);
     head.append(el("div", "gr-name", "GR " + gr), gs, ag);
     const gvs = el("div", "gvs");
     [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
-      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome));
-      const nIn = doGv.filter((p) => p.feito > 0).length;
-      const tot = doGv.reduce((a, p) => a + p.feito, 0);
+      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => b.vi - a.vi || b.ag - a.ag || a.nome.localeCompare(b.nome));
+      const a2 = doGv.reduce((a, p) => a + p.ag, 0), v2 = doGv.reduce((a, p) => a + p.vi, 0);
       const card = el("div", "gv");
       const top = el("div", "gv-top");
-      const ct = el("div", "gv-count"); ct.append(el("b", null, nIn), " de " + doGv.length + " fizeram visita");
+      const ct = el("div", "gv-count"); ct.append(el("b", null, a2 ? Math.round(v2 / a2 * 100) + "%" : "—"), " realizadas");
       top.append(el("div", "gv-name", "Equipe " + gv), ct);
-      const mini = el("div", "mini"); const mi = el("i"); mi.style.width = (nIn / doGv.length * 100) + "%"; mini.appendChild(mi);
-      const agv = el("div", "ag"); agv.append(el("b", "real", tot), " " + plural(tot, "visita", "visitas") + " no dia");
+      const mini = el("div", "mini vi-bar"); const mi = el("i"); mi.style.width = (a2 ? Math.min(100, v2 / a2 * 100) : 0) + "%"; mini.appendChild(mi);
+      const agv = el("div", "ag"); pares(agv, a2, v2);
       const ul = el("ul", "people");
       doGv.forEach((p) => {
-        const li = el("li", p.feito ? null : "out");
-        const pill = p.feito ? el("span", "pill p-n", p.feito + " " + plural(p.feito, "visita", "visitas")) : el("span", "pill p-out", "Sem visita");
-        li.append(el("span", "pn", p.nome), pill); ul.appendChild(li);
+        const li = el("li", p.ag || p.vi ? null : "out");
+        const pl = el("span", "pills");
+        if (p.ag || p.vi) {
+          pl.append(el("span", "pill p-ag", p.ag + " " + plural(p.ag, "agendada", "agendadas")), el("span", "pill p-vi", p.vi + " " + plural(p.vi, "realizada", "realizadas")));
+        } else pl.appendChild(el("span", "pill p-none", "Sem visita no dia"));
+        li.append(el("span", "pn", p.nome), pl); ul.appendChild(li);
       });
       card.append(top, mini, agv, ul);
       gvs.appendChild(card);
@@ -368,33 +415,34 @@ function equipes(pessoas) {
 function fora(F) {
   const box = $("fora"); box.textContent = "";
   $("fora-sec").hidden = !F.length;
-  F.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
-    const row = el("div", "row ok");
-    const tag = el("div", "tag", c.feito); tag.appendChild(el("small", null, plural(c.feito, "visita", "visitas")));
-    row.append(el("div", "nome", c.nome), tag); box.appendChild(row);
+  F.slice().sort((a, b) => b.vi - a.vi || b.ag - a.ag || a.nome.localeCompare(b.nome)).forEach((c) => {
+    const row = el("div", "row");
+    const tags = el("div", "tags");
+    const t1 = el("div", "tag r", c.ag); t1.appendChild(el("small", null, plural(c.ag, "agendada", "agendadas")));
+    const t2 = el("div", "tag g", c.vi); t2.appendChild(el("small", null, plural(c.vi, "realizada", "realizadas")));
+    tags.append(t1, t2);
+    row.append(el("div", "nome", c.nome), tags); box.appendChild(row);
   });
 }
 
-function grafico(pessoas, F, ehHoje) {
+function grafico(todos, ehHoje) {
   const box = $("grafico"); box.textContent = "";
-  const rows = pessoas.filter((p) => p.feito > 0).map((p) => ({nome: p.nome, gv: p.gv, v: p.feito}))
-    .concat(F.map((c) => ({nome: c.nome, gv: null, v: c.feito})))
-    .sort((a, b) => b.v - a.v || a.nome.localeCompare(b.nome));
-  if (!rows.length) { box.appendChild(el("div", "vazio", ehHoje ? "Ninguém fez visita ainda hoje." : "Ninguém fez visita neste dia.")); return; }
-  const max = Math.max(...rows.map((r) => r.v));
+  const rows = todos.filter((p) => p.ag > 0 || p.vi > 0).sort((a, b) => b.vi - a.vi || b.ag - a.ag || a.nome.localeCompare(b.nome));
+  if (!rows.length) { box.appendChild(el("div", "vazio", ehHoje ? "Nenhuma visita agendada ou realizada ainda hoje." : "Nenhuma visita agendada ou realizada neste dia.")); return; }
+  const max = Math.max(...rows.map((r) => Math.max(r.ag, r.vi)));
   const grid = el("div", "hbar");
   rows.forEach((r) => {
     const hn = el("div", "hn", r.nome); hn.appendChild(el("small", null, r.gv ? "Equipe " + r.gv : "fora da base"));
     const ht = el("div", "ht");
-    const bar = el("i", r.v === max ? "top" : null); const w = r.v / max * 88; bar.style.width = w + "%";
-    const val = el("b", null, r.v); val.style.left = "calc(" + w + "% + 8px)";
-    ht.append(bar, val); grid.append(hn, ht);
+    const wa = r.ag / max * 85, wv = r.vi / max * 85;
+    const ba = el("i", "ag"); ba.style.width = wa + "%"; if (!r.ag) ba.style.minWidth = "0";
+    const bv = el("i", "vi"); bv.style.width = wv + "%"; if (!r.vi) bv.style.minWidth = "0";
+    const la = el("b", "ag", r.ag); la.style.left = "calc(" + wa + "% + 8px)";
+    const lv = el("b", "vi", r.vi); lv.style.left = "calc(" + wv + "% + 8px)";
+    ht.append(ba, bv, la, lv); grid.append(hn, ht);
   });
   box.appendChild(grid);
-  const g2 = el("div", "hgrid"); const ticks = el("div", "hticks");
-  for (let t = 0; t <= max; t++) { const s = el("span", null, t); s.style.left = (t / max * 88) + "%"; ticks.appendChild(s); }
-  g2.append(el("div"), ticks); box.appendChild(g2);
-  box.appendChild(el("div", "hcap", "Número de visitas realizadas no dia"));
+  box.appendChild(el("div", "hcap", "Vermelho: visitas agendadas para o dia · verde: visitas realizadas no dia"));
 }
 
 // ===== calendário =====
@@ -406,7 +454,7 @@ function calendario() {
   const [y, m] = mesVisto.split("-").map(Number);
   $("cal-mes").textContent = MESES[m - 1] + " " + y;
   $("cal-prev").disabled = mesVisto <= PRIMEIRO.slice(0, 7);
-  $("cal-next").disabled = mesVisto >= HOJE.slice(0, 7);
+  $("cal-next").disabled = mesVisto >= ULTIMO.slice(0, 7);
   const g = $("cal-grid"); g.textContent = "";
   ["D", "S", "T", "Q", "Q", "S", "S"].forEach((w) => g.appendChild(el("div", "cal-w", w)));
   const primeiroDow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
@@ -416,12 +464,12 @@ function calendario() {
     const iso = mesVisto + "-" + String(dd).padStart(2, "0");
     const b = el("button", "cal-d"); b.type = "button";
     b.appendChild(document.createTextNode(dd));
-    const ok = iso >= PRIMEIRO && iso <= HOJE;
+    const ok = iso >= PRIMEIRO && iso <= ULTIMO;
     if (!ok) { b.disabled = true; }
     else {
-      const t = totalDia(iso);
-      const sm = el("small", null, t); b.appendChild(sm); if (!t) b.classList.add("z");
-      b.setAttribute("aria-label", dd + "/" + m + ": " + t + " " + plural(t, "visita", "visitas"));
+      const t = totalDia(iso), a = totalAg(iso);
+      const sm = el("small"); sm.append(el("span", "g", t), "/", el("span", "r", a)); b.appendChild(sm); if (!t && !a) b.classList.add("z");
+      b.setAttribute("aria-label", dd + "/" + m + ": " + t + " realizadas de " + a + " agendadas");
       b.addEventListener("click", () => escolher(iso));
     }
     if (iso === HOJE) b.classList.add("hoje");
@@ -438,7 +486,7 @@ $("cal-prev").addEventListener("click", () => { mesVisto = addMes(mesVisto, -1);
 $("cal-next").addEventListener("click", () => { mesVisto = addMes(mesVisto, 1); calendario(); });
 $("cal-hoje").addEventListener("click", () => escolher(HOJE));
 const pedido = location.hash.slice(1);
-escolher(/^\d{4}-\d{2}-\d{2}$/.test(pedido) && pedido >= PRIMEIRO && pedido <= HOJE ? pedido : HOJE);
+escolher(/^\d{4}-\d{2}-\d{2}$/.test(pedido) && pedido >= PRIMEIRO && pedido <= ULTIMO ? pedido : HOJE);
 
 // botão Atualizar: abre a conversa do Claude e copia o pedido para colar
 $("btn-upd").addEventListener("click", () => {
