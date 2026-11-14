@@ -136,6 +136,12 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 .cal-d.hoje{border-color:var(--muted)}
 .cal-d.sel{background:var(--accent);color:var(--bg)}
 .cal-d.sel small{color:var(--bg)}
+.cal-soma{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.soma-btn{font:700 12px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.soma-btn[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.soma-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.soma-txt{font-size:12px;color:var(--muted)}
+.soma-txt b{color:var(--ink)}
 .cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
 .cal-hoje{background:none;border:none;color:var(--accent);font:600 12px var(--body);cursor:pointer;text-decoration:underline;padding:0}
 .big.zero{color:var(--muted);text-shadow:none}
@@ -179,6 +185,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-hint">Toque num dia para ver o resultado · <button class="cal-hoje" id="cal-hoje" type="button">voltar para hoje</button></div>
+      <div class="cal-soma"><button class="soma-btn" id="cal-soma" type="button" aria-pressed="false">+ Somar dias</button><span class="soma-txt" id="soma-txt"></span><button class="cal-hoje" id="soma-limpar" type="button" hidden>limpar</button></div>
     </div>
   </section>
 
@@ -292,9 +299,18 @@ const totalDia = (iso) => Object.values(DADOS.dias[iso] || {}).reduce((a, n) => 
 
 $("upd").textContent = new Date(DADOS.atualizado).toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
 
-function render(iso) {
-  const A = DADOS.dias[iso] || {};
-  const ehHoje = iso === HOJE;
+// soma vários dias: {"Nome": quantidade}
+function somar(fonte, lista) {
+  const out = {};
+  lista.forEach((d) => Object.entries((fonte || {})[d] || {}).forEach(([n, q]) => { out[n] = (out[n] || 0) + q; }));
+  return out;
+}
+const fmtLista = (l) => l.length <= 4 ? l.map(fmtCurto).join(", ") : fmtCurto(l[0]) + " a " + fmtCurto(l[l.length - 1]) + " (" + l.length + " dias)";
+
+function render(lista) {
+  const iso = lista[lista.length - 1], multi = lista.length > 1;
+  const A = somar(DADOS.dias, lista);
+  const ehHoje = !multi && iso === HOJE;
   const pessoas = DADOS.equipe.map((p) => ({...p, feito: A[p.nome] || 0}));
   const F = Object.entries(A).filter(([n]) => !NA_BASE.has(n)).map(([nome, feito]) => ({nome, feito}));
   const total = pessoas.reduce((a, p) => a + p.feito, 0) + F.reduce((a, c) => a + c.feito, 0);
@@ -303,8 +319,11 @@ function render(iso) {
   const pct = Math.round(nAg / nEq * 100);
   const d = new Date(iso + "T12:00:00-03:00");
   $("dia").textContent = d.toLocaleDateString("pt-BR", {weekday: "long", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"});
+  if (multi) $("dia").textContent = lista.length + " dias somados";
   $("lbl").textContent = ehHoje ? "Hoje o time criou" : "Em " + fmtCurto(iso) + " o time criou";
+  if (multi) $("lbl").textContent = "Em " + lista.length + " dias o time criou";
   $("quando").textContent = ehHoje ? "hoje" : "neste dia";
+  if (multi) $("quando").textContent = "nesses dias";
   $("total").textContent = total;
   $("total").classList.toggle("zero", !total);
   $("total-unit").textContent = plural(total, "agendamento", "agendamentos");
@@ -396,7 +415,8 @@ function grafico(pessoas, F, ehHoje) {
 }
 
 // ===== calendário =====
-let sel = HOJE;
+let selDias = [HOJE];
+let modoSoma = false;
 let mesVisto = HOJE.slice(0, 7);
 const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
 const addMes = (ym, k) => { let [y, m] = ym.split("-").map(Number); m += k; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return y + "-" + String(m).padStart(2, "0"); };
@@ -420,23 +440,45 @@ function calendario() {
       const t = totalDia(iso);
       const sm = el("small", null, t); b.appendChild(sm); if (!t) b.classList.add("z");
       b.setAttribute("aria-label", dd + "/" + m + ": " + t + " " + plural(t, "agendamento", "agendamentos"));
-      b.addEventListener("click", () => escolher(iso));
+      b.addEventListener("click", () => clicarDia(iso));
     }
     if (iso === HOJE) b.classList.add("hoje");
-    if (iso === sel) { b.classList.add("sel"); b.setAttribute("aria-pressed", "true"); }
+    if (selDias.includes(iso)) { b.classList.add("sel"); b.setAttribute("aria-pressed", "true"); }
     g.appendChild(b);
   }
 }
-function escolher(iso) {
-  sel = iso; mesVisto = iso.slice(0, 7);
-  try { history.replaceState(null, "", iso === HOJE ? location.pathname : "#" + iso); } catch (e) {}
-  render(iso); calendario();
+function escolher(lista) {
+  selDias = [...new Set(lista)].sort(); mesVisto = selDias[selDias.length - 1].slice(0, 7);
+  const so = selDias.length === 1 && selDias[0] === HOJE;
+  try { history.replaceState(null, "", so ? location.pathname : "#" + selDias.join(",")); } catch (e) {}
+  render(selDias); calendario(); somaInfo();
 }
+// toque num dia: vê só aquele dia; com "Somar dias" ligado, junta ou tira o dia da soma
+function clicarDia(iso) {
+  if (!modoSoma) return escolher([iso]);
+  const tem = selDias.includes(iso);
+  if (tem && selDias.length === 1) return;
+  escolher(tem ? selDias.filter((d) => d !== iso) : selDias.concat(iso));
+}
+function somaInfo() {
+  $("cal-soma").setAttribute("aria-pressed", modoSoma ? "true" : "false");
+  $("cal-soma").textContent = modoSoma ? "✓ Somando dias" : "+ Somar dias";
+  const t = $("soma-txt"); t.textContent = "";
+  if (modoSoma) { t.append(selDias.length > 1 ? "" : "toque nos dias para somar · "); if (selDias.length > 1) { t.appendChild(el("b", null, selDias.length + " dias")); t.append(": " + fmtLista(selDias)); } }
+  $("soma-limpar").hidden = selDias.length < 2;
+}
+$("cal-soma").addEventListener("click", () => {
+  modoSoma = !modoSoma;
+  if (!modoSoma && selDias.length > 1) escolher([selDias[selDias.length - 1]]); else somaInfo();
+});
+$("soma-limpar").addEventListener("click", () => escolher([selDias[selDias.length - 1]]));
 $("cal-prev").addEventListener("click", () => { mesVisto = addMes(mesVisto, -1); calendario(); });
 $("cal-next").addEventListener("click", () => { mesVisto = addMes(mesVisto, 1); calendario(); });
-$("cal-hoje").addEventListener("click", () => escolher(HOJE));
+$("cal-hoje").addEventListener("click", () => { modoSoma = false; escolher([HOJE]); });
 const pedido = location.hash.slice(1);
-escolher(/^\d{4}-\d{2}-\d{2}$/.test(pedido) && pedido >= PRIMEIRO && pedido <= HOJE ? pedido : HOJE);
+const pedidos = pedido.split(",").filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d) && d >= PRIMEIRO && d <= HOJE);
+if (pedidos.length > 1) modoSoma = true;
+escolher(pedidos.length ? pedidos : [HOJE]);
 
 // botão Atualizar: abre a conversa do Claude e copia o pedido para colar
 $("btn-upd").addEventListener("click", () => {
