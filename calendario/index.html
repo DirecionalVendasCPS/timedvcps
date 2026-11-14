@@ -85,6 +85,15 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
 .f input:focus-visible,.f select:focus-visible{outline:2px solid var(--accent)}
 .acts{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
 .msg{font-size:13px;color:var(--accent);min-height:18px}
+.mes-bar{display:flex;gap:6px;flex-wrap:wrap}
+.mes-btn{font:700 13px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;text-transform:capitalize}
+.mes-btn[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.mes-btn.atual:not([aria-pressed="true"]){border-color:var(--accent)}
+.mes-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.day.fora{background:#0d1938}
+.day.fora .num{opacity:.4}
+.day.fora .ev{opacity:.55}
+.day .num{font-size:16px}
 </style>
 </head>
 <body>
@@ -92,8 +101,8 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
   <a class="back" href="../">← Direcional Vendas CPS</a>
   <header>
     <div>
-      <h1>Black November CPS</h1>
-      <p class="sub">Calendário de ações · 01/11 a 12/12/2026</p>
+      <h1 id="titulo">Black November CPS</h1>
+      <p class="sub" id="subtitulo">Calendário de ações 2026</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-ghost" id="btn-copiar" type="button">Copiar atividades novas</button>
@@ -107,6 +116,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
     <span><i style="background:var(--divul)"></i>Divulgação</span>
     <span><i style="background:var(--outro)"></i>Outra atividade</span>
   </div>
+  <div class="mes-bar" id="mes-bar" role="group" aria-label="Escolha o mês"></div>
   <div class="msg" id="msg" role="status"></div>
 
   <div class="cal" id="cal">
@@ -117,7 +127,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
 
   <section class="aniv-sec" aria-label="Aniversariantes">
     <h2>🎂 Aniversariantes</h2>
-    <p class="sub2">Corretores ativos da base que fazem aniversário neste mês.</p>
+    <p class="sub2" id="aniv-sub">Corretores ativos da base que fazem aniversário neste mês.</p>
     <div class="meses" id="aniv"></div>
   </section>
 
@@ -127,7 +137,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
 <dialog id="dlg">
   <form id="form" method="dialog">
     <h2>Nova atividade</h2>
-    <div class="f"><label for="f-data">Data</label><input id="f-data" type="date" min="2026-11-01" max="2026-12-12" required></div>
+    <div class="f"><label for="f-data">Data</label><input id="f-data" type="date" min="2026-01-01" max="2026-12-31" required></div>
     <div class="f"><label for="f-titulo">Atividade</label><input id="f-titulo" type="text" maxlength="80" placeholder="Ex.: Corujão p/ 05/12" required></div>
     <div class="f"><label for="f-tipo">Tipo</label>
       <select id="f-tipo">
@@ -251,22 +261,26 @@ function chip(a) {
   }
   return c;
 }
+const MESES_N = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const ANO = 2026;
+let mesSel = hoje.slice(0, 4) === String(ANO) ? Number(hoje.slice(5, 7)) : 11; // 1 a 12
 function desenhar() {
   const weeks = $("weeks"); weeks.replaceChildren();
   const ag = $("agenda"); ag.replaceChildren();
-  const d = new Date(2026, 10, 1);
-  for (let w = 0; w < 6; w++) {
+  // mesma formatação em todos os meses: semanas de domingo a sábado
+  const d = new Date(ANO, mesSel - 1, 1); d.setDate(1 - d.getDay());
+  for (let w = 0; w < 6; w++) { // sempre 6 semanas, como o calendário do Windows
     const row = el("div", "week");
     for (let i = 0; i < 7; i++) {
-      const s = iso(d);
-      const cell = el("div", "day" + (s === hoje ? " hoje" : ""));
-      cell.appendChild(el("div", "num", ddmm(s)));
+      const s = iso(d), noMes = d.getMonth() === mesSel - 1;
+      const cell = el("div", "day" + (s === hoje ? " hoje" : "") + (noMes ? "" : " fora"));
+      const num = el("div", "num", String(d.getDate())); num.title = ddmm(s); cell.appendChild(num);
       const evs = doDia(s);
       evs.forEach((a) => cell.appendChild(chip(a)));
       const add = el("button", "addday", "+"); add.type = "button"; add.setAttribute("aria-label", "Adicionar atividade em " + ddmm(s));
       add.addEventListener("click", () => abrir(s)); cell.appendChild(add);
       row.appendChild(cell);
-      if (evs.length) {
+      if (evs.length && noMes) {
         const box = el("div", "ag-day" + (s === hoje ? " hoje" : ""));
         box.appendChild(el("h3", null, DIAS[d.getDay()] + ", " + ddmm(s) + (s === hoje ? " · hoje" : "")));
         evs.forEach((a) => box.appendChild(chip(a)));
@@ -276,11 +290,31 @@ function desenhar() {
     }
     weeks.appendChild(row);
   }
+  if (!ag.children.length) ag.appendChild(el("p", "note", "Nenhuma atividade em " + MESES_N[mesSel - 1] + "."));
+  const nome = MESES_N[mesSel - 1];
+  $("titulo").textContent = mesSel === 11 ? "Black November CPS" : "Calendário CPS · " + nome[0].toUpperCase() + nome.slice(1);
+  $("subtitulo").textContent = "Calendário de ações · " + nome + " de " + ANO;
+  [...$("mes-bar").children].forEach((b, k) => b.setAttribute("aria-pressed", k + 1 === mesSel ? "true" : "false"));
 }
+function escolherMes(m) {
+  mesSel = m;
+  try { history.replaceState(null, "", "#" + ANO + "-" + String(m).padStart(2, "0")); } catch (e) {}
+  desenhar(); aniversariantes();
+}
+(function () {
+  const bar = $("mes-bar"), mesHoje = hoje.slice(0, 4) === String(ANO) ? Number(hoje.slice(5, 7)) : 0;
+  MESES_N.forEach((n, k) => {
+    const b = el("button", "mes-btn" + (k + 1 === mesHoje ? " atual" : ""), n.slice(0, 3)); b.type = "button";
+    b.setAttribute("aria-label", n + " de " + ANO);
+    b.addEventListener("click", () => escolherMes(k + 1)); bar.appendChild(b);
+  });
+  const m = /^#?(\d{4})-(\d{2})$/.exec(location.hash);
+  if (m && Number(m[1]) === ANO && +m[2] >= 1 && +m[2] <= 12) mesSel = +m[2];
+})();
 
 const dlg = $("dlg");
 function abrir(data) {
-  $("f-data").value = data || (hoje >= "2026-11-01" && hoje <= "2026-12-12" ? hoje : "2026-11-01");
+  $("f-data").value = data || (hoje.slice(5, 7) === String(mesSel).padStart(2, "0") ? hoje : ANO + "-" + String(mesSel).padStart(2, "0") + "-01");
   $("f-titulo").value = ""; $("f-tipo").value = "divul";
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
   $("f-titulo").focus();
@@ -307,25 +341,25 @@ function curto(n) {
   const p = n.split(" ").filter((w) => !/^(de|da|do|dos|das|e)$/i.test(w));
   return p.length > 1 ? p[0] + " " + p[p.length - 1] : n;
 }
-const MESES_N = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
 function aniversariantes() {
   const box = $("aniv"); box.replaceChildren();
-  const mesHoje = Number(hoje.slice(5, 7)), dmHoje = hoje.slice(5);
-  for (let k = 0; k < 1; k++) { // só o mês vigente
-    const m = ((mesHoje - 1 + k) % 12) + 1, mm = String(m).padStart(2, "0");
+  const dmHoje = hoje.slice(5), ehAtual = hoje.slice(0, 7) === ANO + "-" + String(mesSel).padStart(2, "0");
+  $("aniv-sub").textContent = "Corretores ativos da base que fazem aniversário em " + MESES_N[mesSel - 1] + ".";
+  for (let k = 0; k < 1; k++) { // só o mês escolhido no calendário
+    const m = mesSel, mm = String(m).padStart(2, "0");
     const lista = ANIVERSARIOS.filter((x) => x.dia.slice(0, 2) === mm);
     if (!lista.length) continue;
-    const card = el("div", "mes" + (k === 0 ? " atual" : ""));
+    const card = el("div", "mes" + (ehAtual ? " atual" : ""));
     const h = el("h3", null, MESES_N[m - 1]); h.appendChild(el("small", null, lista.length + (lista.length === 1 ? " aniversariante" : " aniversariantes")));
     const ul = el("ul");
     lista.forEach((x) => {
-      const li = el("li", k === 0 ? (x.dia === dmHoje ? "hoje" : x.dia < dmHoje ? "passou" : null) : null);
+      const li = el("li", ehAtual ? (x.dia === dmHoje ? "hoje" : x.dia < dmHoje ? "passou" : null) : null);
       li.append(el("b", null, x.dia.slice(3) + "/" + mm), el("span", null, x.nome));
       ul.appendChild(li);
     });
     card.append(h, ul); box.appendChild(card);
   }
-  if (!box.children.length) box.appendChild(el("p", "note", "Nenhum aniversariante neste mês."));
+  if (!box.children.length) box.appendChild(el("p", "note", "Nenhum aniversariante em " + MESES_N[mesSel - 1] + "."));
 }
 desenhar();
 aniversariantes();
