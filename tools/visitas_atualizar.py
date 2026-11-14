@@ -1,8 +1,8 @@
 # Atualiza visitas/index.html (Visitas do dia), com a mesma estrutura da página de agendamentos.
 # uso (na raiz do repo, depois de base_atualizar.py):
 #   python3 tools/visitas_atualizar.py "DD/MM HH:MM" agendados.txt < visitas_dia.txt
-# visitas_dia.txt = saída do gviz da planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", aba Visitas (gid=636908934):
-#   select K,I,count(A) where K >= date 'AAAA-MM-DD' group by K,I      (K = Data de comparecimento, I = corretor)
+# visitas_dia.txt = visitas realizadas, planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", aba Agendamentos (gid=885964070):
+#   select E,J,count(A) where E >= date 'AAAA-MM-DD' and H = true group by E,J   (E = Data, J = corretor, H = Visita Realizada)
 #   linhas no formato "AAAA-M-D NOME DO CORRETOR quantidade". A página é refeita inteira a partir do início indicado.
 # agendados.txt = visitas agendadas para cada dia (vermelho na página), aba Agendamentos (gid=885964070):
 #   select E,J,count(A) where E >= date 'AAAA-MM-DD' group by E,J      (E = Data agendada, J = corretor)
