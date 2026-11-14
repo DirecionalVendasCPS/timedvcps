@@ -5,13 +5,13 @@
 #   calc.txt = get_page_text de .../gviz/tq?tqx=out:html&sheet=Calc_Data
 # - Realizado: bloco "Realizado Semanal" (uma linha por GV: nome curto, GR, 4 grupos OPs/AG/VIS/PAS com
 #   6 semanas + % + 2 totais, depois 6 semanas de vendas). Usa as 5 primeiras semanas (01/11 a 29/11).
-# - Regra do usuário: 13 vendas migradas de meses anteriores NÃO contam (11 da Mada e 2 do Bruno, semana 08/11).
-# - Tendência: semanas de novembro da Calc_Data (OPs AG VIS PAS VN), com a mesma regra das 13 vendas na semana 08/11.
+# - Regra do usuário: as vendas migradas de meses anteriores (lançadas em 10/11) NÃO contam: 10 da Mada e 2 do Bruno, semana 08/11.
+# - Tendência: semanas de novembro da Calc_Data (OPs AG VIS PAS VN), com a mesma regra das vendas migradas na semana 08/11.
 # - Empreendimentos e origens: contagens da Calc_Data (só as que têm venda).
 import re, sys, json
 P = 'gestao/index.html'
 SEM = ["2026-11-01", "2026-11-08", "2026-11-15", "2026-11-22", "2026-11-29"]
-MIG = {"Mada": 11, "Bruno": 2}
+MIG = {"Mada": 10, "Bruno": 2}  # vendas de 10/11 migradas de meses anteriores (aba Vendas: Mada 10, Bruno 2)
 NOME = {"Icaro": "Ícaro", "Debora": "Débora"}
 GRS = ("Takeashi", "Patricia", "Gustavo")
 mes = open(sys.argv[2], encoding='utf-8').read()
@@ -67,6 +67,6 @@ if o: D["origens"] = [{"origem": n, "vendas": v} for n, v in o]
 s = s[:m.start(1)] + json.dumps(D, ensure_ascii=False) + s[m.end(1):]
 s = re.sub(r'const ATUALIZADO = "[^"]*";', 'const ATUALIZADO = "%s";' % sys.argv[1].replace(" ", " às "), s)
 open(P, 'w', encoding='utf-8').write(s)
-print("realizado (sem as 13 vendas migradas):", tot if False else {k: sum(r[k] for r in D["realizado"]) for k in tot})
+print("realizado (sem as vendas migradas):", tot if False else {k: sum(r[k] for r in D["realizado"]) for k in tot})
 print("tendência:", [(t["semana"], t["ops"], t["vn"]) for t in D["tendencia"]])
 print("empreendimentos:", e, "| origens:", o)
