@@ -291,12 +291,12 @@ $("mes-nome").textContent = MESES[m - 1] + " de " + y;
 $("refresh").textContent = DADOS.refresh || "—";
 const fmtDataHora = (d) => d.toLocaleDateString("pt-BR", {day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"}) + " às " + d.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
 $("upd").textContent = fmtDataHora(new Date(DADOS.atualizado));
-// próxima atualização automática: 01:41, 05:41, 09:41, 13:41, 17:41 e 21:41 (horário de Brasília), até o fim de 2026
+// próxima atualização automática: 01:53, 05:53, 09:53, 13:53, 17:53 e 21:53 (horário de Brasília), até o fim de 2026
 (function () {
   const agora = new Date(), HORAS = [1, 5, 9, 13, 17, 21];
   for (let dia = 0; dia < 2; dia++) for (const h of HORAS) {
     const sp = new Date(agora.getTime() - 3 * 3600e3);
-    const alvo = new Date(Date.UTC(sp.getUTCFullYear(), sp.getUTCMonth(), sp.getUTCDate() + dia, h + 3, 41));
+    const alvo = new Date(Date.UTC(sp.getUTCFullYear(), sp.getUTCMonth(), sp.getUTCDate() + dia, h + 3, 53));
     if (alvo > agora) { $("prox").textContent = alvo.getUTCFullYear() > 2026 ? "—" : fmtDataHora(alvo); return; }
   }
 })();
