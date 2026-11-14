@@ -83,14 +83,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:85ch}
     </div>
   </section>
 
-  <section class="grid3" aria-label="Ranking de contratações">
+  <section class="grid3" aria-label="Ranking de credenciados">
     <div>
-      <h2>Contratações por GV</h2>
+      <h2>Credenciados por GV</h2>
       <p class="sub">Corretores credenciados (inclui reativados) no período. Só GVs ativos hoje.</p>
       <div class="card"><div id="c-gv"></div></div>
     </div>
     <div>
-      <h2>Contratações por GR</h2>
+      <h2>Credenciados por GR</h2>
       <p class="sub">Só GRs ativos hoje.</p>
       <div class="card"><div id="c-gr"></div></div>
     </div>
@@ -233,8 +233,8 @@ function render() {
     if (DADOS.grsAtivos.includes(e.gr)) cgr[e.gr] = (cgr[e.gr] || 0) + 1;
   });
   const ordenar = (lista, c) => lista.slice().sort((a, b) => (c[b] || 0) - (c[a] || 0) || a.localeCompare(b, "pt-BR"));
-  barras($("c-gv"), cgv, ordenar(DADOS.gvsAtivos, cgv), "in", "Nenhuma contratação no período.");
-  barras($("c-gr"), cgr, ordenar(DADOS.grsAtivos, cgr), "in", "Nenhuma contratação no período.");
+  barras($("c-gv"), cgv, ordenar(DADOS.gvsAtivos, cgv), "in", "Nenhum credenciado no período.");
+  barras($("c-gr"), cgr, ordenar(DADOS.grsAtivos, cgr), "in", "Nenhum credenciado no período.");
   barras($("g-gr"), gr, DADOS.grsAtivos.slice().sort((a, b) => (gr[b] || 0) - (gr[a] || 0) || a.localeCompare(b, "pt-BR")));
   linha();
   [...$("meses").children].forEach((b) => b.setAttribute("aria-pressed", (b.dataset.m || null) === (filtro || null) ? "true" : "false"));
