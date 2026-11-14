@@ -43,7 +43,7 @@ header{position:relative}
 .hist-btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0}
 .sub{font-size:13px;color:var(--muted);margin:4px 0 14px;max-width:80ch;line-height:1.45}
-.lead{font-size:17px;line-height:1.5;margin:12px 0 0;max-width:75ch;color:var(--muted)}
+.lead{font-size:17px;line-height:1.5;margin:12px 0 0;max-width:100ch;color:var(--muted)}
 .lead b{color:var(--ink)}
 .ctrls{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-top:18px}
 .ctrls label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
@@ -255,8 +255,8 @@ function desenhar() {
   const comMeta = M.filter((m) => R[m].esp > 0);
   const melhor = comMeta.slice().sort((a, b) => R[b].pctEsp - R[a].pctEsp)[0];
   const pior = comMeta.slice().sort((a, b) => R[a].pctEsp - R[b].pctEsp)[0];
-  lead.append(el("b", null, nomeEscopo()), ", até a semana de " + dia(SEMANAS[semIni - 1]) + ": vendas ", el("b", null, fmt(R.vn.real)), " de ", el("b", null, fmt(R.vn.meta)), " no mês. ");
-  if (melhor && pior && melhor !== pior) lead.append("O ponto mais forte é " + NOME[melhor].toLowerCase() + " (", el("b", null, R[melhor].pctEsp + "%"), " do esperado) e o que mais precisa de atenção é " + NOME[pior].toLowerCase() + " (", el("b", null, R[pior].pctEsp + "%"), ").");
+  lead.append(el("b", null, nomeEscopo()), ", até a semana de " + dia(SEMANAS[semIni - 1]) + ": vendas ", el("b", null, fmt(R.vn.real)), " de ", el("b", null, fmt(R.vn.meta)), " no mês.");
+  if (melhor && pior && melhor !== pior) lead.append(el("br"), "O ponto mais forte é " + NOME[melhor].toLowerCase() + " (", el("b", null, R[melhor].pctEsp + "%"), " do esperado) e o que mais precisa de atenção é " + NOME[pior].toLowerCase() + " (", el("b", null, R[pior].pctEsp + "%"), ").");
 
   // KPIs
   const k = $("kpis"); k.replaceChildren();
