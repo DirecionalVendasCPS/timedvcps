@@ -29,11 +29,13 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,44px);l
 h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0}
 .sub{font-size:13px;color:var(--muted);margin:4px 0 12px;max-width:85ch;line-height:1.45}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){.stats{grid-template-columns:1fr}}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .stat .n{font-family:var(--display);font-weight:900;font-size:48px;line-height:1;font-variant-numeric:tabular-nums}
 .stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.at .n{color:#7c9bff}
 .stat.in .n{color:var(--in)} .stat.out .n{color:var(--out)}
 .filtros{display:flex;gap:6px;flex-wrap:wrap}
 .fbtn{font:700 13px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;text-transform:capitalize}
@@ -64,6 +66,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:85ch}
   </header>
 
   <section class="stats" aria-label="Resumo do período">
+    <div class="stat at"><div class="n" id="s-at">—</div><div class="t" id="s-at-t">corretores ativos hoje</div></div>
     <div class="stat in"><div class="n" id="s-in">—</div><div class="t">corretores ativados (credenciados ou reativados)</div></div>
     <div class="stat out"><div class="n" id="s-out">—</div><div class="t">corretores descredenciados</div></div>
     <div class="stat"><div class="n" id="s-saldo">—</div><div class="t">saldo do período (ativados − descredenciados)</div></div>
@@ -71,10 +74,10 @@ footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:85ch}
 
   <section>
     <h2>Ativos x inativados mês a mês</h2>
-    <p class="sub">Linha para cima: corretores que entraram no time no mês. Linha para baixo: corretores descredenciados no mês. Toque num mês para filtrar os números e os gráficos abaixo.</p>
+    <p class="sub">Linha para cima: corretores que entraram no time no mês. Linha para baixo: corretores descredenciados no mês. Embaixo de cada mês, em azul: quantos corretores ativos o time tinha no fim do mês. Toque num mês para filtrar os números e os gráficos abaixo.</p>
     <div class="filtros" id="meses" role="group" aria-label="Escolha o período"></div>
     <div class="card" style="margin-top:12px">
-      <div class="legend"><span style="--c:var(--in)">Ativados</span><span style="--c:var(--out)">Descredenciados</span><span style="--c:var(--accent)">Saldo do mês</span></div>
+      <div class="legend"><span style="--c:var(--in)">Ativados</span><span style="--c:var(--out)">Descredenciados</span><span style="--c:var(--accent)">Saldo do mês</span><span style="--c:#7c9bff">Ativos no fim do mês</span></div>
       <div id="linha" role="img" aria-label="Gráfico de linhas de ativações e descredenciamentos por mês em 2026"></div>
     </div>
   </section>
@@ -98,13 +101,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:85ch}
     </div>
   </section>
 
-  <footer>Fonte: planilha "Contadores do mês e corujão", aba "base inativos". Entrada no time = Data Credenciamento (coluna AA) ou, se for mais recente, Data Reativação (coluna AD). Saída = Data Descredenciamento (coluna AF), com o Motivo Descredenciamento (coluna AH). GR = proprietário da conta do corretor. A equipe (GV) de quem saiu vem da planilha de gestão (aba Oportunidades); quem não criou oportunidades em 2026 fica sem GV e não aparece no gráfico por GV, assim como GVs e GRs que não estão mais ativos (eles continuam contando na linha mês a mês e nos motivos).</footer>
+  <footer>Fonte: planilha "Contadores do mês e corujão", aba "base inativos". Entrada no time = Data Credenciamento (coluna AA) ou, se for mais recente, Data Reativação (coluna AD). Saída = Data Descredenciamento (coluna AF), com o Motivo Descredenciamento (coluna AH). Ativos no fim de cada mês = ativos de hoje na base de corretores, voltando mês a mês (menos quem entrou, mais quem saiu). GR = proprietário da conta do corretor. A equipe (GV) de quem saiu vem da planilha de gestão (aba Oportunidades); quem não criou oportunidades em 2026 fica sem GV e não aparece no gráfico por GV, assim como GVs e GRs que não estão mais ativos (eles continuam contando na linha mês a mês e nos motivos).</footer>
 </div>
 
 <script>
 // ===== Dados (sem nomes): t = "e" ativação | "s" descredenciamento; m = mês (AAAA-MM) =====
 const DADOS = {
   atualizado: "14/11/2026",
+  ativosHoje: 53, // corretores ativos na base de corretores (Ativo ou Reativado) na data acima
   ano: "2026",
   gvsAtivos: ["Aldinei", "Ícaro", "Pina", "Mada", "Bruno", "Sandro", "Ivan", "Débora"],
   grsAtivos: ["Takeashi", "Patricia", "Gustavo"],
@@ -123,10 +127,17 @@ $("upd").textContent = DADOS.atualizado;
 let filtro = null; // null = ano todo
 
 function conta(t, m) { return DADOS.eventos.filter((e) => e.t === t && e.m === m).length; }
+// ativos no fim de cada mês: parte dos ativos de hoje e volta mês a mês (− entradas + saídas)
+const ATIVOS = {};
+(function () {
+  let n = DADOS.ativosHoje;
+  for (let i = MESES.indexOf(ultimoMes); i >= 0; i--) { ATIVOS[MESES[i]] = n; n = n - conta("e", MESES[i]) + conta("s", MESES[i]); }
+  ATIVOS.inicio = n; // 31/12 do ano anterior
+})();
 
 function linha() {
   const box = $("linha"); box.textContent = "";
-  const W = 1000, H = 380, L = 44, R = 20, T = 30, B = 58;
+  const W = 1000, H = 410, L = 44, R = 20, T = 30, B = 88;
   const ent = MESES.map((m) => conta("e", m)), sai = MESES.map((m) => conta("s", m));
   const max = Math.max(5, ...ent, ...sai);
   const top = Math.ceil(max / 10) * 10;
@@ -141,8 +152,10 @@ function linha() {
   // destaque do mês filtrado e meses
   MESES.forEach((m, i) => {
     if (filtro === m) s.appendChild(sv("rect", {x: x(i) - (W - L - R) / 24, y: T - 18, width: (W - L - R) / 12, height: H - T - B + 18, fill: "rgba(255,182,39,.10)", rx: 8}));
-    const t = sv("text", {x: x(i), y: H - 14, "text-anchor": "middle", "font-size": 13, fill: m > ultimoMes ? "#3a5190" : (filtro === m ? "#ffb627" : "#93a3c8"), "font-weight": filtro === m ? 700 : 500}); t.textContent = MES[i]; s.appendChild(t);
+    if (m <= ultimoMes) { const a = sv("text", {x: x(i), y: H - 14, "text-anchor": "middle", "font-size": 17, "font-weight": 800, fill: "#7c9bff"}); a.textContent = ATIVOS[m]; s.appendChild(a); }
+    const t = sv("text", {x: x(i), y: H - 44, "text-anchor": "middle", "font-size": 13, fill: m > ultimoMes ? "#3a5190" : (filtro === m ? "#ffb627" : "#93a3c8"), "font-weight": filtro === m ? 700 : 500}); t.textContent = MES[i]; s.appendChild(t);
   });
+  const ta = sv("text", {x: L - 8, y: H - 14, "text-anchor": "end", "font-size": 11, fill: "#7c9bff", "font-weight": 700}); ta.textContent = "ativos"; s.appendChild(ta);
   const n = ATE.length;
   const serie = (vals, sinal, cor) => {
     const pts = vals.slice(0, n).map((v, i) => `${x(i)},${y(sinal * v)}`).join(" ");
@@ -183,6 +196,9 @@ function render() {
   const ev = DADOS.eventos.filter(noPeriodo);
   const ne = ev.filter((e) => e.t === "e").length, ns = ev.filter((e) => e.t === "s").length;
   $("s-in").textContent = ne; $("s-out").textContent = ns;
+  const ehAtual = !filtro || filtro === ultimoMes;
+  $("s-at").textContent = ATIVOS[filtro || ultimoMes];
+  $("s-at-t").textContent = ehAtual ? "corretores ativos hoje" : "corretores ativos no fim de " + MES[+filtro.slice(5) - 1] + " (começou o ano com " + ATIVOS.inicio + ")";
   $("s-saldo").textContent = (ne - ns > 0 ? "+" : "") + (ne - ns);
   $("s-saldo").style.color = ne - ns >= 0 ? "var(--in)" : "var(--out)";
   const saidas = ev.filter((e) => e.t === "s");
