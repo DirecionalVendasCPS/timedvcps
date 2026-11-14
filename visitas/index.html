@@ -406,8 +406,8 @@ function equipes(pessoas) {
     const ag = el("div", "ag"); pares(ag, ta, tv);
     head.append(el("div", "gr-name", "GR " + gr), gs, ag);
     const gvs = el("div", "gvs");
-    [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
-      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => b.vi - a.vi || b.ag - a.ag || a.nome.localeCompare(b.nome));
+    [...new Set(doGr.map((p) => p.gv))].sort((a, b) => (a === "A definir") - (b === "A definir") || a.localeCompare(b, "pt-BR")).forEach((gv) => {
+      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")); // ordem alfabética
       const a2 = doGv.reduce((a, p) => a + p.ag, 0), v2 = doGv.reduce((a, p) => a + p.vi, 0);
       const card = el("div", "gv");
       const top = el("div", "gv-top");
