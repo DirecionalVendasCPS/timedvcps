@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Histórico de ativações e descredenciamentos 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b1630; --panel:#12224a; --panel2:#0f1d40; --line:#22376b;
+  --ink:#eef2fb; --muted:#93a3c8; --accent:#ffb627;
+  --in:#3ddc97; --out:#ff6b6b;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(91,124,255,.12), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:24px}
+a.back{color:var(--muted);font-size:13px;text-decoration:none}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:6px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,44px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;line-height:1.05;text-wrap:balance}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0}
+.sub{font-size:13px;color:var(--muted);margin:4px 0 12px;max-width:85ch;line-height:1.45}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:640px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:900;font-size:48px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.in .n{color:var(--in)} .stat.out .n{color:var(--out)}
+.filtros{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{font:700 13px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;text-transform:capitalize}
+.fbtn[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.fbtn:disabled{opacity:.35;cursor:default}
+.fbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:8px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+svg text{font-family:var(--body)}
+.grid3{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:820px){.grid3{grid-template-columns:1fr}}
+.hb{display:grid;grid-template-columns:minmax(110px,40%) 1fr;gap:8px 10px;align-items:center}
+.hb .hn{font-size:14px;text-align:right;line-height:1.2}
+.hb .ht{position:relative;height:24px}
+.hb .ht i{position:absolute;left:0;top:3px;bottom:3px;background:var(--out);border-radius:0 6px 6px 0;min-width:4px}
+.hb .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+.hb .ht b small{font-family:var(--body);font-size:11px;font-weight:600;color:var(--muted);margin-left:4px}
+.vazio{color:var(--muted);text-align:center;padding:14px}
+footer{font-size:13px;color:var(--muted);line-height:1.55;max-width:85ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="./">← Gestão Semanal dos GVs</a>
+    <div class="eyebrow">Direcional Vendas · Campinas · 2026 · dados de <span id="upd">—</span></div>
+    <h1>Histórico de ativações e descredenciamentos</h1>
+  </header>
+
+  <section class="stats" aria-label="Resumo do período">
+    <div class="stat in"><div class="n" id="s-in">—</div><div class="t">corretores ativados (credenciados ou reativados)</div></div>
+    <div class="stat out"><div class="n" id="s-out">—</div><div class="t">corretores descredenciados</div></div>
+    <div class="stat"><div class="n" id="s-saldo">—</div><div class="t">saldo do período (ativados − descredenciados)</div></div>
+  </section>
+
+  <section>
+    <h2>Ativos x inativados mês a mês</h2>
+    <p class="sub">Linha para cima: corretores que entraram no time no mês. Linha para baixo: corretores descredenciados no mês. Toque num mês para filtrar os números e os gráficos abaixo.</p>
+    <div class="filtros" id="meses" role="group" aria-label="Escolha o período"></div>
+    <div class="card" style="margin-top:12px">
+      <div class="legend"><span style="--c:var(--in)">Ativados</span><span style="--c:var(--out)">Descredenciados</span><span style="--c:var(--accent)">Saldo do mês</span></div>
+      <div id="linha" role="img" aria-label="Gráfico de linhas de ativações e descredenciamentos por mês em 2026"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Motivos do descredenciamento</h2>
+    <p class="sub" id="sub-mot">Todos os corretores descredenciados no período.</p>
+    <div class="card"><div id="g-mot"></div></div>
+  </section>
+
+  <section class="grid3">
+    <div>
+      <h2>Descredenciados por GV</h2>
+      <p class="sub">Só GVs ativos hoje. Equipe = onde o corretor mais criou oportunidades em 2026.</p>
+      <div class="card"><div id="g-gv"></div></div>
+    </div>
+    <div>
+      <h2>Descredenciados por GR</h2>
+      <p class="sub">Só GRs ativos hoje.</p>
+      <div class="card"><div id="g-gr"></div></div>
+    </div>
+  </section>
+
+  <footer>Fonte: planilha "Contadores do mês e corujão", aba "base inativos". Entrada no time = Data Credenciamento (coluna AA) ou, se for mais recente, Data Reativação (coluna AD). Saída = Data Descredenciamento (coluna AF), com o Motivo Descredenciamento (coluna AH). GR = proprietário da conta do corretor. A equipe (GV) de quem saiu vem da planilha de gestão (aba Oportunidades); quem não criou oportunidades em 2026 fica sem GV e não aparece no gráfico por GV, assim como GVs e GRs que não estão mais ativos (eles continuam contando na linha mês a mês e nos motivos).</footer>
+</div>
+
+<script>
+// ===== Dados (sem nomes): t = "e" ativação | "s" descredenciamento; m = mês (AAAA-MM) =====
+const DADOS = {
+  atualizado: "14/11/2026",
+  ano: "2026",
+  gvsAtivos: ["Aldinei", "Ícaro", "Pina", "Mada", "Bruno", "Sandro", "Ivan", "Débora"],
+  grsAtivos: ["Takeashi", "Patricia", "Gustavo"],
+  eventos: [{"t":"e","m":"2026-11","gr":"Takeashi"},{"t":"e","m":"2026-11","gr":"Takeashi"},{"t":"e","m":"2026-11","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-11","gr":"Takeashi"},{"t":"e","m":"2026-11","gr":"Patricia"},{"t":"e","m":"2026-03","gr":"Patricia"},{"t":"e","m":"2026-01","gr":"Patricia"},{"t":"e","m":"2026-11","gr":"Patricia"},{"t":"e","m":"2026-04","gr":"Patricia"},{"t":"e","m":"2026-11","gr":"Patricia"},{"t":"e","m":"2026-08","gr":"Patricia"},{"t":"e","m":"2026-04","gr":"Patricia"},{"t":"e","m":"2026-04","gr":"Patricia"},{"t":"e","m":"2026-11","gr":"Gustavo"},{"t":"e","m":"2026-11","gr":"Gustavo"},{"t":"e","m":"2026-06","gr":"Patricia"},{"t":"e","m":"2026-09","gr":"Patricia"},{"t":"e","m":"2026-08","gr":"Patricia"},{"t":"e","m":"2026-07","gr":"Patricia"},{"t":"e","m":"2026-11","gr":"Patricia"},{"t":"e","m":"2026-09","gr":"Patricia"},{"t":"e","m":"2026-11","gr":"Patricia"},{"t":"e","m":"2026-04","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-05","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"e","m":"2026-11","gr":"Gustavo"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"e","m":"2026-10","gr":"Gustavo"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"e","m":"2026-10","gr":"Gustavo"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"e","m":"2026-09","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-04","gr":"Takeashi"},{"t":"e","m":"2026-11","gr":"Takeashi"},{"t":"e","m":"2026-04","gr":"Takeashi"},{"t":"e","m":"2026-11","gr":"Takeashi"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"e","m":"2026-01","gr":"Patricia"},{"t":"s","m":"2026-01","gr":"Patricia","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-02","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sandro José"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-02","gr":"Takeashi","mot":"Comportamento Inadequado","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Rodney"},{"t":"s","m":"2026-03","gr":"Rodney","mot":"Mudança de Cidade / Estado","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Mudança de Cidade / Estado","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Regis Eduardo"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-01","gr":"Rodney"},{"t":"s","m":"2026-03","gr":"Rodney","mot":"Problemas de Saúde","gv":"Lais"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Problemas de Saúde","gv":"Sem GV identificado"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Problemas de Saúde","gv":"Sandro José"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-03","gr":"Takeashi","mot":"Distância","gv":"Sandro José"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Distância","gv":"Sandro José"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Mudança de Cidade / Estado","gv":"Sandro José"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-01","gr":"Rodney"},{"t":"s","m":"2026-04","gr":"Rodney","mot":"Problemas de Saúde","gv":"Lais"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Distância","gv":"Sandro José"},{"t":"e","m":"2026-02","gr":"Patricia"},{"t":"s","m":"2026-04","gr":"Patricia","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-01","gr":"Patricia"},{"t":"s","m":"2026-04","gr":"Patricia","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Baixa performance","gv":"Sandro José"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Sandro José"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-04","gr":"Takeashi","mot":"Problemas de Saúde","gv":"Sandro José"},{"t":"e","m":"2026-03","gr":"Rodney"},{"t":"s","m":"2026-04","gr":"Rodney","mot":"Desistente da Incubadora","gv":"Lais"},{"t":"e","m":"2026-03","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Relacionamento com o Gestor","gv":"Bruno"},{"t":"e","m":"2026-04","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Baixa performance","gv":"Aline Ribeiro"},{"t":"e","m":"2026-01","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Baixa performance","gv":"Bruno"},{"t":"e","m":"2026-02","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Baixa performance","gv":"Bruno"},{"t":"e","m":"2026-02","gr":"Takeashi"},{"t":"s","m":"2026-05","gr":"Takeashi","mot":"Baixa performance","gv":"Sandro José"},{"t":"e","m":"2026-04","gr":"Rodney"},{"t":"s","m":"2026-05","gr":"Rodney","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-03","gr":"Rodney"},{"t":"s","m":"2026-05","gr":"Rodney","mot":"Relacionamento com o Gestor","gv":"Lais"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-05","gr":"Rodney","mot":"Distância","gv":"Dimas Azevedo"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-05","gr":"Rodney","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-05","gr":"Rodney","mot":"Desistente da Incubadora","gv":"Graziela Pires"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-05","gr":"Rodney","mot":"Abandono","gv":"Sem GV identificado"},{"t":"e","m":"2026-05","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Falta de recurso financeiro","gv":"Sem GV identificado"},{"t":"e","m":"2026-04","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-05","gr":"Takeashi"},{"t":"s","m":"2026-05","gr":"Takeashi","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-05","gr":"Rodney","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-02","gr":"Patricia"},{"t":"s","m":"2026-05","gr":"Patricia","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-04","gr":"Takeashi"},{"t":"s","m":"2026-06","gr":"Takeashi","mot":"Baixa performance","gv":"Sandro José"},{"t":"e","m":"2026-04","gr":"Patricia"},{"t":"s","m":"2026-06","gr":"Patricia","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-04","gr":"Rodney"},{"t":"s","m":"2026-06","gr":"Rodney","mot":"Relacionamento com o Gestor","gv":"Gabriel Barbosa"},{"t":"e","m":"2026-05","gr":"Takeashi"},{"t":"s","m":"2026-06","gr":"Takeashi","mot":"Baixa performance","gv":"Sandro José"},{"t":"e","m":"2026-04","gr":"Takeashi"},{"t":"s","m":"2026-06","gr":"Takeashi","mot":"Baixa performance","gv":"Sandro José"},{"t":"e","m":"2026-02","gr":"Patricia"},{"t":"s","m":"2026-06","gr":"Patricia","mot":"Baixa performance","gv":"Bruno"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-06","gr":"Rodney","mot":"Relacionamento com o Gestor","gv":"Gabriel Barbosa"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-06","gr":"Rodney","mot":"Relacionamento com o Gestor","gv":"Luiz Antônio"},{"t":"e","m":"2026-05","gr":"Takeashi"},{"t":"s","m":"2026-06","gr":"Takeashi","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-06","gr":"Rodney","mot":"Concorrência","gv":"Luiz Antônio"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-06","gr":"Rodney","mot":"Oportunidade CLT","gv":"Gabriel Barbosa"},{"t":"e","m":"2026-04","gr":"Takeashi"},{"t":"s","m":"2026-06","gr":"Takeashi","mot":"Problemas de Saúde","gv":"Sandro José"},{"t":"e","m":"2026-06","gr":"Takeashi"},{"t":"s","m":"2026-07","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Sem GV identificado"},{"t":"e","m":"2026-06","gr":"Takeashi"},{"t":"s","m":"2026-07","gr":"Takeashi","mot":"Problemas de Saúde","gv":"Sem GV identificado"},{"t":"e","m":"2026-06","gr":"Takeashi"},{"t":"s","m":"2026-07","gr":"Takeashi","mot":"Baixa performance","gv":"Aldinei"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-07","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Sandro José"},{"t":"e","m":"2026-01","gr":"Patricia"},{"t":"s","m":"2026-07","gr":"Patricia","mot":"Comportamento Inadequado","gv":"Bruno"},{"t":"e","m":"2026-07","gr":"Takeashi"},{"t":"s","m":"2026-07","gr":"Takeashi","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-06","gr":"Takeashi"},{"t":"s","m":"2026-07","gr":"Takeashi","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Patricia"},{"t":"s","m":"2026-07","gr":"Patricia","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-06","gr":"Takeashi"},{"t":"s","m":"2026-07","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Aldinei"},{"t":"e","m":"2026-07","gr":"Patricia"},{"t":"s","m":"2026-08","gr":"Patricia","mot":"Falta de recurso financeiro","gv":"Leonardo Divaney"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-08","gr":"Rodney","mot":"Baixa performance","gv":"Lais"},{"t":"e","m":"2026-05","gr":"Patricia"},{"t":"s","m":"2026-08","gr":"Patricia","mot":"Falta de recurso financeiro","gv":"Mada"},{"t":"e","m":"2026-06","gr":"Takeashi"},{"t":"s","m":"2026-08","gr":"Takeashi","mot":"Comportamento Inadequado","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Takeashi"},{"t":"s","m":"2026-08","gr":"Takeashi","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-08","gr":"Gustavo","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-05","gr":"Takeashi"},{"t":"s","m":"2026-08","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Sandro José"},{"t":"e","m":"2026-05","gr":"Takeashi"},{"t":"s","m":"2026-08","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Aldinei"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-08","gr":"Rodney","mot":"Comportamento Inadequado","gv":"Lais"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-08","gr":"Gustavo","mot":"Falta de recurso financeiro","gv":"Sem GV identificado"},{"t":"e","m":"2026-05","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Baixa performance","gv":"Luiz Antônio"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Falta de recurso financeiro","gv":"Bianca"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Mudança de Cidade / Estado","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Falta de recurso financeiro","gv":"Bianca"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Concorrência","gv":"Bianca"},{"t":"e","m":"2026-08","gr":"Takeashi"},{"t":"s","m":"2026-09","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Aldinei"},{"t":"e","m":"2026-06","gr":"Takeashi"},{"t":"s","m":"2026-09","gr":"Takeashi","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Distância","gv":"Emerson Feitoza"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Distância","gv":"Bianca"},{"t":"e","m":"2026-03","gr":"Takeashi"},{"t":"s","m":"2026-09","gr":"Takeashi","mot":"Baixa performance","gv":"Aldinei"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Baixa performance","gv":"Mayara"},{"t":"e","m":"2026-06","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Baixa performance","gv":"Luciano Braga"},{"t":"e","m":"2026-07","gr":"Patricia"},{"t":"s","m":"2026-09","gr":"Patricia","mot":"Problemas de Saúde","gv":"Bruno"},{"t":"e","m":"2026-07","gr":"Takeashi"},{"t":"s","m":"2026-09","gr":"Takeashi","mot":"Falta de recurso financeiro","gv":"Aldinei"},{"t":"e","m":"2026-06","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Problemas de Saúde","gv":"Luciano Braga"},{"t":"e","m":"2026-09","gr":"Patricia"},{"t":"s","m":"2026-09","gr":"Patricia","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Baixa performance","gv":"Bianca"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Abandono","gv":"Sem GV identificado"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Problemas de Saúde","gv":"Sem GV identificado"},{"t":"e","m":"2026-07","gr":"Takeashi"},{"t":"s","m":"2026-09","gr":"Takeashi","mot":"Baixa performance","gv":"Ícaro"},{"t":"e","m":"2026-08","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Relacionamento com o Gestor","gv":"Luciano Braga"},{"t":"e","m":"2026-08","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Relacionamento com o Gestor","gv":"Luciano Braga"},{"t":"e","m":"2026-08","gr":"Rodney"},{"t":"s","m":"2026-09","gr":"Rodney","mot":"Concorrência","gv":"Luciano Braga"},{"t":"e","m":"2026-08","gr":"Takeashi"},{"t":"s","m":"2026-09","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Ícaro"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Falta de recurso financeiro","gv":"Mayara"},{"t":"e","m":"2026-08","gr":"Takeashi"},{"t":"s","m":"2026-09","gr":"Takeashi","mot":"Mudança de Cidade / Estado","gv":"Ícaro"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-09","gr":"Gustavo","mot":"Mudança de Cidade / Estado","gv":"Sem GV identificado"},{"t":"e","m":"2026-04","gr":"Takeashi"},{"t":"s","m":"2026-10","gr":"Takeashi","mot":"Baixa performance","gv":"Aldinei"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Desistente da Incubadora","gv":"Ivan"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Distância","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Baixa performance","gv":"Bianca"},{"t":"e","m":"2026-07","gr":"Takeashi"},{"t":"s","m":"2026-10","gr":"Takeashi","mot":"Baixa performance","gv":"Ícaro"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Comportamento Inadequado","gv":"Sem GV identificado"},{"t":"e","m":"2026-09","gr":"Patricia"},{"t":"s","m":"2026-10","gr":"Patricia","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-10","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Baixa performance","gv":"Bianca"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"s","m":"2026-10","gr":"Takeashi","mot":"Desistente da Incubadora","gv":"Sem GV identificado"},{"t":"e","m":"2026-09","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Oportunidade CLT","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-08","gr":"Gustavo"},{"t":"s","m":"2026-10","gr":"Gustavo","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-09","gr":"Takeashi"},{"t":"s","m":"2026-10","gr":"Takeashi","mot":"Baixa performance","gv":"Sem GV identificado"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"s","m":"2026-10","gr":"Takeashi","mot":"Problemas de Saúde","gv":"Aldinei"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"s","m":"2026-10","gr":"Takeashi","mot":"Distância","gv":"Aldinei"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"s","m":"2026-10","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Pina"},{"t":"e","m":"2026-10","gr":"Patricia"},{"t":"s","m":"2026-10","gr":"Patricia","mot":"Relacionamento com o Gestor","gv":"Sem GV identificado"},{"t":"e","m":"2026-10","gr":"Patricia"},{"t":"s","m":"2026-11","gr":"Patricia","mot":"Concorrência","gv":"Sem GV identificado"},{"t":"e","m":"2026-10","gr":"Gustavo"},{"t":"s","m":"2026-11","gr":"Gustavo","mot":"Relacionamento com o Gestor","gv":"Ivan"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"s","m":"2026-11","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Pina"},{"t":"e","m":"2026-10","gr":"Patricia"},{"t":"s","m":"2026-11","gr":"Patricia","mot":"Mudança de Cidade / Estado","gv":"Bruno"},{"t":"e","m":"2026-09","gr":"Takeashi"},{"t":"s","m":"2026-11","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Ícaro"},{"t":"e","m":"2026-10","gr":"Takeashi"},{"t":"s","m":"2026-11","gr":"Takeashi","mot":"Relacionamento com o Gestor","gv":"Pina"},{"t":"e","m":"2026-08","gr":"Takeashi"},{"t":"s","m":"2026-11","gr":"Takeashi","mot":"Problemas de Saúde","gv":"Aldinei"},{"t":"e","m":"2026-10","gr":"Patricia"},{"t":"s","m":"2026-11","gr":"Patricia","mot":"Baixa performance","gv":"Bruno"},{"t":"e","m":"2026-08","gr":"Takeashi"},{"t":"s","m":"2026-11","gr":"Takeashi","mot":"Baixa performance","gv":"Aldinei"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-11","gr":"Gustavo","mot":"Oportunidade CLT","gv":"Ivan"},{"t":"e","m":"2026-07","gr":"Gustavo"},{"t":"s","m":"2026-11","gr":"Gustavo","mot":"Baixa performance","gv":"Mayara"}],
+};
+// ==========================================================
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const NS = "http://www.w3.org/2000/svg";
+const sv = (tag, at) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); return e; };
+const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const MESES = MES.map((_, i) => DADOS.ano + "-" + String(i + 1).padStart(2, "0"));
+const ultimoMes = DADOS.eventos.reduce((a, e) => e.m > a ? e.m : a, MESES[0]);
+const ATE = MESES.filter((m) => m <= ultimoMes);
+$("upd").textContent = DADOS.atualizado;
+let filtro = null; // null = ano todo
+
+function conta(t, m) { return DADOS.eventos.filter((e) => e.t === t && e.m === m).length; }
+
+function linha() {
+  const box = $("linha"); box.textContent = "";
+  const W = 1000, H = 380, L = 44, R = 20, T = 30, B = 58;
+  const ent = MESES.map((m) => conta("e", m)), sai = MESES.map((m) => conta("s", m));
+  const max = Math.max(5, ...ent, ...sai);
+  const top = Math.ceil(max / 10) * 10;
+  const x = (i) => L + (W - L - R) * (i + .5) / 12;
+  const y = (v) => T + (H - T - B) * (top - v) / (2 * top);
+  const s = sv("svg", {viewBox: `0 0 ${W} ${H}`, width: "100%", style: "display:block"});
+  // grade
+  for (let v = -top; v <= top; v += top / 2) {
+    s.appendChild(sv("line", {x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: v === 0 ? "#93a3c8" : "#22376b", "stroke-width": v === 0 ? 1.5 : 1}));
+    const t = sv("text", {x: L - 8, y: y(v) + 4, "text-anchor": "end", "font-size": 12, fill: "#93a3c8"}); t.textContent = Math.abs(v); s.appendChild(t);
+  }
+  // destaque do mês filtrado e meses
+  MESES.forEach((m, i) => {
+    if (filtro === m) s.appendChild(sv("rect", {x: x(i) - (W - L - R) / 24, y: T - 18, width: (W - L - R) / 12, height: H - T - B + 18, fill: "rgba(255,182,39,.10)", rx: 8}));
+    const t = sv("text", {x: x(i), y: H - 14, "text-anchor": "middle", "font-size": 13, fill: m > ultimoMes ? "#3a5190" : (filtro === m ? "#ffb627" : "#93a3c8"), "font-weight": filtro === m ? 700 : 500}); t.textContent = MES[i]; s.appendChild(t);
+  });
+  const n = ATE.length;
+  const serie = (vals, sinal, cor) => {
+    const pts = vals.slice(0, n).map((v, i) => `${x(i)},${y(sinal * v)}`).join(" ");
+    s.appendChild(sv("polyline", {points: pts, fill: "none", stroke: cor, "stroke-width": 3, "stroke-linejoin": "round"}));
+    vals.slice(0, n).forEach((v, i) => {
+      s.appendChild(sv("circle", {cx: x(i), cy: y(sinal * v), r: 5, fill: cor, stroke: "#12224a", "stroke-width": 2}));
+      const t = sv("text", {x: x(i), y: y(sinal * v) + (sinal > 0 ? -11 : 21), "text-anchor": "middle", "font-size": 14, "font-weight": 700, fill: cor}); t.textContent = v; s.appendChild(t);
+    });
+  };
+  // saldo (barras finas)
+  ent.slice(0, n).forEach((v, i) => {
+    const d = v - sai[i]; if (!d) return;
+    s.appendChild(sv("rect", {x: x(i) - 5, y: Math.min(y(0), y(d)), width: 10, height: Math.abs(y(d) - y(0)), fill: "#ffb627", opacity: .55, rx: 2}));
+  });
+  serie(ent, 1, "#3ddc97");
+  serie(sai, -1, "#ff6b6b");
+  box.appendChild(s);
+}
+
+function barras(box, contagem, ordem) {
+  box.textContent = "";
+  let rows = Object.entries(contagem);
+  if (ordem) rows = ordem.map((k) => [k, contagem[k] || 0]); else rows.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"));
+  const tot = rows.reduce((a, r) => a + r[1], 0);
+  if (!tot) { box.appendChild(el("div", "vazio", "Nenhum descredenciamento no período.")); return; }
+  const max = Math.max(...rows.map((r) => r[1]));
+  const g = el("div", "hb");
+  rows.forEach(([k, v]) => {
+    const ht = el("div", "ht"); const i = el("i"); i.style.width = (v / max * 80) + "%"; if (!v) i.style.minWidth = "0";
+    const b = el("b", null, v); b.appendChild(el("small", null, Math.round(v / tot * 100) + "%")); b.style.left = "calc(" + (v / max * 80) + "% + 8px)";
+    ht.append(i, b); g.append(el("div", "hn", k), ht);
+  });
+  box.appendChild(g);
+}
+
+function render() {
+  const noPeriodo = (e) => !filtro || e.m === filtro;
+  const ev = DADOS.eventos.filter(noPeriodo);
+  const ne = ev.filter((e) => e.t === "e").length, ns = ev.filter((e) => e.t === "s").length;
+  $("s-in").textContent = ne; $("s-out").textContent = ns;
+  $("s-saldo").textContent = (ne - ns > 0 ? "+" : "") + (ne - ns);
+  $("s-saldo").style.color = ne - ns >= 0 ? "var(--in)" : "var(--out)";
+  const saidas = ev.filter((e) => e.t === "s");
+  const mot = {}, gv = {}, gr = {};
+  saidas.forEach((e) => {
+    mot[e.mot] = (mot[e.mot] || 0) + 1;
+    if (DADOS.gvsAtivos.includes(e.gv)) gv[e.gv] = (gv[e.gv] || 0) + 1;
+    if (DADOS.grsAtivos.includes(e.gr)) gr[e.gr] = (gr[e.gr] || 0) + 1;
+  });
+  $("sub-mot").textContent = (filtro ? "Descredenciados em " + MES[+filtro.slice(5) - 1] + "/" + DADOS.ano : "Todos os descredenciados de " + DADOS.ano) + " (" + ns + ").";
+  barras($("g-mot"), mot);
+  const gvOrd = Object.keys(gv).sort((a, b) => gv[b] - gv[a] || a.localeCompare(b, "pt-BR"));
+  barras($("g-gv"), gv, DADOS.gvsAtivos.slice().sort((a, b) => (gv[b] || 0) - (gv[a] || 0) || a.localeCompare(b, "pt-BR")));
+  barras($("g-gr"), gr, DADOS.grsAtivos.slice().sort((a, b) => (gr[b] || 0) - (gr[a] || 0) || a.localeCompare(b, "pt-BR")));
+  linha();
+  [...$("meses").children].forEach((b) => b.setAttribute("aria-pressed", (b.dataset.m || null) === (filtro || null) ? "true" : "false"));
+}
+
+(function filtros() {
+  const box = $("meses");
+  const add = (txt, m, dis) => { const b = el("button", "fbtn", txt); b.type = "button"; if (m) b.dataset.m = m; b.disabled = !!dis; b.addEventListener("click", () => { filtro = m || null; render(); }); box.appendChild(b); };
+  add("Ano todo", null);
+  MESES.forEach((m, i) => add(MES[i], m, m > ultimoMes));
+})();
+render();
+</script>
+<script src="../auto-refresh.js" defer></script>
+</body>
+</html>
