@@ -14,6 +14,4 @@ def nome_bonito(n, base):
 
 REFRESH_PLANILHA = os.environ.get('REFRESH_PLANILHA')  # horário do último refresh da planilha (Auto Refresh Execution Log), ex.: 15/11/2026 17:48
 def grava_refresh(s):
-    # atualização forçada (pedida pelo usuário): "Dados da planilha até" = agora. Rodada agendada: REFRESH_PLANILHA = horário do log da planilha.
-    v = REFRESH_PLANILHA or agora().strftime('%d/%m/%Y %H:%M')
-    return re.sub(r'  refresh: "[^"]*",', lambda _: f'  refresh: "{v}",', s, count=1)
+    return re.sub(r'  refresh: "[^"]*",', lambda _: f'  refresh: "{REFRESH_PLANILHA}",', s, count=1) if REFRESH_PLANILHA else s
