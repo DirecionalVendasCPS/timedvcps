@@ -9,6 +9,7 @@
 # - Tendência: semanas de novembro da Calc_Data (OPs AG VIS PAS VN), com a mesma regra das vendas migradas na semana 08/11.
 # - Empreendimentos e origens: contagens da Calc_Data (só as que têm venda).
 import re, sys, json
+sys.path.insert(0, 'tools'); from comum import *
 P = 'gestao/index.html'
 SEM = ["2026-11-01", "2026-11-08", "2026-11-15", "2026-11-22", "2026-11-29"]
 MIG = {"Mada": 10, "Bruno": 2}  # vendas de 10/11 migradas de meses anteriores (aba Vendas: Mada 10, Bruno 2)
@@ -65,7 +66,8 @@ if e: D["empreendimentos"] = [{"empreendimento": n, "vendas": v} for n, v in e]
 if o: D["origens"] = [{"origem": n, "vendas": v} for n, v in o]
 
 s = s[:m.start(1)] + json.dumps(D, ensure_ascii=False) + s[m.end(1):]
-s = re.sub(r'const ATUALIZADO = "[^"]*";', 'const ATUALIZADO = "%s";' % sys.argv[1].replace(" ", " às "), s)
+s = re.sub(r'const ATUALIZADO = "[^"]*";', 'const ATUALIZADO = "%s";' % agora().strftime('%d/%m às %H:%M'), s)
+s = re.sub(r'const REFRESH = "[^"]*";', 'const REFRESH = "%s";' % (sys.argv[1] if len(sys.argv[1].split('/')) > 2 else sys.argv[1].split(' ')[0] + '/' + agora().strftime('%Y') + ' ' + sys.argv[1].split(' ')[1]), s)
 open(P, 'w', encoding='utf-8').write(s)
 print("realizado (sem as vendas migradas):", tot if False else {k: sum(r[k] for r in D["realizado"]) for k in tot})
 print("tendência:", [(t["semana"], t["ops"], t["vn"]) for t in D["tendencia"]])

@@ -191,3 +191,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
   - Grupo **"Time Corretores Direcional Campinas"**: prints do time (placar/total e ranking; no corujão também o gráfico).
   - No privado, cada GR o seu: **"GR Paty"** (Patricia), **"GR Takeashi"**, **"GR gustavo moura"** (Gustavo).
 - Nunca enviar sem o ok do usuário.
+
+## Linha "Dados da planilha até" (todas as páginas com botão Atualizar)
+- Cada página mostra: Atualizado em (momento em que o site foi atualizado), **Dados da planilha até** (horário do último refresh da planilha, do "Auto Refresh Execution Log") e Próxima atualização.
+- Rodar os scripts com `REFRESH_PLANILHA="DD/MM/AAAA HH:MM"` (agend_hoje, conv_atualizar, vendas_atualizar); visitas, corretores e gestão recebem o horário no 1º argumento. Contadores (Agendamentos, Conversão, Vendas) usam o log da planilha "Contadores"; Visitas, Corretores e Gestão usam o da planilha de Gestão.

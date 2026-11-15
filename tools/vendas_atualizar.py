@@ -55,6 +55,7 @@ mudou = antes != novo
 s = s[:ini] + novo + s[fim:]
 s = re.sub(r'  mes: "[^"]+",', f'  mes: "{vig}",', s, count=1)
 s = re.sub(r'  atualizado: "[^"]+",', f'  atualizado: "{agora().strftime("%Y-%m-%dT%H:%M:00-03:00")}",', s, count=1)
+s = grava_refresh(s)
 open(P, 'w').write(s)
 from collections import Counter
 c = Counter((v['mes'], v['tipo']) for v in vendas)

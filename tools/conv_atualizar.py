@@ -27,6 +27,7 @@ s = re.sub(r'  meses: \{.*\},\n', lambda _: '  meses: ' + json.dumps(out, ensure
 s = re.sub(r'  equipe: \[\n.*?\n  \],', lambda _: '  equipe: [\n' + equipe + '\n  ],', s, count=1, flags=re.S)
 s = re.sub(r'  mes: "[^"]+",', f'  mes: "{agora().strftime("%Y-%m")}",', s, count=1)
 s = re.sub(r'  atualizado: "[^"]+",', f'  atualizado: "{agora().strftime("%Y-%m-%dT%H:%M:00-03:00")}",', s, count=1)
+s = grava_refresh(s)
 open(P, 'w').write(s)
 for k, v in out.items():
     a, b = sum(x[0] for x in v.values()), sum(x[1] for x in v.values())

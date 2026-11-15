@@ -23,6 +23,7 @@ atual = dict(sorted(atual.items()))
 s = s[:mm.start(1)] + json.dumps(atual, ensure_ascii=False, separators=(',', ':')) + s[mm.end(1):]
 s = re.sub(r'  hoje: "[^"]+",', f'  hoje: "{hoje}",', s, count=1)
 s = re.sub(r'  atualizado: "[^"]+",', f'  atualizado: "{agora().strftime("%Y-%m-%dT%H:%M:00-03:00")}",', s, count=1)
+s = grava_refresh(s)
 open(P, 'w').write(s)
 for k in sorted(set(dias) | {hoje}):
     print(k, antes.get(k, 0), '->', sum(atual.get(k, {}).values()))

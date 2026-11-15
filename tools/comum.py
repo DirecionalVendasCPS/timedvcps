@@ -1,5 +1,5 @@
 # funções comuns dos scripts de atualização (rodar a partir da raiz do repositório)
-import re, unicodedata, datetime, zoneinfo
+import os, re, unicodedata, datetime, zoneinfo
 TZ = zoneinfo.ZoneInfo('America/Sao_Paulo')
 agora = lambda: datetime.datetime.now(TZ)
 norm = lambda s: ' '.join(unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode().upper().split())
@@ -11,3 +11,7 @@ def nome_bonito(n, base):
     k = ALIAS.get(norm(n), norm(n))
     if k in base: return base[k][0]
     return ' '.join(w.lower() if w.lower() in ('de', 'da', 'do', 'dos', 'das') else w[:1].upper() + w[1:].lower() for w in n.split())
+
+REFRESH_PLANILHA = os.environ.get('REFRESH_PLANILHA')  # horário do último refresh da planilha (Auto Refresh Execution Log), ex.: 15/11/2026 17:48
+def grava_refresh(s):
+    return re.sub(r'  refresh: "[^"]*",', lambda _: f'  refresh: "{REFRESH_PLANILHA}",', s, count=1) if REFRESH_PLANILHA else s

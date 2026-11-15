@@ -6,7 +6,7 @@
 #   linhas no formato "AAAA-M-D NOME DO CORRETOR quantidade". A página é refeita inteira a partir do início indicado.
 # agendados.txt = visitas agendadas para cada dia (vermelho na página), aba Agendamentos (gid=885964070):
 #   select E,J,count(A) where E >= date 'AAAA-MM-DD' group by E,J      (E = Data agendada, J = corretor)
-# O 1º argumento é o horário do último refresh dessa planilha (Auto Refresh Execution Log).
+# O 1º argumento é o horário do último refresh dessa planilha (Auto Refresh Execution Log), ex.: "15/11/2026 17:47".
 import re, sys, json, collections
 sys.path.insert(0, 'tools'); from comum import *
 P = 'visitas/index.html'
