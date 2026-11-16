@@ -102,13 +102,20 @@ tbody tr{cursor:pointer}
 details{font-size:13px;color:var(--muted);line-height:1.55}
 details summary{cursor:pointer;color:var(--ink)}
 footer{font-size:12px;color:var(--muted)}
+.meses{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin:14px 0 4px;clear:both}
+.mes-btn{font:inherit;font-size:14px;font-weight:700;padding:8px 0;border-radius:999px;border:1px solid var(--line, #2a3b66);background:transparent;color:inherit;cursor:pointer;width:100%}
+.mes-btn[aria-pressed="true"]{background:#ffb627;border-color:#ffb627;color:#0b1630}
+.mes-btn:disabled{opacity:.3;cursor:default}
+.mes-aviso{font-size:13px;color:#ffb627;margin:4px 0 0}
+@media (min-width:760px){.meses{margin-top:62px}}
+@media (max-width:640px){.meses{grid-template-columns:repeat(6,1fr)}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <a class="back" href="../">← Direcional Vendas CPS</a>
-    <div class="eyebrow">Direcional Vendas · Campinas · Novembro/26</div>
+    <div class="eyebrow">Direcional Vendas · Campinas · <span id="mes-eyebrow">Novembro/26</span></div>
     <h1>Gestão Semanal dos GVs</h1>
     <div class="top-right">
       <a class="hist-btn" href="ativacoes.html">Histórico de credenciados e descredenciamentos 2026 →</a>
@@ -119,6 +126,7 @@ footer{font-size:12px;color:var(--muted)}
       <div class="upd">Atualizado em <span id="upd">—</span><br>Dados da planilha até <b id="refresh">—</b><br>Próxima atualização: <span id="prox">quando pedir pelo botão Atualizar</span></div>
       <div class="upd-ok" id="upd-ok" hidden>"atualizar gestão semanal" copiado. Cole na conversa e envie.</div>
     </div>
+    <div class="meses" id="meses" role="group" aria-label="Escolha o mês"></div>
     <p class="lead" id="lead"></p>
     <div class="ctrls">
       <label for="f-gr">Gerente Regional (GR)<select id="f-gr"></select></label>
@@ -133,7 +141,7 @@ footer{font-size:12px;color:var(--muted)}
 
   <section>
     <h2>Resultado do mês x meta</h2>
-    <p class="sub">Número grande = realizado em novembro. A barra mostra quanto da meta do mês já foi feito; o traço branco marca onde deveria estar até esta semana.</p>
+    <p class="sub" id="sub-kpi">Número grande = realizado em novembro. A barra mostra quanto da meta do mês já foi feito; o traço branco marca onde deveria estar até esta semana.</p>
     <div class="grid5" id="kpis"></div>
   </section>
 
@@ -151,14 +159,14 @@ footer{font-size:12px;color:var(--muted)}
     </section>
     <section class="card">
       <h2>Ranking dos GVs</h2>
-      <p class="sub">Realizado no mês e % do esperado até esta semana. Toque em um GV para filtrar.</p>
+      <p class="sub" id="sub-rank">Realizado no mês e % do esperado até esta semana. Toque em um GV para filtrar.</p>
       <div class="twrap"><table><thead><tr><th>GV</th><th>OPs</th><th>AG</th><th>VIS</th><th>PAS</th><th>Vendas</th></tr></thead><tbody id="ranking"></tbody></table></div>
     </section>
   </div>
 
   <section>
     <h2>Últimas 6 semanas · equipe toda</h2>
-    <p class="sub">Tendência da equipe de Campinas. Não muda com os filtros de GR/GV.</p>
+    <p class="sub">Tendência da equipe de Campinas até hoje. Não muda com o mês escolhido nem com os filtros de GR/GV.</p>
     <div class="grid5" id="tendencia"></div>
   </section>
 
@@ -170,8 +178,9 @@ footer{font-size:12px;color:var(--muted)}
   <details>
     <summary>Como ler este painel</summary>
     <ul>
-      <li><b>Meta do mês</b>: soma das metas de cada GV (aba Novembro/26). Meta semanal = meta do mês ÷ 5.</li>
-      <li><b>Esperado até agora</b>: meta do mês × semanas já iniciadas ÷ 5. No meio da semana é normal ficar abaixo de 100%.</li>
+      <li><b>Meta do mês</b>: soma das metas de cada GV (aba Novembro/26). Meta semanal = meta do mês ÷ número de semanas do mês.</li>
+      <li><b>Esperado até agora</b>: meta do mês × semanas já iniciadas ÷ semanas do mês. No meio da semana é normal ficar abaixo de 100%.</li>
+      <li><b>Meses anteriores</b>: escolha Jul, Ago, Set ou Out na linha dos meses. Os números vêm da aba do mês (Julho/26, Agosto/26…), com os GVs e GRs daquele mês; o mês fechado é comparado com a meta inteira. Em julho e agosto a planilha não tem vendas por semana.</li>
       <li><b>% do esperado</b>: realizado ÷ esperado. Verde 100%+, amarelo 70–99%, vermelho abaixo de 70%.</li>
       <li><b>Vendas de novembro</b>: as 13 vendas de meses anteriores migradas para novembro não contam.</li>
       <li><b>Agendamentos</b> incluem visitas já marcadas para semanas futuras.</li>
@@ -182,13 +191,18 @@ footer{font-size:12px;color:var(--muted)}
 
 <script>
 const DADOS = {"metas": [{"gv": "Aldinei", "gr": "Takeashi", "nome": "Aldinei Rezende Fagundes", "ops": 180, "ag": 90, "vis": 30, "pas": 12, "vn": 3}, {"gv": "Ícaro", "gr": "Takeashi", "nome": "Ícaro Zivko Miranda", "ops": 180, "ag": 90, "vis": 30, "pas": 12, "vn": 3}, {"gv": "Pina", "gr": "Takeashi", "nome": "Shirley do Nascimento Pina", "ops": 60, "ag": 30, "vis": 10, "pas": 4, "vn": 1}, {"gv": "Mada", "gr": "Patricia", "nome": "Madeleine Borges", "ops": 720, "ag": 360, "vis": 120, "pas": 48, "vn": 12}, {"gv": "Bruno", "gr": "Patricia", "nome": "Bruno Miccoli de Oliveira", "ops": 240, "ag": 120, "vis": 40, "pas": 16, "vn": 4}, {"gv": "Sandro", "gr": "Patricia", "nome": "Sandro Antonio da Silva", "ops": 60, "ag": 30, "vis": 10, "pas": 4, "vn": 1}, {"gv": "Ivan", "gr": "Gustavo", "nome": "Ivan de Aguiar Nascimento", "ops": 300, "ag": 150, "vis": 50, "pas": 20, "vn": 5}, {"gv": "Débora", "gr": "Gustavo", "nome": "Débora (equipe a ajustar na planilha)", "ops": 60, "ag": 30, "vis": 10, "pas": 4, "vn": 1}], "realizado": [{"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-01", "ops": 165, "ag": 19, "vis": 9, "pas": 0, "vn": 0}, {"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-08", "ops": 94, "ag": 18, "vis": 7, "pas": 4, "vn": 0}, {"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-15", "ops": 0, "ag": 2, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Aldinei", "gr": "Takeashi", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-01", "ops": 102, "ag": 16, "vis": 6, "pas": 0, "vn": 0}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-08", "ops": 73, "ag": 18, "vis": 11, "pas": 1, "vn": 1}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-15", "ops": 6, "ag": 1, "vis": 1, "pas": 0, "vn": 0}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Ícaro", "gr": "Takeashi", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-01", "ops": 0, "ag": 15, "vis": 3, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-08", "ops": 0, "ag": 13, "vis": 3, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Pina", "gr": "Takeashi", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-01", "ops": 234, "ag": 51, "vis": 16, "pas": 7, "vn": 0}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-08", "ops": 162, "ag": 74, "vis": 16, "pas": 13, "vn": 2}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-15", "ops": 10, "ag": 2, "vis": 1, "pas": 0, "vn": 0}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Mada", "gr": "Patricia", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-01", "ops": 112, "ag": 16, "vis": 3, "pas": 1, "vn": 0}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-08", "ops": 141, "ag": 22, "vis": 7, "pas": 1, "vn": 1}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-15", "ops": 9, "ag": 5, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Bruno", "gr": "Patricia", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-01", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-08", "ops": 1, "ag": 1, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-15", "ops": 0, "ag": 1, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Sandro", "gr": "Patricia", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-01", "ops": 160, "ag": 18, "vis": 8, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-08", "ops": 184, "ag": 37, "vis": 4, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-15", "ops": 10, "ag": 13, "vis": 2, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Ivan", "gr": "Gustavo", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-01", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-08", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-15", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-22", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}, {"gv": "Débora", "gr": "Gustavo", "semana": "2026-11-29", "ops": 0, "ag": 0, "vis": 0, "pas": 0, "vn": 0}], "tendencia": [{"semana": "2026-10-11", "ops": 704, "ag": 100, "vis": 34, "pas": 10, "vn": 6}, {"semana": "2026-10-18", "ops": 531, "ag": 155, "vis": 52, "pas": 10, "vn": 2}, {"semana": "2026-10-25", "ops": 828, "ag": 110, "vis": 32, "pas": 10, "vn": 6}, {"semana": "2026-11-01", "ops": 773, "ag": 135, "vis": 45, "pas": 8, "vn": 0}, {"semana": "2026-11-08", "ops": 655, "ag": 183, "vis": 48, "pas": 19, "vn": 4}, {"semana": "2026-11-15", "ops": 35, "ag": 24, "vis": 4, "pas": 0, "vn": 0}], "empreendimentos": [{"empreendimento": "Alta Vista Mangará", "vendas": 11}, {"empreendimento": "Cores da Mata Mangará", "vendas": 4}, {"empreendimento": "Seleto Amoreiras", "vendas": 1}], "origens": [{"origem": "WhatsApp", "vendas": 5}, {"origem": "Oferta do corretor", "vendas": 7}, {"origem": "Stand", "vendas": 1}, {"origem": "Indica mais", "vendas": 1}, {"origem": "Portal Vertical", "vendas": 1}]};
+const HISTORICO = {"2026-07":{"semanas":["2026-06-28","2026-07-05","2026-07-12","2026-07-19"],"metas":[{"gv":"Aldinei","gr":"Takeashi","nome":"Aldinei Rezende Fagundes","ops":240,"ag":120,"vis":40,"pas":16,"vn":4},{"gv":"Jonatha","gr":"Takeashi","nome":"Jonatha Gomes Morais de Lima","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Mada","gr":"Patricia","nome":"Madeleine Borges","ops":240,"ag":120,"vis":40,"pas":16,"vn":4},{"gv":"Leonardo","gr":"Patricia","nome":"Leonardo Divaney Alves","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Vanessa","gr":"Rodney","nome":"Vanessa de Albuquerque Sá Lobo","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Feitosa","gr":"Rodney","nome":"Emerson José Feitoza","ops":60,"ag":30,"vis":10,"pas":4,"vn":1},{"gv":"Walace","gr":"Gustavo","nome":"Walace Martins de Jesus","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Mayara","gr":"Gustavo","nome":"Mayara Soares Diogo","ops":60,"ag":30,"vis":10,"pas":4,"vn":1},{"gv":"Bianca","gr":"Gustavo","nome":"Bianca Nascimento Sabino da Silva","ops":60,"ag":30,"vis":10,"pas":4,"vn":1}],"realizado":[{"gv":"Aldinei","gr":"Takeashi","semana":"2026-06-28","ops":116,"ag":22,"vis":8,"pas":4,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-07-05","ops":119,"ag":20,"vis":11,"pas":1,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-07-12","ops":105,"ag":23,"vis":6,"pas":2,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-07-19","ops":111,"ag":20,"vis":13,"pas":1,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-06-28","ops":0,"ag":2,"vis":2,"pas":0,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-07-05","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-07-12","ops":0,"ag":1,"vis":1,"pas":0,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-07-19","ops":0,"ag":3,"vis":2,"pas":0,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-06-28","ops":137,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-07-05","ops":125,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-07-12","ops":98,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-07-19","ops":195,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Leonardo","gr":"Patricia","semana":"2026-06-28","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Leonardo","gr":"Patricia","semana":"2026-07-05","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Leonardo","gr":"Patricia","semana":"2026-07-12","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Leonardo","gr":"Patricia","semana":"2026-07-19","ops":0,"ag":24,"vis":4,"pas":0,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-06-28","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-07-05","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-07-12","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-07-19","ops":0,"ag":3,"vis":2,"pas":0,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-06-28","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-07-05","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-07-12","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-07-19","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-06-28","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-07-05","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-07-12","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-07-19","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-06-28","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-07-05","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-07-12","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-07-19","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-06-28","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-07-05","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-07-12","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-07-19","ops":0,"ag":0,"vis":0,"pas":0,"vn":0}]},"2026-08":{"semanas":["2026-08-02","2026-08-09","2026-08-16","2026-08-23"],"metas":[{"gv":"Aldinei","gr":"Takeashi","nome":"Aldinei Rezende Fagundes","ops":240,"ag":120,"vis":40,"pas":16,"vn":4},{"gv":"Jonatha","gr":"Takeashi","nome":"Jonatha Gomes Morais de Lima","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Mada","gr":"Patricia","nome":"Madeleine Borges","ops":240,"ag":120,"vis":40,"pas":16,"vn":4},{"gv":"Vanessa","gr":"Rodney","nome":"Vanessa de Albuquerque Sá Lobo","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Feitosa","gr":"Rodney","nome":"Emerson José Feitoza","ops":60,"ag":30,"vis":10,"pas":4,"vn":1},{"gv":"Walace","gr":"Gustavo","nome":"Walace Martins de Jesus","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Mayara","gr":"Gustavo","nome":"Mayara Soares Diogo","ops":60,"ag":30,"vis":10,"pas":4,"vn":1},{"gv":"Bianca","gr":"Gustavo","nome":"Bianca Nascimento Sabino da Silva","ops":60,"ag":30,"vis":10,"pas":4,"vn":1}],"realizado":[{"gv":"Aldinei","gr":"Takeashi","semana":"2026-08-02","ops":102,"ag":19,"vis":10,"pas":1,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-08-09","ops":121,"ag":23,"vis":9,"pas":2,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-08-16","ops":105,"ag":12,"vis":9,"pas":0,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-08-23","ops":89,"ag":27,"vis":7,"pas":1,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-08-02","ops":0,"ag":3,"vis":2,"pas":0,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-08-09","ops":0,"ag":10,"vis":5,"pas":0,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-08-16","ops":0,"ag":8,"vis":3,"pas":0,"vn":0},{"gv":"Jonatha","gr":"Takeashi","semana":"2026-08-23","ops":0,"ag":1,"vis":0,"pas":0,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-08-02","ops":409,"ag":46,"vis":17,"pas":5,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-08-09","ops":264,"ag":40,"vis":19,"pas":4,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-08-16","ops":352,"ag":54,"vis":28,"pas":6,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-08-23","ops":329,"ag":38,"vis":14,"pas":5,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-08-02","ops":0,"ag":6,"vis":2,"pas":0,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-08-09","ops":0,"ag":15,"vis":8,"pas":0,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-08-16","ops":0,"ag":3,"vis":1,"pas":0,"vn":0},{"gv":"Vanessa","gr":"Rodney","semana":"2026-08-23","ops":0,"ag":6,"vis":3,"pas":0,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-08-02","ops":61,"ag":2,"vis":1,"pas":0,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-08-09","ops":140,"ag":10,"vis":3,"pas":1,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-08-16","ops":140,"ag":1,"vis":1,"pas":0,"vn":0},{"gv":"Feitosa","gr":"Rodney","semana":"2026-08-23","ops":133,"ag":9,"vis":3,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-08-02","ops":0,"ag":3,"vis":1,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-08-09","ops":0,"ag":14,"vis":1,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-08-16","ops":0,"ag":7,"vis":1,"pas":0,"vn":0},{"gv":"Walace","gr":"Gustavo","semana":"2026-08-23","ops":0,"ag":5,"vis":2,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-08-02","ops":26,"ag":5,"vis":0,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-08-09","ops":27,"ag":4,"vis":1,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-08-16","ops":34,"ag":7,"vis":2,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-08-23","ops":53,"ag":9,"vis":2,"pas":2,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-08-02","ops":14,"ag":3,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-08-09","ops":22,"ag":7,"vis":1,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-08-16","ops":22,"ag":6,"vis":1,"pas":1,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-08-23","ops":32,"ag":6,"vis":1,"pas":0,"vn":0}]},"2026-09":{"semanas":["2026-08-30","2026-09-06","2026-09-13","2026-09-20","2026-09-27"],"metas":[{"gv":"Aldinei","gr":"Takeashi","nome":"Aldinei Rezende Fagundes","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Ícaro","gr":"Takeashi","nome":"Ícaro Zivko Miranda","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Mada","gr":"Patricia","nome":"Madeleine Borges","ops":480,"ag":240,"vis":80,"pas":32,"vn":8},{"gv":"Bruno","gr":"Patricia","nome":"Bruno Miccoli de Oliveira","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Luciano","gr":"Rodney","nome":"Luciano Calvitti Braga","ops":60,"ag":30,"vis":10,"pas":4,"vn":1},{"gv":"Francisco","gr":"Rodney","nome":"Francisco Luiz Ferreira de Figueiredo","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Ivan","gr":"Gustavo","nome":"Ivan de Aguiar Nascimento","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Mayara","gr":"Gustavo","nome":"Mayara Soares Diogo","ops":60,"ag":30,"vis":10,"pas":4,"vn":1},{"gv":"Bianca","gr":"Gustavo","nome":"Bianca Nascimento Sabino da Silva","ops":120,"ag":60,"vis":20,"pas":8,"vn":2}],"realizado":[{"gv":"Aldinei","gr":"Takeashi","semana":"2026-08-30","ops":77,"ag":21,"vis":6,"pas":0,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-09-06","ops":120,"ag":15,"vis":2,"pas":1,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-09-13","ops":43,"ag":9,"vis":3,"pas":0,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-09-20","ops":62,"ag":10,"vis":5,"pas":0,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-09-27","ops":93,"ag":6,"vis":5,"pas":1,"vn":1},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-08-30","ops":127,"ag":4,"vis":2,"pas":0,"vn":0},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-09-06","ops":163,"ag":16,"vis":2,"pas":0,"vn":0},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-09-13","ops":142,"ag":18,"vis":5,"pas":1,"vn":0},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-09-20","ops":111,"ag":32,"vis":7,"pas":0,"vn":0},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-09-27","ops":88,"ag":13,"vis":6,"pas":1,"vn":1},{"gv":"Mada","gr":"Patricia","semana":"2026-08-30","ops":271,"ag":24,"vis":8,"pas":5,"vn":3},{"gv":"Mada","gr":"Patricia","semana":"2026-09-06","ops":474,"ag":38,"vis":13,"pas":5,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-09-13","ops":544,"ag":67,"vis":23,"pas":6,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-09-20","ops":257,"ag":58,"vis":24,"pas":4,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-09-27","ops":240,"ag":43,"vis":20,"pas":4,"vn":2},{"gv":"Bruno","gr":"Patricia","semana":"2026-08-30","ops":12,"ag":4,"vis":0,"pas":0,"vn":0},{"gv":"Bruno","gr":"Patricia","semana":"2026-09-06","ops":140,"ag":3,"vis":0,"pas":0,"vn":0},{"gv":"Bruno","gr":"Patricia","semana":"2026-09-13","ops":183,"ag":9,"vis":2,"pas":1,"vn":0},{"gv":"Bruno","gr":"Patricia","semana":"2026-09-20","ops":146,"ag":11,"vis":6,"pas":0,"vn":1},{"gv":"Bruno","gr":"Patricia","semana":"2026-09-27","ops":158,"ag":14,"vis":5,"pas":1,"vn":0},{"gv":"Luciano","gr":"Rodney","semana":"2026-08-30","ops":105,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Luciano","gr":"Rodney","semana":"2026-09-06","ops":106,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Luciano","gr":"Rodney","semana":"2026-09-13","ops":590,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Luciano","gr":"Rodney","semana":"2026-09-20","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Luciano","gr":"Rodney","semana":"2026-09-27","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Francisco","gr":"Rodney","semana":"2026-08-30","ops":1,"ag":4,"vis":0,"pas":0,"vn":0},{"gv":"Francisco","gr":"Rodney","semana":"2026-09-06","ops":21,"ag":8,"vis":2,"pas":0,"vn":0},{"gv":"Francisco","gr":"Rodney","semana":"2026-09-13","ops":43,"ag":14,"vis":1,"pas":0,"vn":0},{"gv":"Francisco","gr":"Rodney","semana":"2026-09-20","ops":60,"ag":7,"vis":0,"pas":0,"vn":0},{"gv":"Francisco","gr":"Rodney","semana":"2026-09-27","ops":25,"ag":8,"vis":0,"pas":1,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-08-30","ops":23,"ag":1,"vis":0,"pas":0,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-09-06","ops":203,"ag":11,"vis":2,"pas":0,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-09-13","ops":286,"ag":8,"vis":0,"pas":0,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-09-20","ops":110,"ag":6,"vis":3,"pas":0,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-09-27","ops":196,"ag":6,"vis":0,"pas":0,"vn":1},{"gv":"Mayara","gr":"Gustavo","semana":"2026-08-30","ops":29,"ag":10,"vis":2,"pas":1,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-09-06","ops":38,"ag":7,"vis":0,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-09-13","ops":125,"ag":14,"vis":2,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-09-20","ops":74,"ag":11,"vis":1,"pas":0,"vn":0},{"gv":"Mayara","gr":"Gustavo","semana":"2026-09-27","ops":21,"ag":8,"vis":1,"pas":1,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-08-30","ops":11,"ag":1,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-09-06","ops":21,"ag":3,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-09-13","ops":53,"ag":10,"vis":1,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-09-20","ops":47,"ag":16,"vis":0,"pas":0,"vn":0},{"gv":"Bianca","gr":"Gustavo","semana":"2026-09-27","ops":16,"ag":4,"vis":1,"pas":0,"vn":0}]},"2026-10":{"semanas":["2026-10-04","2026-10-11","2026-10-18","2026-10-25"],"metas":[{"gv":"Aldinei","gr":"Takeashi","nome":"Aldinei Rezende Fagundes","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Ícaro","gr":"Takeashi","nome":"Ícaro Zivko Miranda","ops":180,"ag":90,"vis":30,"pas":12,"vn":3},{"gv":"Pina","gr":"Takeashi","nome":"Shirley do Nascimento Pina","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Mada","gr":"Patricia","nome":"Madeleine Borges","ops":480,"ag":240,"vis":80,"pas":32,"vn":8},{"gv":"Bruno","gr":"Patricia","nome":"Bruno Miccoli de Oliveira","ops":120,"ag":60,"vis":20,"pas":8,"vn":2},{"gv":"Ivan","gr":"Gustavo","nome":"Ivan de Aguiar Nascimento","ops":180,"ag":90,"vis":30,"pas":12,"vn":3}],"realizado":[{"gv":"Aldinei","gr":"Takeashi","semana":"2026-10-04","ops":63,"ag":9,"vis":4,"pas":1,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-10-11","ops":102,"ag":3,"vis":3,"pas":2,"vn":1},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-10-18","ops":42,"ag":8,"vis":4,"pas":0,"vn":0},{"gv":"Aldinei","gr":"Takeashi","semana":"2026-10-25","ops":129,"ag":7,"vis":2,"pas":3,"vn":0},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-10-04","ops":54,"ag":13,"vis":8,"pas":0,"vn":1},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-10-11","ops":85,"ag":10,"vis":4,"pas":1,"vn":1},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-10-18","ops":88,"ag":31,"vis":12,"pas":0,"vn":0},{"gv":"Ícaro","gr":"Takeashi","semana":"2026-10-25","ops":95,"ag":13,"vis":5,"pas":0,"vn":0},{"gv":"Pina","gr":"Takeashi","semana":"2026-10-04","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Pina","gr":"Takeashi","semana":"2026-10-11","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Pina","gr":"Takeashi","semana":"2026-10-18","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Pina","gr":"Takeashi","semana":"2026-10-25","ops":0,"ag":0,"vis":0,"pas":0,"vn":0},{"gv":"Mada","gr":"Patricia","semana":"2026-10-04","ops":180,"ag":43,"vis":18,"pas":6,"vn":1},{"gv":"Mada","gr":"Patricia","semana":"2026-10-11","ops":168,"ag":47,"vis":23,"pas":6,"vn":4},{"gv":"Mada","gr":"Patricia","semana":"2026-10-18","ops":173,"ag":58,"vis":23,"pas":6,"vn":1},{"gv":"Mada","gr":"Patricia","semana":"2026-10-25","ops":217,"ag":23,"vis":6,"pas":6,"vn":6},{"gv":"Bruno","gr":"Patricia","semana":"2026-10-04","ops":58,"ag":9,"vis":3,"pas":1,"vn":0},{"gv":"Bruno","gr":"Patricia","semana":"2026-10-11","ops":198,"ag":20,"vis":3,"pas":1,"vn":0},{"gv":"Bruno","gr":"Patricia","semana":"2026-10-18","ops":85,"ag":20,"vis":6,"pas":3,"vn":1},{"gv":"Bruno","gr":"Patricia","semana":"2026-10-25","ops":138,"ag":22,"vis":3,"pas":1,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-10-04","ops":136,"ag":25,"vis":8,"pas":3,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-10-11","ops":136,"ag":18,"vis":1,"pas":0,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-10-18","ops":149,"ag":36,"vis":7,"pas":1,"vn":0},{"gv":"Ivan","gr":"Gustavo","semana":"2026-10-25","ops":263,"ag":45,"vis":16,"pas":0,"vn":0}]}};
 const ATUALIZADO = "16/11 às 12:07";
 const REFRESH = "16/11/2026 12:07"; // horário do último refresh da planilha
 
 const M = ["ops","ag","vis","pas","vn"];
 const NOME = {ops:"Oportunidades",ag:"Agendamentos",vis:"Visitas",pas:"Pastas",vn:"Vendas"};
 const CURTO = {ops:"OPs",ag:"AG",vis:"VIS",pas:"PAS",vn:"VN"};
-const SEMANAS = ["2026-11-01","2026-11-08","2026-11-15","2026-11-22","2026-11-29"];
+const SEMANAS_ATUAL = ["2026-11-01","2026-11-08","2026-11-15","2026-11-22","2026-11-29"];
+const MES_ATUAL = "2026-11";
+let SEMANAS = SEMANAS_ATUAL;
+let MES = DADOS; // mês escolhido: DADOS (mês atual) ou HISTORICO["AAAA-MM"]
+let mesSel = MES_ATUAL;
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => n == null ? "—" : Number(n).toLocaleString("pt-BR", {maximumFractionDigits: 1});
 const dia = (s) => s.slice(8,10) + "/" + s.slice(5,7);
@@ -197,7 +211,8 @@ const status = (p) => p == null ? "bad" : p >= 100 ? "ok" : p >= 70 ? "warn" : "
 const STXT = {ok:"No ritmo", warn:"Atenção", bad:"Abaixo"};
 const SCOR = {ok:"var(--ok)", warn:"var(--warn)", bad:"var(--bad)"};
 const agora = new Date();
-const semIni = Math.max(1, Math.min(5, SEMANAS.filter((d) => new Date(d + "T00:00:00-03:00") <= agora).length));
+let semIni = 1;
+function calcSemIni() { semIni = mesSel === MES_ATUAL ? Math.max(1, Math.min(SEMANAS.length, SEMANAS.filter((d) => new Date(d + "T00:00:00-03:00") <= agora).length)) : SEMANAS.length; }
 let F = {gr: "", gv: ""};
 
 function filtro(r) { return F.gv ? r.gv === F.gv : F.gr ? r.gr === F.gr : true; }
@@ -205,9 +220,9 @@ function nomeEscopo() { return F.gv ? "GV " + F.gv : F.gr ? "Equipe do GR " + F.
 function resumo(ok) {
   const o = {};
   M.forEach((m) => {
-    const real = DADOS.realizado.filter(ok).reduce((a, r) => a + r[m], 0);
-    const meta = DADOS.metas.filter(ok).reduce((a, r) => a + r[m], 0);
-    const esp = Math.round(meta * semIni / 5);
+    const real = MES.realizado.filter(ok).reduce((a, r) => a + r[m], 0);
+    const meta = MES.metas.filter(ok).reduce((a, r) => a + r[m], 0);
+    const esp = Math.round(meta * semIni / SEMANAS.length);
     o[m] = {real, meta, esp, pctMes: meta ? Math.round(real / meta * 100) : null, pctEsp: esp ? Math.round(real / esp * 100) : null};
   });
   return o;
@@ -260,7 +275,7 @@ function desenhar() {
   const comMeta = M.filter((m) => R[m].esp > 0);
   const melhor = comMeta.slice().sort((a, b) => R[b].pctEsp - R[a].pctEsp)[0];
   const pior = comMeta.slice().sort((a, b) => R[a].pctEsp - R[b].pctEsp)[0];
-  lead.append(el("b", null, nomeEscopo()), ", até a semana de " + dia(SEMANAS[semIni - 1]) + ": vendas ", el("b", null, fmt(R.vn.real)), " de ", el("b", null, fmt(R.vn.meta)), " no mês.");
+  lead.append(el("b", null, nomeEscopo()), (mesSel === MES_ATUAL ? ", até a semana de " + dia(SEMANAS[semIni - 1]) : ", em " + MESES_N[Number(mesSel.slice(5, 7)) - 1].toLowerCase() + " (mês fechado)") + ": vendas ", el("b", null, fmt(R.vn.real)), " de ", el("b", null, fmt(R.vn.meta)), " no mês.");
   if (melhor && pior && melhor !== pior) lead.append(el("br"), "O ponto mais forte é " + NOME[melhor].toLowerCase() + " (", el("b", null, R[melhor].pctEsp + "%"), " do esperado) e o que mais precisa de atenção é " + NOME[pior].toLowerCase() + " (", el("b", null, R[pior].pctEsp + "%"), ").");
 
   // KPIs
@@ -272,22 +287,22 @@ function desenhar() {
     const of = el("div", "kof"); of.append("de ", el("b", null, fmt(x.meta)), " no mês · " + (x.pctMes ?? 0) + "%");
     const bar = el("div", "bar"); const fi = el("i"); fi.style.width = Math.min(100, x.meta ? x.real / x.meta * 100 : 0) + "%"; fi.style.background = SCOR[st];
     const pc = el("b"); pc.style.left = "calc(" + (x.meta ? Math.min(100, x.esp / x.meta * 100) : 0) + "% - 1px)"; bar.append(fi, pc);
-    c.append(l, el("div", "kbig", fmt(x.real)), of, bar, el("span", "chip st-" + st, STXT[st] + " · " + (x.pctEsp == null ? "—" : x.pctEsp + "%")), el("div", "cap", "Esperado até agora: " + fmt(x.esp)));
+    c.append(l, el("div", "kbig", fmt(x.real)), of, bar, el("span", "chip st-" + st, STXT[st] + " · " + (x.pctEsp == null ? "—" : x.pctEsp + "%")), el("div", "cap", (mesSel === MES_ATUAL ? "Esperado até agora: " : "Meta do mês fechado: ") + fmt(x.esp)));
     k.appendChild(c);
   });
 
   // semana a semana
   const s = $("semanas"); s.replaceChildren();
   M.forEach((m) => {
-    const metaSem = Math.round(DADOS.metas.filter(filtro).reduce((a, r) => a + r[m], 0) / 5 * 10) / 10;
+    const metaSem = Math.round(MES.metas.filter(filtro).reduce((a, r) => a + r[m], 0) / SEMANAS.length * 10) / 10;
     const pts = SEMANAS.map((sem, i) => {
-      const v = DADOS.realizado.filter((r) => filtro(r) && r.semana === sem).reduce((a, r) => a + r[m], 0);
+      const v = MES.realizado.filter((r) => filtro(r) && r.semana === sem).reduce((a, r) => a + r[m], 0);
       return {label: dia(sem), v, meta: metaSem, hi: i === semIni - 1, faint: i >= semIni,
-        tip: [["Semana de " + dia(sem) + (i === semIni - 1 ? " (atual)" : "")], [NOME[m] + ": " + fmt(v)], ["Meta semanal: " + fmt(metaSem), "m"]]};
+        tip: [["Semana de " + dia(sem) + (i === semIni - 1 && mesSel === MES_ATUAL ? " (atual)" : "")], [NOME[m] + ": " + fmt(v)], ["Meta semanal: " + fmt(metaSem), "m"]]};
     });
     const c = el("div", "card"); c.appendChild(el("div", "klbl", NOME[m]));
     const ch = el("div", "chart"); c.appendChild(ch); s.appendChild(c);
-    barras(ch, pts, NOME[m] + " por semana de novembro");
+    barras(ch, pts, NOME[m] + " por semana de " + MESES_N[Number(mesSel.slice(5, 7)) - 1].toLowerCase());
   });
 
   // funil
@@ -309,7 +324,7 @@ function desenhar() {
 
   // ranking
   const tb = $("ranking"); tb.replaceChildren();
-  DADOS.metas.filter((g) => !F.gr || g.gr === F.gr).map((g) => ({g, r: resumo((x) => x.gv === g.gv)}))
+  MES.metas.filter((g) => !F.gr || g.gr === F.gr).map((g) => ({g, r: resumo((x) => x.gv === g.gv)}))
     .sort((a, b) => (b.r.vn.real - a.r.vn.real) || (b.r.pas.real - a.r.pas.real) || (b.r.vis.real - a.r.vis.real))
     .forEach(({g, r}) => {
       const tr = el("tr"); if (g.gv === F.gv) tr.className = "sel";
@@ -337,9 +352,9 @@ function fixos() {
 
 function sincronizar() {
   const sg = $("f-gr"), sv = $("f-gv");
-  const grs = [...new Set(DADOS.metas.map((r) => r.gr))];
+  const grs = [...new Set(MES.metas.map((r) => r.gr))];
   sg.replaceChildren(new Option("Todos os GRs", ""), ...grs.map((g) => new Option(g, g))); sg.value = F.gr;
-  const gvs = DADOS.metas.filter((r) => !F.gr || r.gr === F.gr);
+  const gvs = MES.metas.filter((r) => !F.gr || r.gr === F.gr);
   sv.replaceChildren(new Option(F.gr ? "Todos da equipe" : "Todos os GVs", ""), ...gvs.map((r) => new Option(r.gv + " · " + r.gr, r.gv))); sv.value = F.gv;
   desenhar();
 }
@@ -361,7 +376,41 @@ $("refresh").textContent = REFRESH;
 $("btn-upd").addEventListener("click", () => {
   try { navigator.clipboard.writeText("atualizar gestão semanal").then(() => { $("upd-ok").hidden = false; }).catch(() => {}); } catch (e) {}
 });
-fixos(); sincronizar();
+// ===== linha dos meses de 2026: o mês atual vem de DADOS; os anteriores, de HISTORICO (abas Julho/26, Agosto/26…) =====
+const MESES_N = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const MES3 = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const temMes = (ym) => ym === MES_ATUAL || !!HISTORICO[ym];
+function escolherMes(ym) {
+  mesSel = ym;
+  if (ym === MES_ATUAL) { MES = DADOS; SEMANAS = SEMANAS_ATUAL; } else { MES = HISTORICO[ym]; SEMANAS = MES.semanas; }
+  calcSemIni();
+  if (F.gv && !MES.metas.some((r) => r.gv === F.gv)) F.gv = "";
+  if (F.gr && !MES.metas.some((r) => r.gr === F.gr)) { F.gr = ""; F.gv = ""; }
+  const m = Number(ym.slice(5, 7));
+  $("mes-eyebrow").textContent = MESES_N[m - 1] + "/" + ym.slice(2, 4);
+  try { history.replaceState(null, "", ym === MES_ATUAL ? location.pathname : "#" + ym); } catch (e) {}
+  [...$("meses").children].forEach((b) => b.setAttribute("aria-pressed", b.dataset.ym === ym ? "true" : "false"));
+  const nm = MESES_N[m - 1].toLowerCase(), atual = ym === MES_ATUAL;
+  $("sub-kpi").textContent = atual ? "Número grande = realizado em " + nm + ". A barra mostra quanto da meta do mês já foi feito; o traço branco marca onde deveria estar até esta semana."
+    : "Número grande = realizado em " + nm + " (mês fechado, aba " + MESES_N[m - 1] + "/" + ym.slice(2, 4) + "). A barra mostra quanto da meta do mês foi feito.";
+  $("sub-rank").textContent = atual ? "Realizado no mês e % do esperado até esta semana. Toque em um GV para filtrar." : "Realizado em " + nm + " e % da meta do mês. Toque em um GV para filtrar.";
+  document.querySelectorAll(".so-atual").forEach((e) => { e.hidden = !atual; });
+  sincronizar();
+}
+(function () {
+  const box = $("meses");
+  MES3.forEach((n, i) => {
+    const ym = "2026-" + String(i + 1).padStart(2, "0");
+    const b = el("button", "mes-btn", n); b.type = "button"; b.dataset.ym = ym;
+    b.setAttribute("aria-label", MESES_N[i] + " de 2026");
+    if (!temMes(ym)) { b.disabled = true; b.title = "Sem aba deste mês na planilha"; }
+    else b.addEventListener("click", () => escolherMes(ym));
+    box.appendChild(b);
+  });
+})();
+fixos();
+const pedido = location.hash.slice(1);
+escolherMes(/^2026-\d{2}$/.test(pedido) && temMes(pedido) ? pedido : MES_ATUAL);
 </script>
 <script src="../auto-refresh.js" defer></script>
 </body>

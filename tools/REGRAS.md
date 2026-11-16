@@ -141,7 +141,12 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 - **Ranking dos GVs cabe no quadro sem barra de rolagem** (tabela `table-layout:fixed`; no computador o ranking fica um pouco mais largo que o funil).
 - **Fonte:** "Gestão Semanal", abas **Novembro/26** (bloco "Realizado Semanal", 5 semanas: 01/11, 08/11, 15/11, 22/11, 29/11) e **Calc_Data** (tendência, empreendimentos, origens). Metas no bloco "Meta por Gerente".
 - **Regra das vendas migradas:** vendas de meses anteriores lançadas em **10/11** **não contam** na semana de 08/11. Hoje: **10 da Mada e 2 do Bruno** (antes eram 11 + 2). Mesmo desconto na tendência.
-- **Script:** `tools/gestao_atualizar.py "DD/MM HH:MM" mes.txt < calc.txt`. Para um novo mês: nova aba (ex.: Dezembro/26), novas semanas em `SEMANAS` e novas metas.
+- **Script:** `tools/gestao_atualizar.py "DD/MM HH:MM" mes.txt < calc.txt`. Para um novo mês: nova aba (ex.: Dezembro/26), novas semanas em `SEMANAS_ATUAL`, `MES_ATUAL` e novas metas.
+- **Linha dos meses de 2026** (Jan…Dez, largura toda, abaixo do título; 6 colunas no celular): mês atual = `DADOS`; meses anteriores = `const HISTORICO` (Jul, Ago, Set e Out/26 habilitados; meses sem aba ficam apagados). Link direto: `/gestao/#2026-10`.
+  - Cada mês usa a própria aba (Julho/26, Agosto/26, Setembro/26, Outubro/26) com os GVs e GRs daquele mês (ex.: Rodney com Luciano, Francisco, Vanessa, Feitosa). Semanas = semanas do cabeçalho com dias do mês; semanas finais sem números são descartadas.
+  - Mês fechado: "esperado" = meta inteira do mês; textos dizem "(mês fechado)". Julho e agosto não têm vendas por semana na planilha.
+  - "Últimas 6 semanas", empreendimentos e origens não mudam com o mês.
+  - Script: `tools/gestao_historico.py PASTA` (um `AAAA-MM.txt` por mês, montado do get_page_text da aba). Ao virar o mês, o mês que fechou entra no HISTORICO.
 
 ### 3.9 Histórico de credenciados e descredenciamentos 2026 (`/gestao/ativacoes.html`)
 - Termos: **"Credenciados"** (nunca "Ativados" ou "Contratações") e **"Descredenciados"**.
