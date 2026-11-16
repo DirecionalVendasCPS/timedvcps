@@ -179,7 +179,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 - **Fora do squad sem turno escrito:** decidir pela foto. Se o nome só aparece na foto da tarde, conta na tarde.
 - Nomes ligados à base de corretores pelo CRECI e pelo GV (ex.: Rose = Roseli Martim Tibiriça, Teca = Teresinha Aparecida Crivelaro Lopes, Lucy = Luciane, Laionna/CRECI 301749 = Layane Bispo). **GV e GR vêm da base**, não do que está escrito na folha.
 - Fotos repetidas ou versões anteriores da mesma folha contam uma vez só.
-- Página: total do mês (manhã/tarde), calendário por dia, resumo, ranking, **tabela "No squad" e tabela "Fora do squad"** (corretor, GV·GR, manhã, tarde, total), presenças por GR/GV (quem não foi em cinza) e "Listas registradas".
+- Página: número grande = **corretores diferentes que participaram** (não o número de presenças), com quantos foram de manhã e à tarde; calendário mostra corretores por dia; calendário por dia, resumo, ranking, **tabela "No squad" e tabela "Fora do squad"** (corretor, GV·GR, manhã, tarde, total), presenças por GR/GV (quem não foi em cinza) e "Listas registradas".
 - Dados em `const REGISTROS` (`{data, turno: "M"|"T", gr, squad: [...], fora: [...]}`) no `roleta/index.html`; equipe copiada da página de visitas.
 
 ### 3.12 Pasta de prints (`/prints/`)
