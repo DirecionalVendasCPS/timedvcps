@@ -2,7 +2,7 @@
 
 Documento de referência para manter ou refazer do zero o site
 https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `DirecionalVendasCPS/timedvcps`, branch `main`, GitHub Pages).
-Última revisão: 15/11/2026.
+Última revisão: 16/11/2026.
 
 ---
 
