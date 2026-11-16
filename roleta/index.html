@@ -116,10 +116,10 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
 
   <section class="hero" aria-live="polite">
     <div>
-      <div class="lbl" id="lbl">Corretores no mês</div>
+      <div class="lbl" id="lbl">Corretores no dia</div>
       <div class="big" id="total">—</div>
       <div class="unit">corretores participaram</div>
-      <div class="sub">Em <b id="n-rol">—</b> <span id="rol-txt">roletas</span> no período.</div>
+      <div class="sub"><span id="quando">—</span> · <b id="n-rol">—</b> <span id="rol-txt">roletas</span>.</div>
       <div class="turnos">
         <div class="turno"><b id="t-m">—</b>corretores de manhã · 8:45</div>
         <div class="turno"><b id="t-t">—</b>corretores à tarde · 13:45</div>
@@ -138,7 +138,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
 
   <section class="stats" aria-label="Resumo">
     <div class="stat g"><div class="n" id="s-cor">—</div><div class="t">corretores no squad</div></div>
-    <div class="stat"><div class="n" id="s-media">—</div><div class="t">corretores por roleta, em média</div></div>
+    <div class="stat"><div class="n" id="s-media">—</div><div class="t" id="s-media-t">da base de corretores veio ao stand</div></div>
     <div class="stat"><div class="n" id="s-fs">—</div><div class="t">corretores fora do squad</div></div>
     <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ativos que não foram</div></div>
   </section>
@@ -246,8 +246,8 @@ const POR_NOME = Object.fromEntries(EQUIPE.map((p) => [p.nome, p]));
 const curto = (n) => { const p = n.split(" "); return p.length > 1 ? p[0] + " " + p[p.length - 1] : n; };
 const fmtD = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
 const DIAS = [...new Set(REGISTROS.map((r) => r.data))].sort();
-let sel = {tipo: "mes", ym: DIAS[DIAS.length - 1].slice(0, 7)};
-let calYm = sel.ym;
+let sel = {tipo: "dia", dia: DIAS[DIAS.length - 1]};
+let calYm = sel.dia.slice(0, 7);
 
 function filtrar() { return REGISTROS.filter((r) => sel.tipo === "mes" ? r.data.startsWith(sel.ym) : r.data === sel.dia); }
 
@@ -264,12 +264,17 @@ function render() {
   const roletas = new Set(regs.map((r) => r.data + r.turno)).size;
   const tm = lista.reduce((a, p) => a + p.m, 0), tt = lista.reduce((a, p) => a + p.t, 0);
 
-  if (sel.tipo === "mes") { const m = Number(sel.ym.slice(5, 7)); $("lbl").textContent = "Corretores em " + MESES[m - 1]; $("periodo-top").textContent = MESES[m - 1] + "/" + sel.ym.slice(2, 4); }
-  else { const d = new Date(sel.dia + "T12:00:00-03:00"); $("lbl").textContent = "Corretores em " + SEM[d.getDay()] + ", " + fmtD(sel.dia); $("periodo-top").textContent = fmtD(sel.dia); }
+  if (sel.tipo === "mes") { const m = Number(sel.ym.slice(5, 7)); $("lbl").textContent = "Corretores no mês"; $("quando").textContent = MESES[m - 1].replace(/^./, (c) => c.toUpperCase()) + "/" + sel.ym.slice(2, 4); $("periodo-top").textContent = MESES[m - 1] + "/" + sel.ym.slice(2, 4); }
+  else { const d = new Date(sel.dia + "T12:00:00-03:00"); $("lbl").textContent = "Corretores no dia"; $("quando").textContent = SEM[d.getDay()].replace(/^./, (c) => c.toUpperCase()) + ", " + fmtD(sel.dia); $("periodo-top").textContent = fmtD(sel.dia); }
   $("total").textContent = lista.length; $("n-rol").textContent = roletas; $("rol-txt").textContent = roletas === 1 ? "roleta" : "roletas";
   $("t-m").textContent = lista.filter((p) => p.m).length; $("t-t").textContent = lista.filter((p) => p.t).length;
   $("s-cor").textContent = new Set(regs.flatMap((r) => r.squad)).size;
-  $("s-media").textContent = roletas ? (tot / roletas).toLocaleString("pt-BR", {maximumFractionDigits: 1}) : "0";
+  // % da base que veio ao stand: corretores ativos presentes no dia ÷ corretores ativos (média dos dias, quando é o mês)
+  const diasP = [...new Set(regs.map((r) => r.data))];
+  const pctDia = (d) => new Set(regs.filter((r) => r.data === d).flatMap((r) => [...r.squad, ...r.fora]).filter((n) => POR_NOME[n])).size / EQUIPE.length;
+  const pct = diasP.length ? diasP.reduce((a, d) => a + pctDia(d), 0) / diasP.length : 0;
+  $("s-media").textContent = Math.round(pct * 100) + "%";
+  $("s-media-t").textContent = sel.tipo === "mes" ? "da base veio ao stand por dia, em média (" + diasP.length + (diasP.length === 1 ? " dia)" : " dias)") : "da base veio ao stand (" + EQUIPE.length + " corretores ativos)";
   $("s-fs").textContent = new Set(regs.flatMap((r) => r.fora)).size;
   $("s-zero").textContent = EQUIPE.filter((p) => !por[p.nome]).length;
 
