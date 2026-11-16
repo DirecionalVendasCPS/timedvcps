@@ -138,9 +138,9 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
 
   <section class="stats" aria-label="Resumo">
     <div class="stat g"><div class="n" id="s-cor">—</div><div class="t">corretores no squad</div></div>
-    <div class="stat"><div class="n" id="s-media">—</div><div class="t" id="s-media-t">da base de corretores veio ao stand</div></div>
     <div class="stat"><div class="n" id="s-fs">—</div><div class="t">corretores fora do squad</div></div>
-    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ativos que não foram</div></div>
+    <div class="stat"><div class="n" id="s-media">—</div><div class="t">corretores compareceram</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores não compareceram</div></div>
   </section>
 
   <section>
@@ -274,7 +274,7 @@ function render() {
   const pctDia = (d) => new Set(regs.filter((r) => r.data === d).flatMap((r) => [...r.squad, ...r.fora]).filter((n) => POR_NOME[n])).size / EQUIPE.length;
   const pct = diasP.length ? diasP.reduce((a, d) => a + pctDia(d), 0) / diasP.length : 0;
   $("s-media").textContent = Math.round(pct * 100) + "%";
-  $("s-media-t").textContent = sel.tipo === "mes" ? "da base veio ao stand por dia, em média (" + diasP.length + (diasP.length === 1 ? " dia)" : " dias)") : "da base veio ao stand (" + EQUIPE.length + " corretores ativos)";
+  $("s-media").title = sel.tipo === "mes" ? "Média por dia: corretores ativos presentes ÷ " + EQUIPE.length + " da base" : "Corretores ativos presentes ÷ " + EQUIPE.length + " da base";
   $("s-fs").textContent = new Set(regs.flatMap((r) => r.fora)).size;
   $("s-zero").textContent = EQUIPE.filter((p) => !por[p.nome]).length;
 
