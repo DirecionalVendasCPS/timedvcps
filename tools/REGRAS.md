@@ -131,7 +131,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 - **Calendário completo de 2026** com botões de mês (Jan…Dez). **Sempre 6 semanas**, como o calendário do Windows (dias de outros meses em cinza).
 - Título "Black November CPS" em novembro; nos outros meses "Calendário CPS · Mês". Endereço guarda o mês (`#2026-11`).
 - Tipos de atividade: Evento Black, Evento Stand, Corujão, Divulgação, Outra atividade.
-- **"+ Adicionar atividade"** salva só no navegador; "Copiar atividades novas" gera texto para mandar ao Claude publicar no site.
+- **"+ Adicionar atividade"** e **edição das atividades já publicadas** (toque na atividade → editar data/nome/tipo ou excluir; ✎ marca as alteradas): tudo fica salvo só no navegador. **"Copiar alterações"** gera um texto com NOVA / ALTERAR / EXCLUIR para mandar ao Claude, que aplica em `ATIVIDADES` no `calendario/index.html` e publica para todos.
 - **🎂 Aniversariantes** do mês selecionado: corretores ativos (só dia/mês), vindos da base de corretores (`tools/base_atualizar.py`).
 
 ### 3.8 Gestão Semanal dos GRs e GVs (`/gestao/`)

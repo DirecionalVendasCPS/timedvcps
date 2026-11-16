@@ -84,6 +84,10 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
 .f input,.f select{font:500 15px var(--body);color:var(--ink);background:var(--panel2);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
 .f input:focus-visible,.f select:focus-visible{outline:2px solid var(--accent)}
 .acts{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.btn-del{margin-right:auto;background:transparent;color:#ff8a8a;border:1px solid #ff8a8a}
+.ev.editavel{cursor:pointer}
+.ev.editavel:hover{outline:2px solid #fff;outline-offset:1px}
+.ev.editada::after{content:"✎";margin-left:4px;font-size:11px;opacity:.75}
 .msg{font-size:13px;color:var(--accent);min-height:18px}
 .mes-bar{display:flex;gap:6px;flex-wrap:wrap}
 .mes-btn{font:700 13px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;text-transform:capitalize}
@@ -105,7 +109,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
       <p class="sub" id="subtitulo">Calendário de ações 2026</p>
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn btn-ghost" id="btn-copiar" type="button">Copiar atividades novas</button>
+      <button class="btn btn-ghost" id="btn-copiar" type="button">Copiar alterações</button>
       <button class="btn btn-add" id="btn-add" type="button">+ Adicionar atividade</button>
     </div>
   </header>
@@ -131,12 +135,12 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
     <div class="meses" id="aniv"></div>
   </section>
 
-  <p class="note">As atividades novas ficam salvas neste navegador. Para que todo o time veja, toque em <b>Copiar atividades novas</b> e mande para o Claude, que publica no site.</p>
+  <p class="note">Toque numa atividade para editar ou excluir; as novas e as alteradas ficam salvas neste navegador (✎ = alterada). Para que todo o time veja, toque em <b>Copiar alterações</b> e mande para o Claude, que publica no site.</p>
 </div>
 
 <dialog id="dlg">
   <form id="form" method="dialog">
-    <h2>Nova atividade</h2>
+    <h2 id="dlg-titulo">Nova atividade</h2>
     <div class="f"><label for="f-data">Data</label><input id="f-data" type="date" min="2026-01-01" max="2026-12-31" required></div>
     <div class="f"><label for="f-titulo">Atividade</label><input id="f-titulo" type="text" maxlength="80" placeholder="Ex.: Corujão p/ 05/12" required></div>
     <div class="f"><label for="f-tipo">Tipo</label>
@@ -149,6 +153,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
       </select>
     </div>
     <div class="acts">
+      <button class="btn btn-del" type="button" id="btn-del" hidden>Excluir</button>
       <button class="btn btn-ghost" type="button" id="btn-cancel">Cancelar</button>
       <button class="btn btn-add" type="submit" id="btn-save">Salvar</button>
     </div>
@@ -240,6 +245,12 @@ const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.classN
 function lerNovas() { try { return JSON.parse(localStorage.getItem(CHAVE) || "[]"); } catch (e) { return []; } }
 function salvarNovas(l) { try { localStorage.setItem(CHAVE, JSON.stringify(l)); return true; } catch (e) { return false; } }
 let novas = lerNovas();
+// edições das atividades já publicadas: {"chave": {data, titulo, tipo} ou {removida: true}}
+const CHAVE_ED = "dvcps-calendario-edicoes";
+function lerEd() { try { return JSON.parse(localStorage.getItem(CHAVE_ED) || "{}"); } catch (e) { return {}; } }
+function salvarEd(o) { try { localStorage.setItem(CHAVE_ED, JSON.stringify(o)); return true; } catch (e) { return false; } }
+let edicoes = lerEd();
+const chaveDe = (a) => a.data + "|" + a.titulo + "|" + a.tipo;
 
 const iso = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
 const ddmm = (s) => s.slice(8, 10) + "/" + s.slice(5, 7);
@@ -247,16 +258,22 @@ const DIAS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sáb
 const hoje = iso(new Date());
 
 function doDia(d) {
-  const of = ATIVIDADES.filter((a) => a.data === d).map((a) => ({...a, nova: false}));
+  const of = ATIVIDADES.map((a) => { const k = chaveDe(a), e = edicoes[k]; if (e && e.removida) return null; return e ? {...e, nova: false, chave: k, editada: true, orig: a} : {...a, nova: false, chave: k, orig: a}; })
+    .filter((a) => a && a.data === d);
   const nv = novas.map((a, i) => ({...a, nova: true, idx: i})).filter((a) => a.data === d);
   return of.concat(nv).sort((a, b) => ORDEM[a.tipo] - ORDEM[b.tipo]);
 }
 function chip(a) {
-  const c = el("div", "ev t-" + a.tipo + (a.nova ? " nova" : ""), a.titulo);
-  c.title = a.nomeCompleto ? "Aniversário de " + a.nomeCompleto : NOMES[a.tipo];
+  const c = el("div", "ev t-" + a.tipo + (a.nova ? " nova" : "") + (a.tipo !== "aniv" ? " editavel" : "") + (a.editada ? " editada" : ""), a.titulo);
+  c.title = a.nomeCompleto ? "Aniversário de " + a.nomeCompleto : NOMES[a.tipo] + " · toque para editar";
+  if (a.tipo !== "aniv") {
+    c.tabIndex = 0; c.setAttribute("role", "button"); c.setAttribute("aria-label", "Editar " + a.titulo);
+    c.addEventListener("click", (ev) => { if (ev.target.closest(".del")) return; editar(a); });
+    c.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); editar(a); } });
+  }
   if (a.nova) {
     const x = el("button", "del", "×"); x.type = "button"; x.setAttribute("aria-label", "Remover " + a.titulo);
-    x.addEventListener("click", () => { novas.splice(a.idx, 1); salvarNovas(novas); desenhar(); });
+    x.addEventListener("click", (ev) => { ev.stopPropagation(); novas.splice(a.idx, 1); salvarNovas(novas); desenhar(); });
     c.appendChild(x);
   }
   return c;
@@ -313,7 +330,17 @@ function escolherMes(m) {
 })();
 
 const dlg = $("dlg");
+let editando = null; // null = nova; {nova:true, idx} ou {chave, orig}
+function editar(a) {
+  editando = a.nova ? {nova: true, idx: a.idx} : {chave: a.chave, orig: a.orig};
+  $("dlg-titulo").textContent = "Editar atividade";
+  $("f-data").value = a.data; $("f-titulo").value = a.titulo; $("f-tipo").value = a.tipo;
+  $("btn-del").hidden = false;
+  if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+  $("f-titulo").focus();
+}
 function abrir(data) {
+  editando = null; $("dlg-titulo").textContent = "Nova atividade"; $("btn-del").hidden = true;
   $("f-data").value = data || (hoje.slice(5, 7) === String(mesSel).padStart(2, "0") ? hoje : ANO + "-" + String(mesSel).padStart(2, "0") + "-01");
   $("f-titulo").value = ""; $("f-tipo").value = "divul";
   if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
@@ -325,14 +352,34 @@ $("form").addEventListener("submit", (e) => {
   e.preventDefault();
   const data = $("f-data").value, titulo = $("f-titulo").value.trim(), tipo = $("f-tipo").value;
   if (!data || !titulo) return;
-  novas.push({data, titulo, tipo});
-  const ok = salvarNovas(novas);
+  let ok, txt;
+  if (!editando) { novas.push({data, titulo, tipo}); ok = salvarNovas(novas); txt = "Atividade adicionada em " + ddmm(data) + "."; }
+  else if (editando.nova) { novas[editando.idx] = {data, titulo, tipo}; ok = salvarNovas(novas); txt = "Atividade alterada."; }
+  else {
+    const o = editando.orig;
+    if (o.data === data && o.titulo === titulo && o.tipo === tipo) delete edicoes[editando.chave]; else edicoes[editando.chave] = {data, titulo, tipo};
+    ok = salvarEd(edicoes); txt = "Atividade alterada.";
+  }
   dlg.close(); desenhar();
-  $("msg").textContent = ok ? "Atividade adicionada em " + ddmm(data) + "." : "Atividade adicionada, mas este navegador não deixou salvar: ela some ao recarregar.";
+  $("msg").textContent = ok ? txt + " Toque em Copiar alterações e mande para o Claude para valer para todo o time." : txt + " Mas este navegador não deixou salvar: some ao recarregar.";
+});
+$("btn-del").addEventListener("click", () => {
+  if (!editando) return;
+  if (editando.nova) { novas.splice(editando.idx, 1); salvarNovas(novas); }
+  else { edicoes[editando.chave] = {removida: true}; salvarEd(edicoes); }
+  dlg.close(); desenhar();
+  $("msg").textContent = "Atividade excluída neste navegador. Toque em Copiar alterações e mande para o Claude para valer para todo o time.";
 });
 $("btn-copiar").addEventListener("click", () => {
-  if (!novas.length) { $("msg").textContent = "Nenhuma atividade nova para copiar."; return; }
-  const txt = "Novas atividades do calendário Black November CPS:\n" + novas.slice().sort((a, b) => a.data.localeCompare(b.data)).map((a) => "- " + ddmm(a.data) + " · " + NOMES[a.tipo] + " · " + a.titulo).join("\n");
+  const linhas = [];
+  Object.entries(edicoes).forEach(([k, e]) => {
+    const [d, t, tp] = k.split("|");
+    if (e.removida) linhas.push("- EXCLUIR: " + ddmm(d) + " · " + NOMES[tp] + " · " + t);
+    else linhas.push("- ALTERAR: " + ddmm(d) + " · " + NOMES[tp] + " · " + t + "  →  " + ddmm(e.data) + " · " + NOMES[e.tipo] + " · " + e.titulo);
+  });
+  novas.slice().sort((a, b) => a.data.localeCompare(b.data)).forEach((a) => linhas.push("- NOVA: " + ddmm(a.data) + " · " + NOMES[a.tipo] + " · " + a.titulo));
+  if (!linhas.length) { $("msg").textContent = "Nenhuma alteração para copiar."; return; }
+  const txt = "Alterações no calendário de ações CPS:\n" + linhas.join("\n");
   navigator.clipboard.writeText(txt).then(() => { $("msg").textContent = "Copiado! Cole na conversa com o Claude para publicar para todos."; })
     .catch(() => { $("msg").textContent = txt; });
 });
