@@ -55,7 +55,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 ### Equipes
 - **GRs:** Takeashi, Patricia (Paty) e Gustavo (Gustavo Moura).
 - **GVs:** Aldinei, Ícaro, Pina → Takeashi · Mada (Madeleine Borges), Bruno (Bruno Miccoli), Sandro → Patricia · Ivan, Débora → Gustavo.
-- **Corretor → GV:** `tools/gv.json`. Quem não está lá aparece como **"A definir"** (hoje: José Carlos de Faria).
+- **Corretor → GV:** `tools/gv.json`. Quem não está lá aparece como **"A definir"**; para achar o GV, procurar o corretor na aba Oportunidades (coluna B "EQUIPE X") ou Agendamentos (coluna B). José Carlos de Faria = GV Pina (16/11).
 - **Corretores ativos:** status **Ativo** ou **Reativado** na "base de corretores" (53 em 14/11/2026). Quem tem movimento mas não está ativo aparece como "fora da base".
 
 ---
