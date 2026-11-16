@@ -1,8 +1,8 @@
 // Auto-atualização das páginas do site (como portais de notícia):
-// a cada 2 minutos a página recarrega sozinha, sempre — mesmo com a aba em segundo plano —,
+// a cada 10 minutos a página recarrega sozinha, sempre — mesmo com a aba em segundo plano —,
 // mantendo o dia/mês escolhido (#...) e a posição da tela.
 (function () {
-  var INTERVALO = 2 * 60 * 1000;
+  var INTERVALO = 10 * 60 * 1000;
   var arquivos = [location.pathname];
   // scripts de dados da própria página (ex.: corujao/datas.js)
   Array.prototype.forEach.call(document.querySelectorAll("script[src]"), function (s) {
