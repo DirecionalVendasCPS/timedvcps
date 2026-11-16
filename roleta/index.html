@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Roleta do Stand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1630;--panel:#12224a;--line:#22376b;--ink:#eef2fb;--muted:#93a3c8;--accent:#ffb627;--done:#3ddc97;--blue:#5b7cff;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;--body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.back{color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase}
+.upd{font-size:13px;color:var(--muted);text-align:right}
+.upd b{color:var(--ink)}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:center}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+.lbl{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;line-height:1}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,17vw,190px);line-height:.85;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(255,182,39,.25);margin:8px 0 4px}
+.unit{font-family:var(--display);font-weight:800;font-size:clamp(22px,3vw,30px);letter-spacing:.06em;text-transform:uppercase}
+.sub{margin-top:12px;font-size:17px;color:var(--muted)}
+.sub b{color:var(--ink)}
+.turnos{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.turno{background:#0f1d40;border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:14px;color:var(--muted)}
+.turno b{font-family:var(--display);font-size:26px;color:var(--ink);margin-right:6px;font-variant-numeric:tabular-nums}
+/* calendário */
+.cal{background:#0f1d40;border:1px solid var(--line);border-radius:16px;padding:14px}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:.06em;text-transform:uppercase}
+.cal-nav{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;width:30px;height:30px;font-size:18px;cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{font-size:11px;color:var(--muted);text-align:center;font-weight:700}
+.cal-d{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-height:44px;padding:3px 2px;text-align:center;font:inherit;color:var(--muted);cursor:default}
+.cal-d .n{font-size:12px;display:block}
+.cal-d .v{font-family:var(--display);font-weight:800;font-size:17px;color:var(--accent);line-height:1}
+.cal-d.tem{cursor:pointer;color:var(--ink)}
+.cal-d.sel{outline:2px solid var(--accent);outline-offset:-1px}
+.cal-d.fora{visibility:hidden}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.cal-hint button{background:none;border:none;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer;padding:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.rk{display:grid;grid-template-columns:28px minmax(0,1.4fr) minmax(0,2fr) 44px;gap:8px 12px;align-items:center}
+.rk .pos{font-family:var(--display);font-weight:800;font-size:20px;color:var(--muted);text-align:right}
+.rk .who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk .who small{color:var(--muted);font-size:12px}
+.trk{height:18px;border-radius:9px;background:#0f1d40;overflow:hidden;display:flex}
+.trk i{display:block;height:100%}
+.trk .m{background:var(--accent)} .trk .t{background:var(--blue)}
+.rk .tot{font-family:var(--display);font-weight:900;font-size:26px;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums}
+.leg{display:flex;gap:16px;font-size:13px;color:var(--muted);margin:-4px 0 12px;flex-wrap:wrap}
+.leg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--c)}
+.grs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.grs{grid-template-columns:1fr}}
+.gr h3{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase;margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.gr h3 span{color:var(--accent);font-size:30px}
+.gr .cap{font-size:13px;color:var(--muted);margin:2px 0 10px}
+.gv{border-top:1px solid var(--line);padding:8px 0}
+.gv-t{display:flex;justify-content:space-between;font-weight:700;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.gv-t b{color:var(--ink)}
+.p{display:flex;justify-content:space-between;font-size:14px;padding:3px 0}
+.p.zero{color:#5f6f96}
+.p b{font-variant-numeric:tabular-nums;color:var(--accent)}
+.p.zero b{color:#5f6f96}
+.reg{display:grid;gap:10px}
+.r{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;border-top:1px solid var(--line);padding-top:10px}
+.r:first-child{border-top:none;padding-top:0}
+.r .q{font-weight:700}
+.r .q small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;align-content:flex-start}
+.chip{background:#0f1d40;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;line-height:1.4}
+.chip.fs{border-style:dashed;color:var(--muted)}
+@media (max-width:560px){.r{grid-template-columns:1fr}}
+.tabs2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.tabs2{grid-template-columns:1fr}}
+.tt{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase;margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.tt span{color:var(--accent);font-size:30px}
+.tcap{font-size:13px;color:var(--muted);margin:2px 0 10px}
+.tb{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}
+.tb th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:left;padding:6px 4px;border-bottom:1px solid var(--line)}
+.tb td{padding:7px 4px;border-bottom:1px solid rgba(34,55,107,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb th.n,.tb td.n{text-align:right;width:52px;font-variant-numeric:tabular-nums}
+.tb td.tot{font-family:var(--display);font-weight:800;font-size:18px;color:var(--accent)}
+.tb td small{color:var(--muted)}
+.tb tfoot td{font-weight:700;border-bottom:none;color:var(--ink)}
+footer{font-size:13px;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="back" href="../">← Direcional Vendas CPS</a>
+      <div class="eyebrow">Stand Cores da Mata · Mangará · <span id="periodo-top">—</span></div>
+      <h1>Roleta do Stand</h1>
+    </div>
+    <div class="upd">Atualizado em <b id="upd">—</b><br>Fotos das listas do grupo GRUPO CAMPINAS GERAL</div>
+  </header>
+
+  <section class="hero" aria-live="polite">
+    <div>
+      <div class="lbl" id="lbl">Presenças no mês</div>
+      <div class="big" id="total">—</div>
+      <div class="unit">presenças na roleta</div>
+      <div class="sub"><b id="n-cor">—</b> corretores participaram em <b id="n-rol">—</b> <span id="rol-txt">roletas</span>.</div>
+      <div class="turnos">
+        <div class="turno"><b id="t-m">—</b>manhã · 8:45</div>
+        <div class="turno"><b id="t-t">—</b>tarde · 13:45</div>
+      </div>
+    </div>
+    <div class="cal" role="group" aria-label="Escolha um dia">
+      <div class="cal-top">
+        <button class="cal-nav" id="cal-prev" type="button" aria-label="Mês anterior">‹</button>
+        <div class="cal-mes" id="cal-mes">—</div>
+        <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-hint">presenças por dia · toque num dia · <button id="ver-mes" type="button">ver o mês</button></div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Resumo">
+    <div class="stat g"><div class="n" id="s-cor">—</div><div class="t">corretores presentes</div></div>
+    <div class="stat"><div class="n" id="s-media">—</div><div class="t">corretores por roleta, em média</div></div>
+    <div class="stat"><div class="n" id="s-fs">—</div><div class="t">presenças "fora do squad"</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ativos que não foram</div></div>
+  </section>
+
+  <section>
+    <h2>Ranking de presenças</h2>
+    <div class="leg"><span style="--c:var(--accent)">Manhã (8:45)</span><span style="--c:var(--blue)">Tarde (13:45)</span></div>
+    <div class="card rk" id="ranking"></div>
+  </section>
+
+  <section>
+    <h2>Squad x fora do squad</h2>
+    <div class="tabs2">
+      <div class="card"><h3 class="tt">No squad <span id="n-sq">—</span></h3><p class="tcap">Corretores escritos na tabela "Equipe Squad" da folha.</p><table class="tb" id="tb-squad"></table></div>
+      <div class="card"><h3 class="tt">Fora do squad <span id="n-fs">—</span></h3><p class="tcap">Corretores escritos na tabela "Corretores fora do squad" da folha.</p><table class="tb" id="tb-fora"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Presenças por GR</h2>
+    <div class="grs" id="grs"></div>
+  </section>
+
+  <section>
+    <h2>Listas registradas</h2>
+    <div class="card reg" id="registros"></div>
+  </section>
+
+  <footer>Fonte: fotos das folhas "Roleta" do stand Cores da Mata (Mangará), postadas no grupo GRUPO CAMPINAS GERAL até 15 minutos depois de cada roleta. De segunda a sexta há roleta às 8:45 e às 13:45; aos sábados, domingos e feriados, só às 8:45. Cada nome escrito na folha (squad ou "fora do squad") conta 1 presença naquela roleta. Os nomes da folha são ligados ao cadastro da base de corretores; GV e GR vêm da base. Nome tracejado = corretor "fora do squad".</footer>
+</div>
+
+<script>
+// ===== Dados: uma linha por folha fotografada (data, turno M/T, GR da folha, nomes do squad e de fora do squad) =====
+const ATUALIZADO = "16/11 às 15:35";
+const REGISTROS = [
+  {data: "2026-11-16", turno: "M", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: []},
+  {data: "2026-11-16", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Isabella Garcia Silva", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
+  {data: "2026-11-16", turno: "M", gr: "Patricia", squad: ["Flavia Maria Ramos", "Amekion Ferreira Cruz", "Ellen Cassia Pereira Cassemiro de Campos", "Guilherme Garcia", "Claudio Sena Borges"], fora: []},
+  {data: "2026-11-16", turno: "T", gr: "Patricia", squad: ["Claudio Sena Borges", "Ellen Cassia Pereira Cassemiro de Campos", "Franciely Gomes", "Layane Silva Santos Bispo", "Fernanda Guilherme dos Santos", "Guilherme Garcia", "Jorge Luiz de Lima", "Flavia Maria Ramos", "Amekion Ferreira Cruz"], fora: ["João Gabriel Campos Carvalho da Silva", "Jonathan Pereira da Silva", "Aloisio Antonio Mache Tavares", "Clarice Pereira", "Luciane Aparecida Gomes Barbosa Silva"]},
+  {data: "2026-11-16", turno: "M", gr: "Gustavo", squad: ["Sirlene Aparecida da Silva"], fora: ["Lincoln Farah"]},
+];
+const EQUIPE = [
+    {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi"},
+    {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi"},
+    {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi"},
+    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi"},
+    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi"},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi"},
+    {nome: "José Carlos de Faria", gv: "A definir", gr: "Takeashi"},
+    {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia"},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia"},
+    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia"},
+    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia"},
+    {nome: "Taline Fideles da Silva", gv: "Bruno", gr: "Patricia"},
+    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia"},
+    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia"},
+    {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia"},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia"},
+    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia"},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia"},
+    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia"},
+    {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia"},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia"},
+    {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia"},
+    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia"},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia"},
+    {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia"},
+    {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo"},
+    {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo"},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Emerson Gonçalves Pereira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Lincoln Farah", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo"},
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo"}
+];
+
+const $ = (id) => document.getElementById(id);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const SEM = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+const GRS = ["Takeashi", "Patricia", "Gustavo"];
+const NOME_GR = {Takeashi: "GR Takeashi", Patricia: "GR Patricia", Gustavo: "GR Gustavo Moura"};
+const POR_NOME = Object.fromEntries(EQUIPE.map((p) => [p.nome, p]));
+const curto = (n) => { const p = n.split(" "); return p.length > 1 ? p[0] + " " + p[p.length - 1] : n; };
+const fmtD = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
+const DIAS = [...new Set(REGISTROS.map((r) => r.data))].sort();
+let sel = {tipo: "mes", ym: DIAS[DIAS.length - 1].slice(0, 7)};
+let calYm = sel.ym;
+
+function filtrar() { return REGISTROS.filter((r) => sel.tipo === "mes" ? r.data.startsWith(sel.ym) : r.data === sel.dia); }
+
+function render() {
+  const regs = filtrar();
+  const por = {};
+  regs.forEach((r) => [...r.squad.map((n) => [n, false]), ...r.fora.map((n) => [n, true])].forEach(([n, fs]) => {
+    const p = por[n] || (por[n] = {nome: n, m: 0, t: 0, fs: 0, ult: ""});
+    p[r.turno === "M" ? "m" : "t"]++; if (fs) p.fs++; if (r.data > p.ult) p.ult = r.data;
+  }));
+  const lista = Object.values(por).map((p) => ({...p, tot: p.m + p.t, ...(POR_NOME[p.nome] || {gv: "Fora da base", gr: ""})}));
+  lista.sort((a, b) => b.tot - a.tot || b.t - a.t || a.nome.localeCompare(b.nome, "pt"));
+  const tot = lista.reduce((a, p) => a + p.tot, 0);
+  const roletas = new Set(regs.map((r) => r.data + r.turno)).size;
+  const tm = lista.reduce((a, p) => a + p.m, 0), tt = lista.reduce((a, p) => a + p.t, 0);
+
+  if (sel.tipo === "mes") { const m = Number(sel.ym.slice(5, 7)); $("lbl").textContent = "Presenças em " + MESES[m - 1]; $("periodo-top").textContent = MESES[m - 1] + "/" + sel.ym.slice(2, 4); }
+  else { const d = new Date(sel.dia + "T12:00:00-03:00"); $("lbl").textContent = "Presenças em " + SEM[d.getDay()] + ", " + fmtD(sel.dia); $("periodo-top").textContent = fmtD(sel.dia); }
+  $("total").textContent = tot; $("n-cor").textContent = lista.length; $("n-rol").textContent = roletas; $("rol-txt").textContent = roletas === 1 ? "roleta" : "roletas";
+  $("t-m").textContent = tm; $("t-t").textContent = tt;
+  $("s-cor").textContent = lista.length;
+  $("s-media").textContent = roletas ? (tot / roletas).toLocaleString("pt-BR", {maximumFractionDigits: 1}) : "0";
+  $("s-fs").textContent = lista.reduce((a, p) => a + p.fs, 0);
+  $("s-zero").textContent = EQUIPE.filter((p) => !por[p.nome]).length;
+
+  // ranking
+  const rk = $("ranking"); rk.replaceChildren();
+  const max = Math.max(1, ...lista.map((p) => p.tot));
+  lista.forEach((p, i) => {
+    const who = el("div", "who"); who.append(el("b", null, p.nome), el("small", null, p.gv + (p.gr ? " · " + p.gr : "") + (p.fs ? " · " + p.fs + "× fora do squad" : "")));
+    const trk = el("div", "trk"); trk.title = p.m + " manhã · " + p.t + " tarde";
+    const a = el("i", "m"); a.style.width = p.m / max * 100 + "%"; const b = el("i", "t"); b.style.width = p.t / max * 100 + "%"; trk.append(a, b);
+    rk.append(el("div", "pos", i + 1 + "º"), who, trk, el("div", "tot", p.tot));
+  });
+  if (!lista.length) rk.append(el("div", null, "Nenhuma lista registrada no período."));
+
+  // tabelas squad x fora do squad
+  [["squad", "tb-squad", "n-sq"], ["fora", "tb-fora", "n-fs"]].forEach(([campo, id, nid]) => {
+    const pp = {};
+    regs.forEach((r) => r[campo].forEach((n) => { const x = pp[n] || (pp[n] = {nome: n, m: 0, t: 0}); x[r.turno === "M" ? "m" : "t"]++; }));
+    const ls = Object.values(pp).map((x) => ({...x, tot: x.m + x.t, ...(POR_NOME[x.nome] || {gv: "Fora da base", gr: ""})}))
+      .sort((a, b) => b.tot - a.tot || a.nome.localeCompare(b.nome, "pt"));
+    const tb = $(id); tb.replaceChildren();
+    const th = el("thead"); const hr = el("tr"); [["Corretor", ""], ["GV · GR", ""], ["Manhã", "n"], ["Tarde", "n"], ["Total", "n"]].forEach(([t, c]) => hr.append(el("th", c, t))); th.append(hr);
+    const bd = el("tbody");
+    ls.forEach((x) => { const tr = el("tr"); const nm = el("td", null, curto(x.nome)); nm.title = x.nome;
+      const gg = el("td"); gg.append(el("small", null, x.gv + (x.gr ? " · " + x.gr : "")));
+      tr.append(nm, gg, el("td", "n", x.m), el("td", "n", x.t), el("td", "n tot", x.tot)); bd.append(tr); });
+    if (!ls.length) { const tr = el("tr"); const td = el("td", null, "Ninguém no período."); td.colSpan = 5; tr.append(td); bd.append(tr); }
+    const ft = el("tfoot"); const fr = el("tr"); const f0 = el("td", null, ls.length + " corretores"); f0.colSpan = 2;
+    fr.append(f0, el("td", "n", ls.reduce((a, x) => a + x.m, 0)), el("td", "n", ls.reduce((a, x) => a + x.t, 0)), el("td", "n tot", ls.reduce((a, x) => a + x.tot, 0))); ft.append(fr);
+    tb.append(th, bd, ft); $(nid).textContent = ls.length;
+  });
+
+  // por GR
+  const g = $("grs"); g.replaceChildren();
+  GRS.forEach((gr) => {
+    const doGr = EQUIPE.filter((p) => p.gr === gr);
+    const c = el("div", "card gr");
+    const totGr = doGr.reduce((a, p) => a + ((por[p.nome] || {}).m || 0) + ((por[p.nome] || {}).t || 0), 0);
+    const h = el("h3", null, NOME_GR[gr]); h.append(el("span", null, totGr)); c.append(h);
+    c.append(el("div", "cap", doGr.filter((p) => por[p.nome]).length + " de " + doGr.length + " corretores ativos foram"));
+    [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
+      const ps = doGr.filter((p) => p.gv === gv).map((p) => ({...p, tot: por[p.nome] ? por[p.nome].m + por[p.nome].t : 0})).sort((a, b) => b.tot - a.tot || a.nome.localeCompare(b.nome, "pt"));
+      const box = el("div", "gv"); const t = el("div", "gv-t", "GV " + gv); t.append(el("b", null, ps.reduce((a, p) => a + p.tot, 0))); box.append(t);
+      ps.forEach((p) => { const l = el("div", "p" + (p.tot ? "" : " zero")); l.append(el("span", null, curto(p.nome)), el("b", null, p.tot)); box.append(l); });
+      c.append(box);
+    });
+    g.append(c);
+  });
+
+  // listas
+  const rg = $("registros"); rg.replaceChildren();
+  regs.slice().sort((a, b) => b.data.localeCompare(a.data) || b.turno.localeCompare(a.turno) || GRS.indexOf(a.gr) - GRS.indexOf(b.gr)).forEach((r) => {
+    const d = new Date(r.data + "T12:00:00-03:00");
+    const q = el("div", "q", fmtD(r.data) + " · " + (r.turno === "M" ? "manhã 8:45" : "tarde 13:45")); q.append(el("small", null, SEM[d.getDay()] + " · folha do " + NOME_GR[r.gr]));
+    const ch = el("div", "chips");
+    r.squad.forEach((n) => ch.append(el("span", "chip", curto(n))));
+    r.fora.forEach((n) => { const s = el("span", "chip fs", curto(n)); s.title = "fora do squad"; ch.append(s); });
+    const row = el("div", "r"); row.append(q, ch); rg.append(row);
+  });
+  calendario();
+}
+
+function calendario() {
+  const [a, m] = calYm.split("-").map(Number);
+  $("cal-mes").textContent = MESES[m - 1] + " " + a;
+  const grid = $("cal-grid"); grid.replaceChildren();
+  ["D","S","T","Q","Q","S","S"].forEach((x) => grid.append(el("div", "cal-dow", x)));
+  const ini = new Date(a, m - 1, 1).getDay(), n = new Date(a, m, 0).getDate();
+  for (let i = 0; i < ini; i++) grid.append(el("div", "cal-d fora"));
+  for (let d = 1; d <= n; d++) {
+    const iso = calYm + "-" + String(d).padStart(2, "0");
+    const regs = REGISTROS.filter((r) => r.data === iso);
+    const v = regs.reduce((s, r) => s + r.squad.length + r.fora.length, 0);
+    const b = el("button", "cal-d" + (regs.length ? " tem" : "") + (sel.tipo === "dia" && sel.dia === iso ? " sel" : "")); b.type = "button";
+    b.append(el("span", "n", d)); if (v) b.append(el("span", "v", v));
+    if (regs.length) b.addEventListener("click", () => { sel = {tipo: "dia", dia: iso}; render(); }); else b.disabled = true;
+    grid.append(b);
+  }
+  const yms = [...new Set(DIAS.map((d) => d.slice(0, 7)))];
+  $("cal-prev").disabled = calYm <= yms[0]; $("cal-next").disabled = calYm >= yms[yms.length - 1];
+}
+$("cal-prev").addEventListener("click", () => { const [a, m] = calYm.split("-").map(Number); const d = new Date(a, m - 2, 1); calYm = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); calendario(); });
+$("cal-next").addEventListener("click", () => { const [a, m] = calYm.split("-").map(Number); const d = new Date(a, m, 1); calYm = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); calendario(); });
+$("ver-mes").addEventListener("click", () => { sel = {tipo: "mes", ym: calYm}; render(); });
+$("upd").textContent = ATUALIZADO;
+render();
+</script>
+<script src="../auto-refresh.js" defer></script>
+</body>
+</html>
