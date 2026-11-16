@@ -64,11 +64,12 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 
 ### 3.1 Página inicial (`/index.html`)
 - Título "Direcional Vendas Campinas", texto "Placares do time de Campinas. Toque para abrir."
-- **8 quadros, 2 por linha, centralizados** (grade de 6 colunas a partir de 780px; `.nova-linha` começa cada linha):
+- **9 quadros, 2 por linha, centralizados** (grade de 6 colunas a partir de 780px; `.nova-linha` começa cada linha; `.sozinho` centraliza o último quando fica sozinho na linha):
   1. Agendamentos Criados no Dia · 2. Placar do Corujão
   3. Visitas do Dia · 4. Conversão Visitas x Agendamentos
   5. Contador de Vendas · 6. Calendário Black November
   7. Gestão Semanal (GRs e GVs) · 8. Gestão Semanal dos Corretores
+  9. Roleta do Stand
 - Botão "Ligar som" com as músicas da campanha (`audio/o-piso-e-pouco.mp3`, `audio/nos-queremos-a-meta.mp3`).
 
 ### 3.2 Agendamentos Criados no Dia (`/agendamentos/`)
