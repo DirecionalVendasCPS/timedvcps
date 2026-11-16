@@ -93,7 +93,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 ### 3.4 Visitas do Dia (`/visitas/`)
 - **Mesma estrutura da página de agendamentos** (hero, calendário, Somar dias, ranking, quadros por GR/GV em ordem alfabética).
 - **Fonte:** "Gestão Semanal", aba **Agendamentos**:
-  - **Agendadas (vermelho)** = linhas com a **Data (coluna E)** no dia.
+  - **Agendamentos (vermelho)** = linhas com a **Data (coluna E)** no dia (na página o termo é "agendamentos", não "agendadas").
   - **Realizadas (verde)** = dessas, as com **Visita Realizada (coluna H) = true**.
 - Por GR, GV e corretor. Calendário mostra "realizadas/agendadas" por dia (inclui dias futuros com agendadas).
 - **"Somar dias"** soma **só os números desta página** (não mistura com agendamentos).

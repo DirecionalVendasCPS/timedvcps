@@ -212,9 +212,9 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
       <div class="lbl" id="lbl">Hoje o time fez</div>
       <div class="big-row">
         <div><div class="big" id="total">—</div><div class="unit"><span class="vi" id="total-unit">visitas realizadas</span></div></div>
-        <div class="big-ag" id="ag-box"><span id="total-ag">—</span><small id="ag-unit">agendadas para o dia</small></div>
+        <div class="big-ag" id="ag-box"><span id="total-ag">—</span><small id="ag-unit">agendamentos para o dia</small></div>
       </div>
-      <div class="sub"><b id="n-ag">—</b> de <b id="n-eq">—</b> das visitas agendadas para <span id="quando">hoje</span> foram realizadas (<b id="pct">—</b>)<span id="meta-txt"></span></div>
+      <div class="sub"><b id="n-ag">—</b> de <b id="n-eq">—</b> dos agendamentos para <span id="quando">hoje</span> viraram visita realizada (<b id="pct">—</b>)<span id="meta-txt"></span></div>
       <div class="bar" role="img" id="barra"><i id="barra-i" style="width:0"></i></div>
     </div>
     <div class="cal" id="cal" role="group" aria-label="Escolha um dia para ver o resultado">
@@ -224,7 +224,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
         <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
       </div>
       <div class="cal-grid" id="cal-grid"></div>
-      <div class="cal-hint"><span style="color:#3ddc97">realizadas</span>/<span style="color:#ff6b6b">agendadas</span> · toque num dia · <button class="cal-hoje" id="cal-hoje" type="button">voltar para hoje</button></div>
+      <div class="cal-hint"><span style="color:#3ddc97">realizadas</span>/<span style="color:#ff6b6b">agendamentos</span> · toque num dia · <button class="cal-hoje" id="cal-hoje" type="button">voltar para hoje</button></div>
       <div class="cal-soma"><button class="soma-btn" id="cal-soma" type="button" aria-pressed="false">+ Somar dias</button><span class="soma-txt" id="soma-txt"></span><button class="cal-hoje" id="soma-limpar" type="button" hidden>limpar</button></div>
     </div>
   </section>
@@ -232,23 +232,23 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <div class="aviso" id="aviso" hidden></div>
 
   <section class="stats" aria-label="Resumo dos corretores">
-    <div class="stat r"><div class="n" id="s-agc">—</div><div class="t">corretores com visita agendada para o dia</div></div>
+    <div class="stat r"><div class="n" id="s-agc">—</div><div class="t">corretores com agendamento para o dia</div></div>
     <div class="stat g"><div class="n" id="s-vic">—</div><div class="t">corretores com visita realizada</div></div>
-    <div class="stat"><div class="n" id="s-pend">—</div><div class="t">visitas agendadas ainda não realizadas</div></div>
-    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores sem visita agendada nem realizada</div></div>
+    <div class="stat"><div class="n" id="s-pend">—</div><div class="t">agendamentos ainda sem visita realizada</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores sem agendamento nem visita realizada</div></div>
   </section>
 
   <section aria-label="Ranking do dia" id="grafico-sec">
     <h2>Ranking de visitas do dia</h2>
-    <div class="legend"><span class="lag">Visitas agendadas para o dia</span><span class="lvi">Visitas realizadas</span></div>
+    <div class="legend"><span class="lag">Agendamentos para o dia</span><span class="lvi">Visitas realizadas</span></div>
     <div class="chart-card">
-      <div id="grafico" role="img" aria-label="Gráfico de barras com visitas agendadas e realizadas por corretor no dia"></div>
+      <div id="grafico" role="img" aria-label="Gráfico de barras com agendamentos e visitas realizadas por corretor no dia"></div>
     </div>
   </section>
 
   <section aria-label="Visitas por GR e GV" id="equipes-sec">
     <h2>Visitas por equipe</h2>
-    <div class="legend leg2"><span class="pill p-ag">Agendadas para o dia</span><span class="pill p-vi">Realizadas</span><span class="pill p-none">Sem visita no dia</span></div>
+    <div class="legend leg2"><span class="pill p-ag">Agendamentos para o dia</span><span class="pill p-vi">Realizadas</span><span class="pill p-none">Sem visita no dia</span></div>
     <div class="grs" id="grs"></div>
   </section>
 
@@ -258,7 +258,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
     <div class="list" id="fora"></div>
   </section>
 
-  <footer>Fonte: planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", aba "Agendamentos" (dados até <b id="refresh-txt">—</b>). Visitas agendadas (vermelho) = agendamentos com a Data no dia. Visitas realizadas (verde) = desses, os marcados como Visita Realizada. Só entram nas equipes os corretores ativos da base de corretores; os demais aparecem em "Fora da base de corretores".</footer>
+  <footer>Fonte: planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", aba "Agendamentos" (dados até <b id="refresh-txt">—</b>). Agendamentos (vermelho) = agendamentos com a Data no dia. Visitas realizadas (verde) = desses, os marcados como Visita Realizada. Só entram nas equipes os corretores ativos da base de corretores; os demais aparecem em "Fora da base de corretores".</footer>
 </div>
 
 <script>
@@ -385,14 +385,14 @@ function render(lista) {
   if (multi) $("quando").textContent = "nesses dias";
   $("total").textContent = tv; $("total").classList.toggle("zero", !tv);
   $("total-unit").textContent = plural(tv, "visita realizada", "visitas realizadas");
-  $("total-ag").textContent = ta; $("ag-unit").textContent = plural(ta, "agendada para o dia", "agendadas para o dia");
-  if (multi) { $("ag-unit").textContent = plural(ta, "agendada nesses dias", "agendadas nesses dias"); $("quando").textContent = "esses dias"; }
+  $("total-ag").textContent = ta; $("ag-unit").textContent = plural(ta, "agendamento para o dia", "agendamentos para o dia");
+  if (multi) { $("ag-unit").textContent = plural(ta, "agendamento nesses dias", "agendamentos nesses dias"); $("quando").textContent = "esses dias"; }
   $("n-ag").textContent = tv; $("n-eq").textContent = ta; $("pct").textContent = pct + "%";
   $("barra-i").style.width = Math.min(100, pct) + "%";
-  $("barra").setAttribute("aria-label", tv + " de " + ta + " visitas agendadas realizadas");
+  $("barra").setAttribute("aria-label", tv + " de " + ta + " agendamentos viraram visita realizada");
   $("meta-txt").textContent = "";
   $("aviso").hidden = !!(tv || ta);
-  $("aviso").textContent = ehHoje ? "Ainda não há visitas agendadas nem realizadas hoje no relatório. Os números aparecem assim que a planilha for atualizada." : "Nenhuma visita agendada ou realizada neste dia.";
+  $("aviso").textContent = ehHoje ? "Ainda não há agendamentos nem visitas realizadas hoje no relatório. Os números aparecem assim que a planilha for atualizada." : "Nenhum agendamento ou visita realizada neste dia.";
   $("s-agc").textContent = pessoas.filter((p) => p.ag > 0).length;
   $("s-vic").textContent = pessoas.filter((p) => p.vi > 0).length;
   $("s-pend").textContent = Math.max(0, ta - tv);
@@ -403,7 +403,7 @@ function render(lista) {
 }
 
 function pares(box, ag, vi) {
-  box.append(el("b", "r", ag), " " + plural(ag, "agendada", "agendadas"), el("span", "sep", " · "), el("b", "g", vi), " " + plural(vi, "realizada", "realizadas"));
+  box.append(el("b", "r", ag), " " + plural(ag, "agendamento", "agendamentos"), el("span", "sep", " · "), el("b", "g", vi), " " + plural(vi, "realizada", "realizadas"));
 }
 
 function equipes(pessoas) {
@@ -432,7 +432,7 @@ function equipes(pessoas) {
         const li = el("li", p.ag || p.vi ? null : "out");
         const pl = el("span", "pills");
         if (p.ag || p.vi) {
-          pl.append(el("span", "pill p-ag", p.ag + " " + plural(p.ag, "agendada", "agendadas")), el("span", "pill p-vi", p.vi + " " + plural(p.vi, "realizada", "realizadas")));
+          pl.append(el("span", "pill p-ag", p.ag + " " + plural(p.ag, "agendamento", "agendamentos")), el("span", "pill p-vi", p.vi + " " + plural(p.vi, "realizada", "realizadas")));
         } else pl.appendChild(el("span", "pill p-none", "Sem visita no dia"));
         li.append(el("span", "pn", p.nome), pl); ul.appendChild(li);
       });
@@ -450,7 +450,7 @@ function fora(F) {
   F.slice().sort((a, b) => b.vi - a.vi || b.ag - a.ag || a.nome.localeCompare(b.nome)).forEach((c) => {
     const row = el("div", "row");
     const tags = el("div", "tags");
-    const t1 = el("div", "tag r", c.ag); t1.appendChild(el("small", null, plural(c.ag, "agendada", "agendadas")));
+    const t1 = el("div", "tag r", c.ag); t1.appendChild(el("small", null, plural(c.ag, "agendamento", "agendamentos")));
     const t2 = el("div", "tag g", c.vi); t2.appendChild(el("small", null, plural(c.vi, "realizada", "realizadas")));
     tags.append(t1, t2);
     row.append(el("div", "nome", c.nome), tags); box.appendChild(row);
@@ -460,7 +460,7 @@ function fora(F) {
 function grafico(todos, ehHoje) {
   const box = $("grafico"); box.textContent = "";
   const rows = todos.filter((p) => p.ag > 0 || p.vi > 0).sort((a, b) => b.vi - a.vi || b.ag - a.ag || a.nome.localeCompare(b.nome));
-  if (!rows.length) { box.appendChild(el("div", "vazio", ehHoje ? "Nenhuma visita agendada ou realizada ainda hoje." : "Nenhuma visita agendada ou realizada neste dia.")); return; }
+  if (!rows.length) { box.appendChild(el("div", "vazio", ehHoje ? "Nenhum agendamento ou visita realizada ainda hoje." : "Nenhum agendamento ou visita realizada neste dia.")); return; }
   const max = Math.max(...rows.map((r) => Math.max(r.ag, r.vi)));
   const grid = el("div", "hbar");
   rows.forEach((r) => {
@@ -474,7 +474,7 @@ function grafico(todos, ehHoje) {
     ht.append(ba, bv, la, lv); grid.append(hn, ht);
   });
   box.appendChild(grid);
-  box.appendChild(el("div", "hcap", "Vermelho: visitas agendadas para o dia · verde: visitas realizadas no dia"));
+  box.appendChild(el("div", "hcap", "Vermelho: agendamentos para o dia · verde: visitas realizadas no dia"));
 }
 
 // ===== calendário =====
@@ -502,7 +502,7 @@ function calendario() {
     else {
       const t = totalDia(iso), a = totalAg(iso);
       const sm = el("small"); sm.append(el("span", "g", t), "/", el("span", "r", a)); b.appendChild(sm); if (!t && !a) b.classList.add("z");
-      b.setAttribute("aria-label", dd + "/" + m + ": " + t + " realizadas de " + a + " agendadas");
+      b.setAttribute("aria-label", dd + "/" + m + ": " + t + " realizadas de " + a + " agendamentos");
       b.addEventListener("click", () => clicarDia(iso));
     }
     if (iso === HOJE) b.classList.add("hoje");
