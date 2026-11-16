@@ -104,16 +104,15 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 - **Prints:** `tools/prints_visitas.py PASTA` → `visitas-1-placar.png`, `visitas-2-ranking.png`, `visitas-3-gr-<gr>.png`.
 
 ### 3.5 Conversão Visitas x Agendamentos (`/conversao/`)
-- **Fonte:** "Contadores", aba agendamentos normal.
-- **Agendamentos do mês** = todas as linhas criadas no mês (mesma contagem da página de agendamentos).
-- **Visitas** = dessas, as com **coluna H (Data de comparecimento) preenchida**.
+- **Fonte (desde 16/11/2026): a mesma da página Visitas do dia** — "Gestão Semanal", aba **Agendamentos** (antes era a aba "agendamentos normal" da "Contadores", pela data de criação).
+- **Agendamentos** = linhas com a **Data (coluna E)** no período.
+- **Visitas** = dessas, as com **Visita Realizada (coluna H) = true**.
 - **Conversão = visitas ÷ agendamentos.**
-- Mês em andamento: agendamentos para dias que ainda não chegaram contam como "sem visita".
+- Só entram os **dias até hoje** (agendamentos para dias que ainda não chegaram ficam de fora).
 - **Rankings de corretor, GV e GR ordenados por mais visitas realizadas**; empate → maior conversão; depois nome. Barras mostram as visitas; cartões mostram as visitas em destaque e a % embaixo.
-- **Linha de meses Jan…Dez** (igual à do Calendário): mostra o mês inteiro; meses sem dados ficam apagados.
-- **Calendário por dia** (igual às páginas de agendamentos e visitas): cada dia mostra visitas/agendamentos (verde/amarelo); toque num dia para ver só aquele dia; **"Somar dias"** junta 2 ou mais dias (ex.: sábado + domingo); "ver o mês" volta ao mês. O endereço guarda a escolha (`#2026-10` ou `#2026-11-14,2026-11-15`).
-- Por dia, agendamentos e visitas contam pela **data de criação** da linha (mesma regra do mês).
-- **Script:** `tools/conv_atualizar.py < visitas.txt` (grava `meses` e `dias` = {dia: {corretor: [agendamentos, visitas]}}; consulta `select A,K where A >= date '2026-10-01' and H is not null and K contains 'Corretor(a)'`; guardar só data + "Corretor(a) NOME", nunca o cliente).
+- **Topo:** botão Atualizar no canto superior direito; **linha de meses Jan…Dez** ocupando a linha toda (mês inteiro; meses sem dados apagados).
+- **Calendário por dia** (igual às páginas de agendamentos e visitas): cada dia mostra visitas/agendamentos (verde/amarelo); toque num dia para ver só aquele dia; **"Somar dias"** junta 2 ou mais dias; "ver o mês" volta ao mês. O endereço guarda a escolha (`#2026-10` ou `#2026-11-14,2026-11-15`).
+- **Script:** `tools/conv_atualizar.py` — roda **depois** de `visitas_atualizar.py` e lê os dados de `visitas/index.html` (`agendados`, `dias`, `equipe`, `refresh`); grava `dias` e `meses` = {corretor: [agendamentos, visitas]}.
 
 ### 3.6 Contador de Vendas (`/vendas/`)
 - Título "Meta de vendas de <mês>": **"Faltam X vendas"**, "Já foram N de META vendas no mês (%)", totais **Comercial (amarelo)** e **Facilitada (azul)**.
@@ -175,9 +174,9 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 ## 4. Ordem de atualização ("atualizar tudo")
 1. `base_atualizar.py < base.txt` (ativos, GR, aniversários; `select A,L,N,AI where A is not null`)
 2. `agend_hoje.py < agend.txt`
-3. `conv_atualizar.py < visitas.txt`
-4. `vendas_atualizar.py < vendas.txt`
-5. `visitas_atualizar.py "DD/MM HH:MM" agendados.txt < realizadas.txt`
+3. `vendas_atualizar.py < vendas.txt`
+4. `visitas_atualizar.py "DD/MM HH:MM" agendados.txt < realizadas.txt`
+5. `conv_atualizar.py` (depois das visitas; usa os dados da página de visitas)
 6. `corretores_atualizar.py "DD/MM HH:MM" < semanas.txt`
 7. `gestao_atualizar.py "DD/MM HH:MM" mes.txt < calc.txt`
 8. Conferir as páginas com o playwright (sem erros de JS), `git commit` e `git push`.
@@ -196,4 +195,4 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 
 ## Linha "Dados da planilha até" (todas as páginas com botão Atualizar)
 - Cada página mostra: Atualizado em (momento em que o site foi atualizado), **Dados da planilha até** (horário do último refresh da planilha, do "Auto Refresh Execution Log") e Próxima atualização.
-- Rodar os scripts com `REFRESH_PLANILHA="DD/MM/AAAA HH:MM"` (agend_hoje, conv_atualizar, vendas_atualizar); visitas, corretores e gestão recebem o horário no 1º argumento. Contadores (Agendamentos, Conversão, Vendas) usam o log da planilha "Contadores"; Visitas, Corretores e Gestão usam o da planilha de Gestão.
+- Rodar os scripts com `REFRESH_PLANILHA="DD/MM/AAAA HH:MM"` (agend_hoje, vendas_atualizar); visitas, corretores e gestão recebem o horário no 1º argumento. Agendamentos e Vendas usam o log da planilha "Contadores"; Visitas, Conversão (copia da página de visitas), Corretores e Gestão usam o da planilha de Gestão.

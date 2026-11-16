@@ -1,42 +1,47 @@
 # Atualiza conversao/index.html (Conversão Visitas x Agendamentos).
-# uso (na raiz do repo, depois de tools/agend_hoje.py): python3 tools/conv_atualizar.py < visitas.txt
-# visitas.txt = texto do gviz da aba "agendamentos normal" com as linhas que têm a coluna H
-#   (Data de comparecimento) preenchida, desde o início do trimestre:
-#   select A,K where A >= date 'AAAA-MM-01' and H is not null and K contains 'Corretor(a)'
-# Agendamentos = todas as linhas criadas no mês (mesma contagem da página Agendamentos do dia).
-# Visitas = linhas criadas no mês com a coluna H preenchida.
-# Grava também dias: {"AAAA-MM-DD": {"Nome": [agendamentos, visitas]}} pela data de criação, para o calendário (dia, dias somados).
+# uso (na raiz do repo, DEPOIS de tools/visitas_atualizar.py): python3 tools/conv_atualizar.py
+#   (não lê mais nada da entrada; se receber texto pela entrada, ignora)
+# Base = a mesma da página Visitas do dia: planilha "BURDIM - Gestão Semanal - GVs - CAMPINAS", aba "Agendamentos":
+#   Agendamentos = linhas com a Data (coluna E) no dia (DADOS.agendados de visitas/index.html).
+#   Visitas      = dessas, as com Visita Realizada (coluna H) = true (DADOS.dias de visitas/index.html).
+#   Conversão    = visitas ÷ agendamentos.
+# Só entram os dias até hoje (agendamentos de dias que ainda não chegaram ficam de fora).
+# Grava dias: {"AAAA-MM-DD": {"Nome": [agendamentos, visitas]}} e meses: {"AAAA-MM": {"Nome": [agendamentos, visitas]}}.
 import re, sys, json, collections
 sys.path.insert(0, 'tools'); from comum import *
 P = 'conversao/index.html'
-base = base_corretores()
-ag = open('agendamentos/index.html').read()
-dias = json.loads(re.search(r'  dias: (\{.*\}),\n', ag).group(1))
-equipe = re.search(r'  equipe: \[\n(.*?)\n  \],', ag, re.S).group(1)
+vis = open('visitas/index.html').read()
+def bloco(nome):
+    return json.loads(re.search(r'  ' + nome + r': (\{.*\}),\n', vis).group(1))
+agendados, realizadas = bloco('agendados'), bloco('dias')
+hoje = re.search(r'  hoje: "([^"]+)"', vis).group(1)
+refresh = re.search(r'  refresh: "([^"]*)"', vis).group(1)
+equipe = re.search(r'  equipe: \[\n(.*?)\n  \],', vis, re.S).group(1)
+
+pordia = collections.defaultdict(lambda: collections.defaultdict(lambda: [0, 0]))
+for d, v in agendados.items():
+    if d <= hoje:
+        for n, q in v.items(): pordia[d][n][0] += q
+for d, v in realizadas.items():
+    if d <= hoje:
+        for n, q in v.items(): pordia[d][n][1] += q
 meses = collections.defaultdict(lambda: collections.defaultdict(lambda: [0, 0]))
-pordia = collections.defaultdict(lambda: collections.defaultdict(lambda: [0, 0]))  # dia -> corretor -> [ag, vi]
-for d, v in dias.items():
-    for n, q in v.items(): meses[d[:7]][n][0] += q; pordia[d][n][0] += q
-nvis = 0
-for l in sys.stdin.read().splitlines():
-    m = re.match(r'\s*(\d{1,2})/(\d{1,2})/(\d{4})\b.*?Corretor\(a\)\s+(.+?)\s*$', l)
-    if not m: continue
-    d, mo, a, nome = m.groups()
-    nb = nome_bonito(nome, base)
-    meses[f'{a}-{int(mo):02d}'][nb][1] += 1; pordia[f'{a}-{int(mo):02d}-{int(d):02d}'][nb][1] += 1; nvis += 1
-out = {k: dict(sorted(v.items())) for k, v in sorted(meses.items())}
+for d, v in pordia.items():
+    for n, (a, b) in v.items(): meses[d[:7]][n][0] += a; meses[d[:7]][n][1] += b
 outd = {k: dict(sorted(v.items())) for k, v in sorted(pordia.items())}
+out = {k: dict(sorted(v.items())) for k, v in sorted(meses.items())}
+
 s = open(P).read()
-s = re.sub(r'  meses: \{.*\},\n', lambda _: '  meses: ' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ',\n', s, count=1)
 s = re.sub(r'  dias: \{.*\},\n', lambda _: '  dias: ' + json.dumps(outd, ensure_ascii=False, separators=(',', ':')) + ',\n', s, count=1)
+s = re.sub(r'  meses: \{.*\},\n', lambda _: '  meses: ' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ',\n', s, count=1)
 s = re.sub(r'  equipe: \[\n.*?\n  \],', lambda _: '  equipe: [\n' + equipe + '\n  ],', s, count=1, flags=re.S)
-s = re.sub(r'  mes: "[^"]+",', f'  mes: "{agora().strftime("%Y-%m")}",', s, count=1)
+s = re.sub(r'  mes: "[^"]+",', f'  mes: "{hoje[:7]}",', s, count=1)
 s = re.sub(r'  atualizado: "[^"]+",', f'  atualizado: "{agora().strftime("%Y-%m-%dT%H:%M:00-03:00")}",', s, count=1)
-s = grava_refresh(s)
+s = re.sub(r'  refresh: "[^"]*",', lambda _: f'  refresh: "{refresh}",', s, count=1)
 open(P, 'w').write(s)
 for k, v in out.items():
     a, b = sum(x[0] for x in v.values()), sum(x[1] for x in v.values())
     print(k, 'agendamentos', a, 'visitas', b, f'conversão {b/a*100:.1f}%' if a else '')
     bad = [n for n, x in v.items() if x[1] > x[0]]
     if bad: print('  ATENÇÃO visitas > agendamentos:', bad)
-print('linhas de visita lidas:', nvis)
+print('dias até', hoje, '| dados da planilha de gestão:', refresh)
