@@ -5,6 +5,7 @@
 #   select A,K where A >= date 'AAAA-MM-01' and H is not null and K contains 'Corretor(a)'
 # Agendamentos = todas as linhas criadas no mês (mesma contagem da página Agendamentos do dia).
 # Visitas = linhas criadas no mês com a coluna H preenchida.
+# Grava também dias: {"AAAA-MM-DD": {"Nome": [agendamentos, visitas]}} pela data de criação, para o calendário (dia, dias somados).
 import re, sys, json, collections
 sys.path.insert(0, 'tools'); from comum import *
 P = 'conversao/index.html'
@@ -13,17 +14,21 @@ ag = open('agendamentos/index.html').read()
 dias = json.loads(re.search(r'  dias: (\{.*\}),\n', ag).group(1))
 equipe = re.search(r'  equipe: \[\n(.*?)\n  \],', ag, re.S).group(1)
 meses = collections.defaultdict(lambda: collections.defaultdict(lambda: [0, 0]))
+pordia = collections.defaultdict(lambda: collections.defaultdict(lambda: [0, 0]))  # dia -> corretor -> [ag, vi]
 for d, v in dias.items():
-    for n, q in v.items(): meses[d[:7]][n][0] += q
+    for n, q in v.items(): meses[d[:7]][n][0] += q; pordia[d][n][0] += q
 nvis = 0
 for l in sys.stdin.read().splitlines():
     m = re.match(r'\s*(\d{1,2})/(\d{1,2})/(\d{4})\b.*?Corretor\(a\)\s+(.+?)\s*$', l)
     if not m: continue
     d, mo, a, nome = m.groups()
-    meses[f'{a}-{int(mo):02d}'][nome_bonito(nome, base)][1] += 1; nvis += 1
+    nb = nome_bonito(nome, base)
+    meses[f'{a}-{int(mo):02d}'][nb][1] += 1; pordia[f'{a}-{int(mo):02d}-{int(d):02d}'][nb][1] += 1; nvis += 1
 out = {k: dict(sorted(v.items())) for k, v in sorted(meses.items())}
+outd = {k: dict(sorted(v.items())) for k, v in sorted(pordia.items())}
 s = open(P).read()
 s = re.sub(r'  meses: \{.*\},\n', lambda _: '  meses: ' + json.dumps(out, ensure_ascii=False, separators=(',', ':')) + ',\n', s, count=1)
+s = re.sub(r'  dias: \{.*\},\n', lambda _: '  dias: ' + json.dumps(outd, ensure_ascii=False, separators=(',', ':')) + ',\n', s, count=1)
 s = re.sub(r'  equipe: \[\n.*?\n  \],', lambda _: '  equipe: [\n' + equipe + '\n  ],', s, count=1, flags=re.S)
 s = re.sub(r'  mes: "[^"]+",', f'  mes: "{agora().strftime("%Y-%m")}",', s, count=1)
 s = re.sub(r'  atualizado: "[^"]+",', f'  atualizado: "{agora().strftime("%Y-%m-%dT%H:%M:00-03:00")}",', s, count=1)

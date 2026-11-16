@@ -110,8 +110,10 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 - **Conversão = visitas ÷ agendamentos.**
 - Mês em andamento: agendamentos para dias que ainda não chegaram contam como "sem visita".
 - **Rankings de corretor, GV e GR ordenados por mais visitas realizadas**; empate → maior conversão; depois nome. Barras mostram as visitas; cartões mostram as visitas em destaque e a % embaixo.
-- Botões Outubro / Novembro (meses do trimestre).
-- **Script:** `tools/conv_atualizar.py < visitas.txt` (consulta `select A,K where A >= date '2026-10-01' and H is not null and K contains 'Corretor(a)'`; guardar só data + "Corretor(a) NOME", nunca o cliente).
+- **Linha de meses Jan…Dez** (igual à do Calendário): mostra o mês inteiro; meses sem dados ficam apagados.
+- **Calendário por dia** (igual às páginas de agendamentos e visitas): cada dia mostra visitas/agendamentos (verde/amarelo); toque num dia para ver só aquele dia; **"Somar dias"** junta 2 ou mais dias (ex.: sábado + domingo); "ver o mês" volta ao mês. O endereço guarda a escolha (`#2026-10` ou `#2026-11-14,2026-11-15`).
+- Por dia, agendamentos e visitas contam pela **data de criação** da linha (mesma regra do mês).
+- **Script:** `tools/conv_atualizar.py < visitas.txt` (grava `meses` e `dias` = {dia: {corretor: [agendamentos, visitas]}}; consulta `select A,K where A >= date '2026-10-01' and H is not null and K contains 'Corretor(a)'`; guardar só data + "Corretor(a) NOME", nunca o cliente).
 
 ### 3.6 Contador de Vendas (`/vendas/`)
 - Título "Meta de vendas de <mês>": **"Faltam X vendas"**, "Já foram N de META vendas no mês (%)", totais **Comercial (amarelo)** e **Facilitada (azul)**.

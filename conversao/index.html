@@ -115,6 +115,45 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .p-none{color:var(--muted);background:rgba(147,163,200,.12)}
 .people li.out .pn{color:var(--muted)}
 .vazio{color:var(--muted);text-align:center;padding:12px}
+.cal{justify-self:end;width:100%;max-width:330px;background:#0f1d40;border:1px solid var(--line);border-radius:18px;padding:14px}
+@media (max-width:700px){.cal{justify-self:center}}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.cal-nav{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 16px var(--body);cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-nav:focus-visible,.cal-d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-w{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal-d{aspect-ratio:1;border-radius:9px;border:1px solid transparent;background:var(--panel);color:var(--ink);font:600 13px var(--body);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font-variant-numeric:tabular-nums}
+.cal-d small{font-size:10px;font-weight:700;color:var(--done);line-height:1}
+.cal-d.z small{color:var(--muted)}
+.cal-d:hover:not(:disabled){border-color:var(--accent)}
+.cal-d:disabled{background:transparent;color:#3a5190;cursor:default}
+.cal-d.hoje{border-color:var(--muted)}
+.cal-d.sel{background:var(--accent);color:var(--bg)}
+.cal-d.sel small{color:var(--bg)}
+.cal-soma{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.soma-btn{font:700 12px var(--body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.soma-btn[aria-pressed="true"]{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.soma-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.soma-txt{font-size:12px;color:var(--muted)}
+.soma-txt b{color:var(--ink)}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.cal-hoje{background:none;border:none;color:var(--accent);font:600 12px var(--body);cursor:pointer;text-decoration:underline;padding:0}
+.cal-d small{display:flex;gap:2px}
+.cal-d small .g{color:var(--done)}
+.cal-d small .r{color:var(--accent)}
+.cal-d.sel small .r,.cal-d.sel small .g{color:var(--bg)}
+.hero{grid-template-columns:minmax(0,1fr) minmax(0,250px) 340px}
+.hero .cal{max-width:340px}
+@media (min-width:1001px){.hero .big{font-size:clamp(80px,8.5vw,130px)}}
+.cal-mes{white-space:nowrap;font-size:20px}
+.cal-d small{font-size:9.5px}
+@media (max-width:1000px){.hero{grid-template-columns:1fr 1fr}.hero .cal{grid-column:1/-1;justify-self:center}}
+@media (max-width:700px){.hero{grid-template-columns:1fr}}
+.mes-btn:disabled{opacity:.35;cursor:default}
+.meses{gap:6px}
+.mes-btn{padding:7px 14px;text-transform:none}
 footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:75ch}
 </style>
 </head>
@@ -147,8 +186,18 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:75ch}
       <div class="sub"><b id="n-conv">—</b> de <b id="n-eq">—</b> corretores com agendamento já converteram visita</div>
     </div>
     <div class="funil">
-      <div class="fb ag"><div class="n" id="f-ag">—</div><div class="t">agendamentos criados no mês</div></div>
+      <div class="fb ag"><div class="n" id="f-ag">—</div><div class="t" id="f-ag-t">agendamentos criados no mês</div></div>
       <div class="fb vi"><div class="n" id="f-vi">—</div><div class="t">visitas realizadas (coluna H preenchida)</div></div>
+    </div>
+    <div class="cal" id="cal" role="group" aria-label="Escolha um dia ou some dias">
+      <div class="cal-top">
+        <button class="cal-nav" id="cal-prev" type="button" aria-label="Mês anterior">‹</button>
+        <div class="cal-mes" id="cal-mes">—</div>
+        <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-hint"><span style="color:#3ddc97">visitas</span>/<span style="color:#ffb627">agendamentos</span> · toque num dia · <button class="cal-hoje" id="cal-hoje" type="button">ver o mês</button></div>
+      <div class="cal-soma"><button class="soma-btn" id="cal-soma" type="button" aria-pressed="false">+ Somar dias</button><span class="soma-txt" id="soma-txt"></span><button class="cal-hoje" id="soma-limpar" type="button" hidden>limpar</button></div>
     </div>
   </section>
 
@@ -174,16 +223,17 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:75ch}
     <div class="grs" id="grs"></div>
   </section>
 
-  <footer>Agendamentos = todos os agendamentos e visitas criados no mês (data de criação), a mesma contagem da página Agendamentos do dia. Visitas = desses, os que têm a Data de comparecimento (coluna H) preenchida. Conversão = visitas ÷ agendamentos. Fonte: planilha "Contadores do mês e corujão", aba "agendamentos normal". No mês em andamento, agendamentos para dias que ainda não chegaram contam como sem visita. Rankings ordenados por quem fez mais visitas realizadas; no empate, fica na frente quem tem a maior conversão.</footer>
+  <footer>Agendamentos = todos os agendamentos e visitas criados no mês (data de criação), a mesma contagem da página Agendamentos do dia. Visitas = desses, os que têm a Data de comparecimento (coluna H) preenchida. Conversão = visitas ÷ agendamentos. Fonte: planilha "Contadores do mês e corujão", aba "agendamentos normal". No mês em andamento, agendamentos para dias que ainda não chegaram contam como sem visita. Linha dos meses: mês inteiro. Calendário: toque num dia para ver só aquele dia (pela data de criação do agendamento) ou use "Somar dias" para juntar vários dias. Rankings ordenados por quem fez mais visitas realizadas; no empate, fica na frente quem tem a maior conversão.</footer>
 </div>
 
 <script>
 // ===== Dados (gerados por tools/conv_atualizar.py) =====
 const DADOS = {
   mes: "2026-11",
-  atualizado: "2026-11-15T21:59:00-03:00",
+  atualizado: "2026-11-16T10:12:00-03:00",
   refresh: "15/11/2026 21:48", // horário do último refresh da planilha
   // por mês: {"Nome do corretor": [agendamentos, visitas]}
+  dias: {"2026-10-01":{"Alan Rocha Conceição":[2,0],"Aloisio Antonio Mache Tavares":[3,0],"Amekion Ferreira Cruz":[2,1],"Ana Laura Oliveira de Queiroz":[1,0],"Ana Lucia Menezes de Paula":[1,0],"Ana Luiza Martins":[1,1],"Ana Paula de Souza Leite Aguiar":[1,0],"Bianca Nascimento Sabino da Silva":[2,0],"Claudio Sena Borges":[3,1],"Daniel Alves Silva":[1,0],"Daniela Caroza Aleixo Rodrigues de Carvalho":[1,0],"Fabio Carlo da Silva":[3,2],"Fernanda Guilherme dos Santos":[3,0],"Franciely Gomes":[2,0],"Guilherme Garcia":[3,0],"Jonathan Pereira da Silva":[1,1],"Larissa Gabriele Vitor":[3,0],"Lincoln Farah":[2,0],"Marlene Santana Corrêa dos Santos":[1,0],"Mayara Soares Diogo":[3,0],"Rickelle Quirino de Oliveira":[3,1],"Sonia Maria de Oliveira Maruki":[1,0],"Teresinha Aparecida Crivelaro Lopes":[2,0]},"2026-10-02":{"Aloisio Antonio Mache Tavares":[1,0],"Ana Lucia Menezes de Paula":[1,0],"Conceição Aparecida de Oliveira da Silva":[2,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,1],"Isabella Garcia Silva":[1,1],"Jonathan Pereira da Silva":[1,1],"Larissa Gabriele Vitor":[1,1],"Lucas Vinícius Ferreira Chaves":[1,0],"Luciana Lemes":[1,0],"Mayara Soares Diogo":[2,0],"Roseli Martim Tibiriça":[2,0],"Sonia Maria de Oliveira Maruki":[1,0],"Teresinha Aparecida Crivelaro Lopes":[1,0]},"2026-10-03":{"Aloisio Antonio Mache Tavares":[1,1],"Bruno Miccoli de Oliveira":[1,1],"Claudio Sena Borges":[2,2],"Flavia Maria Ramos":[1,1],"Guilherme Garcia":[2,1],"Jonathan Pereira da Silva":[1,1],"Mayara Soares Diogo":[1,0]},"2026-10-04":{"Daniel Alves Silva":[1,0],"Larissa Gabriele Vitor":[1,1]},"2026-10-05":{"Ana Luiza Martins":[1,1],"Bruno Miccoli de Oliveira":[1,1],"Fabio Carlo da Silva":[3,1],"Fernanda Guilherme dos Santos":[1,0],"Franciely Gomes":[2,1],"Isabella Garcia Silva":[1,0],"Ivan de Aguiar Nascimento":[1,1],"João Gabriel Campos Carvalho da Silva":[1,0]},"2026-10-06":{"Aloisio Antonio Mache Tavares":[2,1],"Ana Paula de Souza Leite Aguiar":[1,0],"Cláudia Maria Carvalho Lopes":[1,1],"Daniel Alves Silva":[1,0],"Isabella Garcia Silva":[2,1],"Jorge Luiz de Lima":[2,0],"João Gabriel Campos Carvalho da Silva":[1,0],"Mayara Soares Diogo":[1,0],"Teresinha Aparecida Crivelaro Lopes":[1,0]},"2026-10-07":{"Claudio Sena Borges":[1,1],"Daniel Alves Silva":[2,0],"Layane Silva Santos Bispo":[2,0],"Luciana Lemes":[1,0],"Roseli Martim Tibiriça":[1,1]},"2026-10-08":{"Aloisio Antonio Mache Tavares":[3,0],"Amekion Ferreira Cruz":[1,1],"Ana Lucia Menezes de Paula":[1,0],"Ana Paula de Souza Leite Aguiar":[4,0],"Bianca Nascimento Sabino da Silva":[2,0],"Claudio Sena Borges":[1,1],"Conceição Aparecida de Oliveira da Silva":[2,1],"Ellen Cassia Pereira Cassemiro de Campos":[2,1],"Fabio Carlo da Silva":[1,0],"Flavia Maria Ramos":[2,0],"Guilherme Garcia":[1,0],"Hellen Caroline Pinheiro":[1,0],"Isabella Garcia Silva":[1,0],"Jonathan Pereira da Silva":[1,0],"Jorge Luiz de Lima":[2,0],"Lincoln Farah":[2,0],"Mayara Soares Diogo":[2,0],"Taíssa Ayane Oliveira da Silva":[4,1],"Vanderlucia de Oliveira Batista Pereira":[1,0]},"2026-10-09":{"Aloisio Antonio Mache Tavares":[1,0],"Amekion Ferreira Cruz":[2,0],"Ana Lucia Menezes de Paula":[1,1],"Claudio Sena Borges":[3,0],"Daniel Alves Silva":[1,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,0],"Guilherme Garcia":[1,0],"Jorge Luiz de Lima":[1,1],"Larissa Gabriele Vitor":[1,0],"Layane Silva Santos Bispo":[1,0],"Marlene Santana Corrêa dos Santos":[4,2],"Mayara Soares Diogo":[1,0],"Roseli Martim Tibiriça":[1,1],"Wesley Matheus Riviera de Carvalho":[1,1]},"2026-10-10":{"Ana Paula de Souza Leite Aguiar":[1,1],"Claudio Sena Borges":[1,0],"Daniel Alves Silva":[1,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,1],"Fabio Carlo da Silva":[1,1],"Isabella Garcia Silva":[1,0],"Jorge Luiz de Lima":[1,1],"Lincoln Farah":[1,0],"Taíssa Ayane Oliveira da Silva":[1,0]},"2026-10-11":{"Claudio Sena Borges":[1,1],"Fabio Carlo da Silva":[1,1],"Guilherme Garcia":[1,1]},"2026-10-12":{"Amekion Ferreira Cruz":[1,1],"Daniel Alves Silva":[1,0],"Teresinha Aparecida Crivelaro Lopes":[1,1]},"2026-10-13":{"Jonathan Pereira da Silva":[2,0],"Jorge Luiz de Lima":[2,2]},"2026-10-15":{"Aloisio Antonio Mache Tavares":[2,0],"Amekion Ferreira Cruz":[2,2],"Ana Lucia Menezes de Paula":[1,1],"Ana Paula de Souza Leite Aguiar":[2,0],"Bianca Nascimento Sabino da Silva":[1,0],"Claudio Sena Borges":[4,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,0],"Fabio Carlo da Silva":[4,1],"Fernanda Guilherme dos Santos":[2,0],"Flavia Maria Ramos":[3,0],"Guilherme Garcia":[5,0],"Hellen Caroline Pinheiro":[1,1],"Isabella Garcia Silva":[1,1],"Jonathan Pereira da Silva":[4,1],"Jorge Luiz de Lima":[3,2],"João Gabriel Campos Carvalho da Silva":[3,0],"Larissa Gabriele Vitor":[3,0],"Layane Silva Santos Bispo":[2,1],"Lucas Vinícius Ferreira Chaves":[1,0],"Luciana Lemes":[3,0],"Marlene Santana Corrêa dos Santos":[2,1],"Mayara Soares Diogo":[3,0],"Muller Gustavo dos Santos":[1,0],"Roseli Sampaio Bastos Ferreira":[1,0],"Shirley do Nascimento Pina":[1,0]},"2026-10-16":{"Aloisio Antonio Mache Tavares":[3,0],"Amekion Ferreira Cruz":[1,0],"Ana Laura Oliveira de Queiroz":[1,0],"Ana Lucia Menezes de Paula":[2,0],"Claudio Sena Borges":[2,2],"Conceição Aparecida de Oliveira da Silva":[1,0],"Ellen Cassia Pereira Cassemiro de Campos":[2,0],"Fabio Carlo da Silva":[2,1],"Flavia Maria Ramos":[1,0],"Guilherme Garcia":[1,0],"Jorge Luiz de Lima":[1,0],"Julia Chiosini":[1,0],"Marlene Santana Corrêa dos Santos":[1,0],"Mayara Soares Diogo":[2,0],"Rickelle Quirino de Oliveira":[1,0],"Vanderlucia de Oliveira Batista Pereira":[2,0]},"2026-10-17":{"Claudio Sena Borges":[2,2],"Daniel Alves Silva":[1,0],"Flavia Maria Ramos":[3,1],"Lincoln Farah":[1,0],"Luciana Lemes":[2,0],"Madeleine Kassia de Campos Sena Borges":[1,1],"Marlene Santana Corrêa dos Santos":[1,0]},"2026-10-18":{"Ana Lucia Menezes de Paula":[1,1],"Lucas Vinícius Ferreira Chaves":[1,1]},"2026-10-19":{"Flavia Maria Ramos":[1,1],"Guilherme Garcia":[1,0],"Isabella Garcia Silva":[1,0],"Jonathan Pereira da Silva":[1,0],"Larissa Gabriele Vitor":[2,1],"Luciana Lemes":[1,0],"Teresinha Aparecida Crivelaro Lopes":[2,0]},"2026-10-20":{"Aloisio Antonio Mache Tavares":[1,1],"Ana Paula de Souza Leite Aguiar":[1,0],"Bianca Nascimento Sabino da Silva":[2,0],"Caroline Resteo":[1,0],"Elisabeth Sueli Velardi":[3,0],"Fernanda Guilherme dos Santos":[7,2],"Luciana Lemes":[2,0],"Marlene Santana Corrêa dos Santos":[1,1]},"2026-10-21":{"Amekion Ferreira Cruz":[1,0],"Ana Paula de Souza Leite Aguiar":[1,0],"Elisabeth Sueli Velardi":[1,0],"Fabio Carlo da Silva":[1,1],"Fernanda Guilherme dos Santos":[1,0],"Guilherme Garcia":[2,0],"Larissa Gabriele Vitor":[1,0],"Luciana Lemes":[5,2]},"2026-10-22":{"Aloisio Antonio Mache Tavares":[2,0],"Amekion Ferreira Cruz":[4,1],"Ana Luiza Martins":[2,1],"Ana Paula de Souza Leite Aguiar":[3,1],"Bianca Nascimento Sabino da Silva":[4,0],"Claudio Sena Borges":[8,3],"Daniel Alves Silva":[2,0],"Elisabeth Sueli Velardi":[1,1],"Ellen Cassia Pereira Cassemiro de Campos":[5,0],"Flavia Maria Ramos":[4,2],"Guilherme Garcia":[3,1],"Isabella Garcia Silva":[1,0],"Jorge Luiz de Lima":[1,0],"João Gabriel Campos Carvalho da Silva":[2,0],"Larissa Gabriele Vitor":[4,0],"Layane Silva Santos Bispo":[1,0],"Luciana Lemes":[4,0],"Marcelo Vicentini Coelho":[1,0],"Marli Teixeira da Costa":[3,2],"Roseli Martim Tibiriça":[1,0],"Roseli Sampaio Bastos Ferreira":[1,0],"Taíssa Ayane Oliveira da Silva":[1,0],"Teresinha Aparecida Crivelaro Lopes":[3,0]},"2026-10-23":{"Ana Paula de Souza Leite Aguiar":[5,2],"Caroline Resteo":[1,0],"Claudio Sena Borges":[1,1],"Flavia Maria Ramos":[1,0],"Guilherme Garcia":[1,1],"Lincoln Farah":[1,0],"Lucas Vinícius Ferreira Chaves":[1,0],"Marlene Santana Corrêa dos Santos":[1,0],"Mayara Soares Diogo":[3,0],"Sonia Maria de Oliveira Maruki":[1,1],"Ícaro Zivko Miranda":[1,1]},"2026-10-24":{"Amekion Ferreira Cruz":[1,0],"Ana Paula de Souza Leite Aguiar":[1,1],"Claudio Sena Borges":[1,1],"Daniel Alves Silva":[2,1],"Elisabeth Sueli Velardi":[1,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,0],"Fabio Carlo da Silva":[3,2],"Fernanda Guilherme dos Santos":[1,1],"Guilherme Garcia":[5,2],"José Raimundo da Silva":[2,2],"Larissa Gabriele Vitor":[1,1],"Luciana Lemes":[2,2],"Madeleine Kassia de Campos Sena Borges":[1,1],"Marlene Santana Corrêa dos Santos":[1,1],"Rickelle Quirino de Oliveira":[1,0],"Sonia Maria de Oliveira Maruki":[1,1],"Teresinha Aparecida Crivelaro Lopes":[2,1]},"2026-10-26":{"Aloisio Antonio Mache Tavares":[1,0],"Ana Luiza Martins":[2,1],"Daniel Alves Silva":[1,0],"Fernanda Guilherme dos Santos":[1,0],"Guilherme Garcia":[1,0],"Jonathan Pereira da Silva":[1,0],"Leonardo Velardi de Aguiar":[6,0],"Rickelle Quirino de Oliveira":[1,0]},"2026-10-27":{"Claudio Sena Borges":[1,0],"Fernanda Guilherme dos Santos":[1,0],"Guilherme Garcia":[1,1],"Jorge Luiz de Lima":[1,0],"João Gabriel Campos Carvalho da Silva":[1,0],"Julia Chiosini":[1,1],"Marlene Santana Corrêa dos Santos":[1,0],"Rickelle Quirino de Oliveira":[1,0],"Taíssa Ayane Oliveira da Silva":[3,3]},"2026-10-28":{"Bianca Nascimento Sabino da Silva":[2,2],"Daniel Aparecido Santos":[1,0],"Fernanda Guilherme dos Santos":[1,1],"Guilherme Garcia":[1,0],"Jonathan Pereira da Silva":[1,0],"Julia Chiosini":[2,1]},"2026-10-29":{"Aloisio Antonio Mache Tavares":[3,0],"Amekion Ferreira Cruz":[2,1],"Ana Paula de Souza Leite Aguiar":[5,0],"Bianca Nascimento Sabino da Silva":[2,1],"Claudio Sena Borges":[3,0],"Daniel Alves Silva":[1,1],"Daniel Aparecido Santos":[1,1],"Elisabeth Sueli Velardi":[1,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,1],"Fabio Carlo da Silva":[2,0],"Flavia Maria Ramos":[1,0],"Guilherme Garcia":[1,0],"Isabella Garcia Silva":[2,0],"Jonathan Pereira da Silva":[3,0],"Jorge Luiz de Lima":[2,0],"João Gabriel Campos Carvalho da Silva":[1,0],"Larissa Gabriele Vitor":[2,0],"Layane Silva Santos Bispo":[1,0],"Lincoln Farah":[5,1],"Luciana Lemes":[3,0],"Luis Fernando Maestro":[1,0],"Marli Teixeira da Costa":[1,1],"Mayara Soares Diogo":[2,0],"Paola Cassanelli da Rocha":[3,1],"Rickelle Quirino de Oliveira":[1,0],"Roseli Martim Tibiriça":[1,0],"Wanderson de Carvalho Coutinho":[1,0]},"2026-10-30":{"Bianca Nascimento Sabino da Silva":[2,1],"Claudio Sena Borges":[2,1],"Elisabeth Sueli Velardi":[1,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,1],"Fabio Carlo da Silva":[1,0],"Guilherme Garcia":[4,0],"Jonathan Pereira da Silva":[1,0],"Jorge Luiz de Lima":[1,1],"Larissa Gabriele Vitor":[1,0],"Lincoln Farah":[5,0],"Lucas Vinícius Ferreira Chaves":[2,0],"Marlene Santana Corrêa dos Santos":[1,0],"Mayara Soares Diogo":[1,0],"Paola Cassanelli da Rocha":[1,1],"Teresinha Aparecida Crivelaro Lopes":[3,1]},"2026-10-31":{"Elisabeth Sueli Velardi":[1,1],"Luciana Lemes":[1,0],"Marcelo Vicentini Coelho":[2,2],"Mayara Soares Diogo":[3,3],"Roseli Martim Tibiriça":[1,1],"Ícaro Zivko Miranda":[1,1]},"2026-11-02":{"Aldinei Rezende Fagundes":[1,1],"Ana Luiza Martins":[1,0],"Isabella Garcia Silva":[2,1],"Jorge Luiz de Lima":[1,1],"Luis Fernando Maestro":[2,1],"Paola Cassanelli da Rocha":[5,0],"Roberto Oliveira da Silva Souza":[1,0],"Sonia Maria de Oliveira Maruki":[1,1]},"2026-11-03":{"Aloisio Antonio Mache Tavares":[1,0],"Benedito Thomaz Siqueira":[1,0],"Flavia Maria Ramos":[1,1],"Jorge Luiz de Lima":[1,0],"Luciana Lemes":[3,1],"Luis Fernando Maestro":[1,0],"Paola Cassanelli da Rocha":[2,1],"Roseli Sampaio Bastos Ferreira":[1,0],"Vanderlucia de Oliveira Batista Pereira":[3,0]},"2026-11-04":{"Claudio Sena Borges":[1,0],"Fabio Carlo da Silva":[3,1],"Fernanda Guilherme dos Santos":[1,1],"Franciely Gomes":[1,0],"Guilherme Garcia":[3,1],"Jonathan Pereira da Silva":[1,1],"Jorge Luiz de Lima":[1,0],"Luciana Lemes":[1,0],"Luis Fernando Maestro":[1,1],"Paola Cassanelli da Rocha":[3,0],"Roseli Sampaio Bastos Ferreira":[2,2]},"2026-11-05":{"Aloisio Antonio Mache Tavares":[3,0],"Amekion Ferreira Cruz":[1,0],"Ana Luiza Martins":[1,0],"Benedito Thomaz Siqueira":[2,0],"Claudio Sena Borges":[4,1],"Daniel Alves Silva":[1,1],"Fernanda Guilherme dos Santos":[3,1],"Flavia Maria Ramos":[2,0],"Franciely Gomes":[1,0],"Guilherme Garcia":[1,0],"Isabella Garcia Silva":[2,1],"Jorge Luiz de Lima":[2,1],"João Gabriel Campos Carvalho da Silva":[1,0],"Larissa Gabriele Vitor":[1,0],"Layane Silva Santos Bispo":[1,0],"Lincoln Farah":[1,0],"Luciana Lemes":[1,1],"Marlene Santana Corrêa dos Santos":[1,0],"Paola Cassanelli da Rocha":[1,0],"Roseli Martim Tibiriça":[1,0],"Sonia Maria de Oliveira Maruki":[3,0],"Teresinha Aparecida Crivelaro Lopes":[1,0]},"2026-11-06":{"Aloisio Antonio Mache Tavares":[2,0],"Claudio Sena Borges":[3,0],"Daniel Alves Silva":[2,1],"Flavia Maria Ramos":[1,0],"Guilherme Garcia":[3,1],"João Gabriel Campos Carvalho da Silva":[1,0],"Larissa Gabriele Vitor":[1,0],"Lincoln Farah":[3,0],"Luciana Lemes":[1,0],"Madeleine Kassia de Campos Sena Borges":[1,0],"Marlene Santana Corrêa dos Santos":[1,0],"Paola Cassanelli da Rocha":[2,1],"Roseli Sampaio Bastos Ferreira":[1,1],"Vanderlucia de Oliveira Batista Pereira":[2,0]},"2026-11-07":{"Aloisio Antonio Mache Tavares":[1,1],"Benedito Thomaz Siqueira":[1,0],"Fabio Carlo da Silva":[4,2],"Guilherme Garcia":[1,1],"Isabella Garcia Silva":[2,2],"Luciana Lemes":[1,1],"Luis Fernando Maestro":[1,0],"Marli Teixeira da Costa":[1,1],"Paola Cassanelli da Rocha":[3,1],"Teresinha Aparecida Crivelaro Lopes":[2,1]},"2026-11-08":{"Ana Lucia Menezes de Paula":[1,1],"Claudio Sena Borges":[2,2],"Flavia Maria Ramos":[1,1],"Guilherme Garcia":[1,1],"Roseli Martim Tibiriça":[1,1]},"2026-11-09":{"Aloisio Antonio Mache Tavares":[1,1],"Amekion Ferreira Cruz":[1,1],"Daniel Alves Silva":[1,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,0],"Guilherme Garcia":[2,0],"Isabella Garcia Silva":[1,1],"Larissa Gabriele Vitor":[1,0],"Layane Silva Santos Bispo":[1,1],"Lincoln Farah":[3,0],"Roberto Oliveira da Silva Souza":[1,1],"Sonia Maria de Oliveira Maruki":[2,1],"Teresinha Aparecida Crivelaro Lopes":[2,2],"Vanderlucia de Oliveira Batista Pereira":[1,0]},"2026-11-10":{"Aloisio Antonio Mache Tavares":[2,0],"Amekion Ferreira Cruz":[2,0],"Ana Lucia Menezes de Paula":[1,1],"Ana Paula de Souza Leite Aguiar":[6,0],"Benedito Thomaz Siqueira":[1,1],"Claudio Sena Borges":[3,0],"Daniel Alves Silva":[2,0],"Ellen Cassia Pereira Cassemiro de Campos":[1,0],"Fabio Carlo da Silva":[2,0],"Fernanda Guilherme dos Santos":[1,0],"Flavia Maria Ramos":[3,0],"Franciely Gomes":[2,0],"Guilherme Garcia":[2,1],"Isabella Garcia Silva":[1,0],"Jonathan Pereira da Silva":[2,0],"Jorge Luiz de Lima":[4,0],"João Gabriel Campos Carvalho da Silva":[2,0],"Larissa Gabriele Vitor":[2,1],"Lincoln Farah":[2,0],"Marlene Santana Corrêa dos Santos":[1,0],"Mayara Soares Diogo":[2,0],"Márcio Antônio Custódio":[2,1],"Paola Cassanelli da Rocha":[3,0],"Roberto Oliveira da Silva Souza":[1,0],"Sonia Maria de Oliveira Maruki":[2,1],"Vanderlucia de Oliveira Batista Pereira":[1,0]},"2026-11-11":{"Aloisio Antonio Mache Tavares":[1,0],"Amekion Ferreira Cruz":[1,1],"Ana Luiza Martins":[1,1],"Claudio Sena Borges":[2,0],"Emerson Gonçalves Pereira":[1,0],"Fabiana Sertori de Oliveira":[1,0],"Guilherme Garcia":[2,2],"Larissa Gabriele Vitor":[2,1],"Luciana Lemes":[1,0],"Paola Cassanelli da Rocha":[5,0],"Roseli Martim Tibiriça":[1,0],"Taíssa Ayane Oliveira da Silva":[1,0],"Wanderson de Carvalho Coutinho":[2,1]},"2026-11-12":{"Aloisio Antonio Mache Tavares":[2,1],"Amekion Ferreira Cruz":[1,0],"Ana Luiza Martins":[1,0],"Ana Paula de Souza Leite Aguiar":[4,0],"Clarice Pereira":[1,1],"Claudio Sena Borges":[5,0],"Daniel Alves Silva":[2,0],"Ellen Cassia Pereira Cassemiro de Campos":[2,0],"Fernanda Guilherme dos Santos":[2,0],"Flavia Maria Ramos":[3,0],"Franciely Gomes":[1,0],"Guilherme Garcia":[3,0],"Jorge Luiz de Lima":[3,0],"João Gabriel Campos Carvalho da Silva":[1,0],"Larissa Gabriele Vitor":[3,0],"Layane Silva Santos Bispo":[2,0],"Lincoln Farah":[3,0],"Luciana Lemes":[1,1],"Luciane Aparecida Gomes Barbosa Silva":[1,0],"Marcelo Vicentini Coelho":[1,0],"Marlene Santana Corrêa dos Santos":[1,0],"Marli Teixeira da Costa":[1,0],"Mayara Soares Diogo":[4,0],"Márcio Antônio Custódio":[2,0],"Paola Cassanelli da Rocha":[2,1],"Rickelle Quirino de Oliveira":[1,0],"Sonia Maria de Oliveira Maruki":[4,0],"Wanderson de Carvalho Coutinho":[3,0]},"2026-11-13":{"Claudio Sena Borges":[1,1],"Ellen Cassia Pereira Cassemiro de Campos":[1,0],"Fabio Carlo da Silva":[4,0],"Flavia Maria Ramos":[1,1],"Guilherme Garcia":[1,0],"Isabella Garcia Silva":[1,0],"Jonathan Pereira da Silva":[2,1],"Larissa Gabriele Vitor":[1,0],"Lincoln Farah":[2,0],"Luciana Lemes":[1,1],"Luis Fernando Maestro":[1,0],"Marlene Santana Corrêa dos Santos":[1,0],"Paola Cassanelli da Rocha":[1,1]},"2026-11-14":{"Aldinei Rezende Fagundes":[1,1],"Fabio Carlo da Silva":[1,0],"Flavia Maria Ramos":[1,0],"Franciely Gomes":[1,1],"João Gabriel Campos Carvalho da Silva":[1,0],"Larissa Gabriele Vitor":[2,0],"Luciana Lemes":[1,1],"Luciane Aparecida Gomes Barbosa Silva":[1,0],"Mauro de Pinho Micaela":[1,1],"Teresinha Aparecida Crivelaro Lopes":[1,0]},"2026-11-15":{"Guilherme Garcia":[1,0],"Teresinha Aparecida Crivelaro Lopes":[1,1]}},
   meses: {"2026-10":{"Alan Rocha Conceição":[2,0],"Aloisio Antonio Mache Tavares":[23,3],"Amekion Ferreira Cruz":[17,7],"Ana Laura Oliveira de Queiroz":[2,0],"Ana Lucia Menezes de Paula":[8,3],"Ana Luiza Martins":[6,4],"Ana Paula de Souza Leite Aguiar":[25,5],"Bianca Nascimento Sabino da Silva":[17,4],"Bruno Miccoli de Oliveira":[2,2],"Caroline Resteo":[2,0],"Claudio Sena Borges":[36,16],"Cláudia Maria Carvalho Lopes":[1,1],"Conceição Aparecida de Oliveira da Silva":[5,1],"Daniel Alves Silva":[15,2],"Daniel Aparecido Santos":[2,1],"Daniela Caroza Aleixo Rodrigues de Carvalho":[1,0],"Elisabeth Sueli Velardi":[9,2],"Ellen Cassia Pereira Cassemiro de Campos":[16,5],"Fabio Carlo da Silva":[22,10],"Fernanda Guilherme dos Santos":[18,4],"Flavia Maria Ramos":[17,5],"Franciely Gomes":[4,1],"Guilherme Garcia":[34,7],"Hellen Caroline Pinheiro":[2,1],"Isabella Garcia Silva":[11,3],"Ivan de Aguiar Nascimento":[1,1],"Jonathan Pereira da Silva":[17,4],"Jorge Luiz de Lima":[17,7],"José Raimundo da Silva":[2,2],"João Gabriel Campos Carvalho da Silva":[9,0],"Julia Chiosini":[4,2],"Larissa Gabriele Vitor":[20,4],"Layane Silva Santos Bispo":[7,1],"Leonardo Velardi de Aguiar":[6,0],"Lincoln Farah":[17,1],"Lucas Vinícius Ferreira Chaves":[6,1],"Luciana Lemes":[25,4],"Luis Fernando Maestro":[1,0],"Madeleine Kassia de Campos Sena Borges":[2,2],"Marcelo Vicentini Coelho":[3,2],"Marlene Santana Corrêa dos Santos":[14,5],"Marli Teixeira da Costa":[4,3],"Mayara Soares Diogo":[24,3],"Muller Gustavo dos Santos":[1,0],"Paola Cassanelli da Rocha":[4,2],"Rickelle Quirino de Oliveira":[8,1],"Roseli Martim Tibiriça":[7,3],"Roseli Sampaio Bastos Ferreira":[2,0],"Shirley do Nascimento Pina":[1,0],"Sonia Maria de Oliveira Maruki":[4,2],"Taíssa Ayane Oliveira da Silva":[9,4],"Teresinha Aparecida Crivelaro Lopes":[15,3],"Vanderlucia de Oliveira Batista Pereira":[3,0],"Wanderson de Carvalho Coutinho":[1,0],"Wesley Matheus Riviera de Carvalho":[1,1],"Ícaro Zivko Miranda":[2,2]},"2026-11":{"Aldinei Rezende Fagundes":[2,2],"Aloisio Antonio Mache Tavares":[13,3],"Amekion Ferreira Cruz":[6,2],"Ana Lucia Menezes de Paula":[2,2],"Ana Luiza Martins":[4,1],"Ana Paula de Souza Leite Aguiar":[10,0],"Benedito Thomaz Siqueira":[5,1],"Clarice Pereira":[1,1],"Claudio Sena Borges":[21,4],"Daniel Alves Silva":[8,2],"Ellen Cassia Pereira Cassemiro de Campos":[5,0],"Emerson Gonçalves Pereira":[1,0],"Fabiana Sertori de Oliveira":[1,0],"Fabio Carlo da Silva":[14,3],"Fernanda Guilherme dos Santos":[7,2],"Flavia Maria Ramos":[13,3],"Franciely Gomes":[6,1],"Guilherme Garcia":[20,7],"Isabella Garcia Silva":[9,5],"Jonathan Pereira da Silva":[5,2],"Jorge Luiz de Lima":[12,2],"João Gabriel Campos Carvalho da Silva":[6,0],"Larissa Gabriele Vitor":[13,2],"Layane Silva Santos Bispo":[4,1],"Lincoln Farah":[14,0],"Luciana Lemes":[11,6],"Luciane Aparecida Gomes Barbosa Silva":[2,0],"Luis Fernando Maestro":[6,2],"Madeleine Kassia de Campos Sena Borges":[1,0],"Marcelo Vicentini Coelho":[1,0],"Marlene Santana Corrêa dos Santos":[5,0],"Marli Teixeira da Costa":[2,1],"Mauro de Pinho Micaela":[1,1],"Mayara Soares Diogo":[6,0],"Márcio Antônio Custódio":[4,1],"Paola Cassanelli da Rocha":[27,5],"Rickelle Quirino de Oliveira":[1,0],"Roberto Oliveira da Silva Souza":[3,1],"Roseli Martim Tibiriça":[3,1],"Roseli Sampaio Bastos Ferreira":[4,3],"Sonia Maria de Oliveira Maruki":[12,3],"Taíssa Ayane Oliveira da Silva":[1,0],"Teresinha Aparecida Crivelaro Lopes":[7,4],"Vanderlucia de Oliveira Batista Pereira":[7,0],"Wanderson de Carvalho Coutinho":[5,1]}},
   equipe: [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
@@ -270,12 +320,26 @@ $("btn-upd").addEventListener("click", () => {
   try { navigator.clipboard.writeText("atualizar conversão").then(() => { $("upd-ok").hidden = false; }).catch(() => {}); } catch (e) {}
 });
 
-function render(ym) {
-  const M = DADOS.meses[ym] || {};
+// período escolhido: um mês (linha Jan…Dez), um dia ou vários dias somados (calendário)
+function dadosDe(sel) {
+  const M = {};
+  const dias = sel.tipo === "mes" ? Object.keys(DADOS.dias).filter((d) => d.startsWith(sel.ym)) : sel.dias;
+  dias.forEach((d) => Object.entries(DADOS.dias[d] || {}).forEach(([n, v]) => { const x = M[n] || (M[n] = [0, 0]); x[0] += v[0]; x[1] += v[1]; }));
+  return M;
+}
+const fmtDia = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
+function render(sel) {
+  const M = dadosDe(sel);
+  const ym = sel.tipo === "mes" ? sel.ym : sel.dias[sel.dias.length - 1].slice(0, 7);
   const [y, m] = ym.split("-").map(Number);
-  const atual = ym === DADOS.mes;
-  $("mes-nome").textContent = MESES[m - 1] + " de " + y;
-  $("lbl").textContent = atual ? "Conversão do time no mês" : "Conversão do time em " + MESES[m - 1];
+  let quando, oque;
+  if (sel.tipo === "mes") { quando = ym === DADOS.mes ? "no mês" : "em " + MESES[m - 1]; oque = "no mês"; }
+  else if (sel.dias.length === 1) { quando = "em " + fmtDia(sel.dias[0]); oque = "no dia " + fmtDia(sel.dias[0]); }
+  else { quando = "em " + sel.dias.length + " dias somados"; oque = "nos " + sel.dias.length + " dias"; }
+  PERIODO = sel.tipo === "mes" ? "neste mês" : (sel.dias.length === 1 ? "neste dia" : "nestes dias");
+  $("mes-nome").textContent = sel.tipo === "mes" ? MESES[m - 1] + " de " + y : (sel.dias.length === 1 ? fmtDia(sel.dias[0]) + "/" + y : fmtLista(sel.dias));
+  $("lbl").textContent = "Conversão do time " + quando;
+  $("f-ag-t").textContent = "agendamentos criados " + oque;
   const naBase = new Set(DADOS.equipe.map((p) => p.nome));
   const pessoas = DADOS.equipe.map((p) => ({...p, ag: (M[p.nome] || [0, 0])[0], vi: (M[p.nome] || [0, 0])[1]}));
   const fora = Object.entries(M).filter(([n]) => !naBase.has(n)).map(([nome, v]) => ({nome, gv: null, gr: null, ag: v[0], vi: v[1]}));
@@ -300,7 +364,7 @@ function render(ym) {
 
 function cards(box, lst, titulo, sub) {
   box.textContent = "";
-  if (!lst.length) { box.appendChild(el("div", "vazio", "Sem agendamentos neste mês.")); return; }
+  if (!lst.length) { box.appendChild(el("div", "vazio", "Sem agendamentos " + PERIODO + ".")); return; }
   lst.forEach((g, i) => {
     const c = el("div", "rcard" + (i === 0 ? " first" : ""));
     const top = el("div", "rtop");
@@ -315,7 +379,7 @@ function cards(box, lst, titulo, sub) {
 
 function ranking(rows, media) {
   const box = $("rk-cor"); box.textContent = "";
-  if (!rows.length) { box.appendChild(el("div", "vazio", "Sem agendamentos neste mês.")); return; }
+  if (!rows.length) { box.appendChild(el("div", "vazio", "Sem agendamentos " + PERIODO + ".")); return; }
   const grid = el("div", "rk");
   const W = 78; // % da largura usada pela maior barra
   const maxV = Math.max(1, ...rows.map((r) => r.vi));
@@ -330,7 +394,7 @@ function ranking(rows, media) {
     ht.append(bar, val); grid.append(pos, hn, ht);
   });
   box.appendChild(grid);
-  box.appendChild(el("div", "hcap", "Barra = visitas realizadas no mês · ao lado: conversão (visitas ÷ agendamentos) e visitas/agendamentos"));
+  box.appendChild(el("div", "hcap", "Barra = visitas realizadas " + PERIODO.replace("neste", "no").replace("nestes", "nos") + " · ao lado: conversão (visitas ÷ agendamentos) e visitas/agendamentos"));
 }
 
 function equipes(pessoas, media) {
@@ -369,20 +433,96 @@ function equipes(pessoas, media) {
   });
 }
 
-// ===== meses =====
-const LISTA = Object.keys(DADOS.meses).filter((k) => k <= DADOS.mes).sort();
-function escolher(ym) {
-  try { history.replaceState(null, "", ym === DADOS.mes ? location.pathname : "#" + ym); } catch (e) {}
+// ===== período: meses (Jan…Dez) e calendário (dia / somar dias) =====
+let PERIODO = "neste mês";
+const HOJE = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+const DIAS = Object.keys(DADOS.dias).sort();
+const PRIMEIRO = DIAS[0] || HOJE, ULTIMO = HOJE;
+const ANO = DADOS.mes.slice(0, 4);
+const MES3 = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const temMes = (ym) => DIAS.some((d) => d.startsWith(ym));
+const totDia = (iso) => Object.values(DADOS.dias[iso] || {}).reduce((s, v) => [s[0] + v[0], s[1] + v[1]], [0, 0]);
+function fmtLista(lista) { return lista.length > 4 ? fmtDia(lista[0]) + " a " + fmtDia(lista[lista.length - 1]) + " (" + lista.length + " dias)" : lista.map(fmtDia).join(", "); }
+const addMes = (ym, k) => { let [y, m] = ym.split("-").map(Number); m += k; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return y + "-" + String(m).padStart(2, "0"); };
+let sel = {tipo: "mes", ym: DADOS.mes};
+let modoSoma = false;
+let mesVisto = DADOS.mes;
+
+function linhaMeses() {
   const box = $("meses"); box.textContent = "";
-  LISTA.forEach((k) => {
-    const b = el("button", "mes-btn", MESES[Number(k.slice(5)) - 1]); b.type = "button";
-    b.setAttribute("aria-pressed", k === ym ? "true" : "false");
-    b.addEventListener("click", () => escolher(k)); box.appendChild(b);
+  MES3.forEach((nome, i) => {
+    const ym = ANO + "-" + String(i + 1).padStart(2, "0");
+    const b = el("button", "mes-btn", nome); b.type = "button";
+    b.setAttribute("aria-pressed", sel.tipo === "mes" && sel.ym === ym ? "true" : "false");
+    b.setAttribute("aria-label", MESES[i] + " de " + ANO);
+    if (!temMes(ym) || ym > DADOS.mes) b.disabled = true;
+    else b.addEventListener("click", () => { modoSoma = false; mostrar({tipo: "mes", ym}); });
+    box.appendChild(b);
   });
-  render(ym);
 }
+function calendario() {
+  const [y, m] = mesVisto.split("-").map(Number);
+  $("cal-mes").textContent = MESES[m - 1] + " " + y;
+  $("cal-prev").disabled = mesVisto <= PRIMEIRO.slice(0, 7);
+  $("cal-next").disabled = mesVisto >= ULTIMO.slice(0, 7);
+  const g = $("cal-grid"); g.textContent = "";
+  ["D", "S", "T", "Q", "Q", "S", "S"].forEach((w) => g.appendChild(el("div", "cal-w", w)));
+  const primeiroDow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+  for (let i = 0; i < primeiroDow; i++) g.appendChild(el("div"));
+  const nDias = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const escolhidos = sel.tipo === "dias" ? sel.dias : [];
+  for (let dd = 1; dd <= nDias; dd++) {
+    const iso = mesVisto + "-" + String(dd).padStart(2, "0");
+    const b = el("button", "cal-d"); b.type = "button";
+    b.appendChild(document.createTextNode(dd));
+    if (iso < PRIMEIRO || iso > ULTIMO) b.disabled = true;
+    else {
+      const [a, v] = totDia(iso);
+      const sm = el("small"); sm.append(el("span", "g", v), "/", el("span", "r", a)); b.appendChild(sm);
+      if (!a && !v) b.classList.add("z");
+      b.setAttribute("aria-label", dd + "/" + m + ": " + v + " visitas de " + a + " agendamentos");
+      b.addEventListener("click", () => clicarDia(iso));
+    }
+    if (iso === HOJE) b.classList.add("hoje");
+    if (escolhidos.includes(iso)) { b.classList.add("sel"); b.setAttribute("aria-pressed", "true"); }
+    g.appendChild(b);
+  }
+}
+function mostrar(novo) {
+  sel = novo.tipo === "dias" ? {tipo: "dias", dias: [...new Set(novo.dias)].sort()} : novo;
+  mesVisto = sel.tipo === "mes" ? sel.ym : sel.dias[sel.dias.length - 1].slice(0, 7);
+  const padrao = sel.tipo === "mes" && sel.ym === DADOS.mes;
+  try { history.replaceState(null, "", padrao ? location.pathname : "#" + (sel.tipo === "mes" ? sel.ym : sel.dias.join(","))); } catch (e) {}
+  render(sel); linhaMeses(); calendario(); somaInfo();
+}
+// toque num dia: vê só aquele dia; com "Somar dias" ligado, junta ou tira o dia da soma
+function clicarDia(iso) {
+  if (!modoSoma || sel.tipo !== "dias") return mostrar({tipo: "dias", dias: [iso]});
+  const tem = sel.dias.includes(iso);
+  if (tem && sel.dias.length === 1) return;
+  mostrar({tipo: "dias", dias: tem ? sel.dias.filter((d) => d !== iso) : sel.dias.concat(iso)});
+}
+function somaInfo() {
+  $("cal-soma").setAttribute("aria-pressed", modoSoma ? "true" : "false");
+  $("cal-soma").textContent = modoSoma ? "✓ Somando dias" : "+ Somar dias";
+  const t = $("soma-txt"); t.textContent = "";
+  const n = sel.tipo === "dias" ? sel.dias.length : 0;
+  if (modoSoma) { if (n > 1) { t.appendChild(el("b", null, n + " dias")); t.append(": " + fmtLista(sel.dias)); } else t.append("toque nos dias para somar"); }
+  $("soma-limpar").hidden = n < 2;
+}
+$("cal-soma").addEventListener("click", () => {
+  modoSoma = !modoSoma;
+  if (modoSoma && sel.tipo === "mes") { somaInfo(); return; }
+  if (!modoSoma && sel.tipo === "dias" && sel.dias.length > 1) mostrar({tipo: "dias", dias: [sel.dias[sel.dias.length - 1]]}); else somaInfo();
+});
+$("soma-limpar").addEventListener("click", () => mostrar({tipo: "dias", dias: [sel.dias[sel.dias.length - 1]]}));
+$("cal-prev").addEventListener("click", () => { mesVisto = addMes(mesVisto, -1); calendario(); });
+$("cal-next").addEventListener("click", () => { mesVisto = addMes(mesVisto, 1); calendario(); });
+$("cal-hoje").addEventListener("click", () => { modoSoma = false; mostrar({tipo: "mes", ym: mesVisto <= DADOS.mes && temMes(mesVisto) ? mesVisto : DADOS.mes}); });
 const pedido = location.hash.slice(1);
-escolher(LISTA.includes(pedido) ? pedido : DADOS.mes);
+const pedDias = pedido.split(",").filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d) && d >= PRIMEIRO && d <= ULTIMO);
+if (pedDias.length) { if (pedDias.length > 1) modoSoma = true; mostrar({tipo: "dias", dias: pedDias}); }
+else mostrar({tipo: "mes", ym: /^\d{4}-\d{2}$/.test(pedido) && temMes(pedido) && pedido <= DADOS.mes ? pedido : DADOS.mes});
 </script>
 <script src="../auto-refresh.js" defer></script>
 </body>
