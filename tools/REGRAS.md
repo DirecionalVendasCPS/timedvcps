@@ -214,8 +214,8 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 8. Conferir as páginas com o playwright (sem erros de JS), `git commit` e `git push`.
 
 ## 5. Tarefa programada
-- **Uma só tarefa:** "Atualizar site DV Campinas (5 min após o refresh das planilhas)", cron `CRON_TZ=America/Sao_Paulo 53 1,5,9,13,17,21 * * *`, válida até o fim de 2026.
-- Precisa do Chrome do usuário: no app Claude do computador, ligar **"Require this computer"** na tarefa.
+- **Desde 17/11/2026:** uma verificação encadeada (send_later, presa a esta conversa) que lê o **Auto Refresh Execution Log** da planilha nova. Achou refresh novo → "atualizar tudo" e agenda a próxima para refresh + 4h05; não achou → confere de novo em 10 min; aba do log ainda não existe → confere em 30 min; sem Chrome conectado → avisa e tenta em 30 min.
+- Precisa do Chrome do usuário ligado com a extensão.
 
 ## 6. Prints para o WhatsApp
 - Pedidos: **"prints das visitas"**, **"prints dos agendamentos"**, **"prints do corujão"**.
