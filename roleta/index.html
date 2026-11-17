@@ -48,6 +48,9 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);l
 .cal-d.sel{outline:2px solid var(--accent);outline-offset:-1px}
 .cal-d.fora{visibility:hidden}
 .cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.somar{display:block;margin:10px auto 0;font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:none;border:1px solid var(--line);border-radius:999px;padding:7px 16px;cursor:pointer}
+.somar[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#0b1630}
+.soma-info{font-size:12px;color:var(--accent);text-align:center;margin-top:6px;min-height:15px}
 .cal-hint button{background:none;border:none;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer;padding:0}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -133,6 +136,8 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-hint">corretores por dia · toque num dia · <button id="ver-mes" type="button">ver o mês</button></div>
+      <button class="somar" id="somar" type="button" aria-pressed="false">+ Somar dias</button>
+      <div class="soma-info" id="soma-info"></div>
     </div>
   </section>
 
@@ -252,7 +257,8 @@ const DIAS = [...new Set(REGISTROS.map((r) => r.data))].sort();
 let sel = {tipo: "dia", dia: DIAS[DIAS.length - 1]};
 let calYm = sel.dia.slice(0, 7);
 
-function filtrar() { return REGISTROS.filter((r) => sel.tipo === "mes" ? r.data.startsWith(sel.ym) : r.data === sel.dia); }
+let somando = false;
+function filtrar() { return REGISTROS.filter((r) => sel.tipo === "mes" ? r.data.startsWith(sel.ym) : sel.tipo === "dias" ? sel.dias.includes(r.data) : r.data === sel.dia); }
 
 function render() {
   const regs = filtrar();
@@ -268,6 +274,7 @@ function render() {
   const tm = lista.reduce((a, p) => a + p.m, 0), tt = lista.reduce((a, p) => a + p.t, 0);
 
   if (sel.tipo === "mes") { const m = Number(sel.ym.slice(5, 7)); $("lbl").textContent = "Corretores no mês"; $("quando").textContent = MESES[m - 1].replace(/^./, (c) => c.toUpperCase()) + "/" + sel.ym.slice(2, 4); $("periodo-top").textContent = MESES[m - 1] + "/" + sel.ym.slice(2, 4); }
+  else if (sel.tipo === "dias") { $("lbl").textContent = "Corretores nos dias"; $("quando").textContent = sel.dias.length + " dias somados: " + sel.dias.map(fmtD).join(" + "); $("periodo-top").textContent = sel.dias.map(fmtD).join(" + "); }
   else { const d = new Date(sel.dia + "T12:00:00-03:00"); $("lbl").textContent = "Corretores no dia"; $("quando").textContent = SEM[d.getDay()].replace(/^./, (c) => c.toUpperCase()) + ", " + fmtD(sel.dia); $("periodo-top").textContent = fmtD(sel.dia); }
   $("total").textContent = lista.length; $("n-rol").textContent = roletas; $("rol-txt").textContent = roletas === 1 ? "roleta" : "roletas";
   $("t-m").textContent = lista.filter((p) => p.m).length; $("t-t").textContent = lista.filter((p) => p.t).length;
@@ -277,7 +284,7 @@ function render() {
   const pctDia = (d) => new Set(regs.filter((r) => r.data === d).flatMap((r) => [...r.squad, ...r.fora]).filter((n) => POR_NOME[n])).size / EQUIPE.length;
   const pct = diasP.length ? diasP.reduce((a, d) => a + pctDia(d), 0) / diasP.length : 0;
   $("s-media").textContent = Math.round(pct * 100) + "%";
-  $("s-media").title = sel.tipo === "mes" ? "Média por dia: corretores ativos presentes ÷ " + EQUIPE.length + " da base" : "Corretores ativos presentes ÷ " + EQUIPE.length + " da base";
+  $("s-media").title = sel.tipo !== "dia" ? "Média por dia: corretores ativos presentes ÷ " + EQUIPE.length + " da base" : "Corretores ativos presentes ÷ " + EQUIPE.length + " da base";
   $("s-fs").textContent = new Set(regs.flatMap((r) => r.fora)).size;
   $("s-zero").textContent = EQUIPE.filter((p) => !por[p.nome]).length;
 
@@ -351,9 +358,9 @@ function calendario() {
     const iso = calYm + "-" + String(d).padStart(2, "0");
     const regs = REGISTROS.filter((r) => r.data === iso);
     const v = new Set(regs.flatMap((r) => [...r.squad, ...r.fora])).size;
-    const b = el("button", "cal-d" + (regs.length ? " tem" : "") + (sel.tipo === "dia" && sel.dia === iso ? " sel" : "")); b.type = "button";
+    const b = el("button", "cal-d" + (regs.length ? " tem" : "") + ((sel.tipo === "dia" && sel.dia === iso) || (sel.tipo === "dias" && sel.dias.includes(iso)) ? " sel" : "")); b.type = "button";
     b.append(el("span", "n", d)); if (v) b.append(el("span", "v", v));
-    if (regs.length) b.addEventListener("click", () => { sel = {tipo: "dia", dia: iso}; render(); }); else b.disabled = true;
+    if (regs.length) b.addEventListener("click", () => clicarDia(iso)); else b.disabled = true;
     grid.append(b);
   }
   const yms = [...new Set(DIAS.map((d) => d.slice(0, 7)))];
@@ -361,9 +368,37 @@ function calendario() {
 }
 $("cal-prev").addEventListener("click", () => { const [a, m] = calYm.split("-").map(Number); const d = new Date(a, m - 2, 1); calYm = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); calendario(); });
 $("cal-next").addEventListener("click", () => { const [a, m] = calYm.split("-").map(Number); const d = new Date(a, m, 1); calYm = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); calendario(); });
-$("ver-mes").addEventListener("click", () => { sel = {tipo: "mes", ym: calYm}; render(); });
+$("ver-mes").addEventListener("click", () => { somando = false; sel = {tipo: "mes", ym: calYm}; mostrar(); });
+// ===== Somar dias: liga o modo, toca nos dias para juntar (ex.: sábado + domingo); o endereço guarda os dias (#2026-11-16,2026-11-17) =====
+function selDias() { return sel.tipo === "dias" ? sel.dias : sel.tipo === "dia" ? [sel.dia] : []; }
+function clicarDia(iso) {
+  if (!somando) { sel = {tipo: "dia", dia: iso}; return mostrar(); }
+  let ds = selDias().slice(); ds = ds.includes(iso) ? ds.filter((d) => d !== iso) : [...ds, iso].sort();
+  if (!ds.length) ds = [iso];
+  sel = ds.length === 1 ? {tipo: "dia", dia: ds[0]} : {tipo: "dias", dias: ds};
+  mostrar();
+}
+function mostrar() {
+  const b = $("somar"); b.setAttribute("aria-pressed", somando ? "true" : "false"); b.textContent = somando ? "✓ Somando dias" : "+ Somar dias";
+  $("soma-info").textContent = somando ? (sel.tipo === "dias" ? sel.dias.length + " dias marcados · toque para tirar ou juntar" : "toque nos dias para juntar") : "";
+  try { history.replaceState(null, "", sel.tipo === "dias" ? "#" + sel.dias.join(",") : sel.tipo === "mes" ? "#" + sel.ym : "#" + sel.dia); } catch (e) {}
+  render();
+}
+$("somar").addEventListener("click", () => {
+  somando = !somando;
+  if (!somando && sel.tipo === "mes") sel = {tipo: "dia", dia: DIAS[DIAS.length - 1]};
+  if (somando && sel.tipo === "mes") sel = {tipo: "dia", dia: DIAS[DIAS.length - 1]};
+  mostrar();
+});
+(function () {
+  const h = location.hash.slice(1); if (!h) return;
+  if (/^\d{4}-\d{2}$/.test(h)) { sel = {tipo: "mes", ym: h}; calYm = h; return; }
+  const ds = h.split(",").filter((d) => DIAS.includes(d)).sort();
+  if (ds.length > 1) { somando = true; sel = {tipo: "dias", dias: ds}; calYm = ds[0].slice(0, 7); }
+  else if (ds.length === 1) { sel = {tipo: "dia", dia: ds[0]}; calYm = ds[0].slice(0, 7); }
+})();
 $("upd").textContent = ATUALIZADO;
-render();
+mostrar();
 </script>
 <script src="../auto-refresh.js" defer></script>
 </body>
