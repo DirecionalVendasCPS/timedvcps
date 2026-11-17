@@ -177,7 +177,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
 
 <script>
 // ===== Dados: uma linha por folha fotografada (data, turno M/T, GR da folha, nomes do squad e de fora do squad) =====
-const ATUALIZADO = "17/11 às 09:15";
+const ATUALIZADO = "17/11 às 14:00";
 const REGISTROS = [
   {data: "2026-11-16", turno: "M", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: []},
   {data: "2026-11-16", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Isabella Garcia Silva", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
@@ -187,6 +187,9 @@ const REGISTROS = [
   {data: "2026-11-17", turno: "M", gr: "Takeashi", squad: ["Valda Terezinha Delanhese Francisco", "Isabella Garcia Silva", "Teresinha Aparecida Crivelaro Lopes", "Ana Luiza Martins", "Roseli Martim Tibiriça"], fora: ["Roberto Oliveira da Silva Souza", "Mauro de Pinho Micaela", "Benedito Thomaz Siqueira"]},
   {data: "2026-11-17", turno: "M", gr: "Patricia", squad: ["Fabio Carlo da Silva", "Guilherme Garcia", "Sonia Maria de Oliveira Maruki", "Amekion Ferreira Cruz"], fora: []},
   {data: "2026-11-17", turno: "M", gr: "Gustavo", squad: ["Roseli Sampaio Bastos Ferreira"], fora: ["Lincoln Farah", "Mariana Lazaretti Salomão"]},
+  {data: "2026-11-17", turno: "T", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Isabella Garcia Silva", "Valda Terezinha Delanhese Francisco", "Ana Luiza Martins", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Robson de Oliveira", "Ronaldo", "José Carlos de Faria", "J. Eduardo", "Paola Cassanelli da Rocha"]},
+  {data: "2026-11-17", turno: "T", gr: "Patricia", squad: ["Jorge Luiz de Lima", "Layane Silva Santos Bispo", "Amekion Ferreira Cruz", "Sonia Maria de Oliveira Maruki", "Fernanda Guilherme dos Santos", "Flavia Maria Ramos", "Guilherme Garcia", "Fabio Carlo da Silva"], fora: ["João Gabriel Campos Carvalho da Silva", "Clarice Pereira", "Marlene Santana Corrêa dos Santos", "Márcio Antônio Custódio", "Aloisio Antonio Mache Tavares", "Paulo"]},
+  {data: "2026-11-17", turno: "T", gr: "Gustavo", squad: ["Roseli Sampaio Bastos Ferreira"], fora: ["Lincoln Farah"]},
 ];
 const EQUIPE = [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
@@ -250,6 +253,8 @@ const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","ag
 const SEM = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
 const GRS = ["Takeashi", "Patricia", "Gustavo"];
 const NOME_GR = {Takeashi: "GR Takeashi", Patricia: "GR Patricia", Gustavo: "GR Gustavo Moura"};
+// nomes da folha que não estão na base de corretores ativos: GV/GR como escrito na folha
+const FORA_BASE = {"Ronaldo": {gv: "Pina", gr: "Takeashi"}, "J. Eduardo": {gv: "Aldinei", gr: "Takeashi"}, "Paulo": {gv: "Bruno", gr: "Patricia"}};
 const POR_NOME = Object.fromEntries(EQUIPE.map((p) => [p.nome, p]));
 const curto = (n) => { const p = n.split(" "); return p.length > 1 ? p[0] + " " + p[p.length - 1] : n; };
 const fmtD = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
@@ -267,7 +272,7 @@ function render() {
     const p = por[n] || (por[n] = {nome: n, m: 0, t: 0, fs: 0, ult: ""});
     p[r.turno === "M" ? "m" : "t"]++; if (fs) p.fs++; if (r.data > p.ult) p.ult = r.data;
   }));
-  const lista = Object.values(por).map((p) => ({...p, tot: p.m + p.t, ...(POR_NOME[p.nome] || {gv: "Fora da base", gr: ""})}));
+  const lista = Object.values(por).map((p) => ({...p, tot: p.m + p.t, ...(POR_NOME[p.nome] || (FORA_BASE[p.nome] ? {gv: FORA_BASE[p.nome].gv + " (fora da base)", gr: FORA_BASE[p.nome].gr} : {gv: "Fora da base", gr: ""}))}));
   lista.sort((a, b) => b.tot - a.tot || b.t - a.t || a.nome.localeCompare(b.nome, "pt"));
   const tot = lista.reduce((a, p) => a + p.tot, 0);
   const roletas = new Set(regs.map((r) => r.data + r.turno)).size;
@@ -303,7 +308,7 @@ function render() {
   [["squad", "tb-squad", "n-sq"], ["fora", "tb-fora", "n-fs"]].forEach(([campo, id, nid]) => {
     const pp = {};
     regs.forEach((r) => r[campo].forEach((n) => { const x = pp[n] || (pp[n] = {nome: n, m: 0, t: 0}); x[r.turno === "M" ? "m" : "t"]++; }));
-    const ls = Object.values(pp).map((x) => ({...x, tot: x.m + x.t, ...(POR_NOME[x.nome] || {gv: "Fora da base", gr: ""})}))
+    const ls = Object.values(pp).map((x) => ({...x, tot: x.m + x.t, ...(POR_NOME[x.nome] || (FORA_BASE[x.nome] ? {gv: FORA_BASE[x.nome].gv + " (fora da base)", gr: FORA_BASE[x.nome].gr} : {gv: "Fora da base", gr: ""}))}))
       .sort((a, b) => b.tot - a.tot || a.nome.localeCompare(b.nome, "pt"));
     const tb = $(id); tb.replaceChildren();
     const th = el("thead"); const hr = el("tr"); [["Corretor", ""], ["GV · GR", ""], ["Manhã", "n"], ["Tarde", "n"], ["Total", "n"]].forEach(([t, c]) => hr.append(el("th", c, t))); th.append(hr);
