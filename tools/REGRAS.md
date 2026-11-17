@@ -101,7 +101,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 - Corretores fora da base ativa aparecem em "Fora da base de corretores" (contam no total do dia).
 - **Script:** `tools/visitas_atualizar.py "DD/MM HH:MM" agendados.txt < realizadas.txt`
   - agendados: `select E,J,count(A) where E >= date '2026-10-01' group by E,J`
-  - realizadas: `select E,J,count(A) where E >= date '2026-10-01' and H = 'verdadeiro' group by E,J` (desde 16/11 a coluna H vem como texto "verdadeiro"/"falso"; `H = true` não retorna nada)
+  - realizadas: `select E,J,count(A) where E >= date '2026-10-01' and H = 'verdadeiro' group by E,J` (a coluna H às vezes vem como booleano e às vezes como texto: testar `H = true`; se não vier nada, usar `H = 'verdadeiro'`)
 - **Prints:** `tools/prints_visitas.py PASTA` → `visitas-1-placar.png`, `visitas-2-ranking.png`, `visitas-3-gr-<gr>.png`.
 
 ### 3.5 Conversão Visitas x Agendamentos (`/conversao/`)
