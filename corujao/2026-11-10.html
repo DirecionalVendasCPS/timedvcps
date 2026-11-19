@@ -87,7 +87,8 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .dots{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
 .dot{width:16px;height:16px;border-radius:4px;border:1.5px dashed #3a5190}
 .dot.done{background:var(--done);border:1.5px solid var(--done)}
-.dot.extra{background:var(--accent);border:1.5px solid var(--accent)}
+.dot.extra{background:#4d7bff;border:1.5px solid #4d7bff}
+.dot.part{background:var(--accent);border:1.5px solid var(--accent)}
 .det{grid-column:1/-1;font-size:13px;color:var(--muted)}
 .det b{color:var(--ink)}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:-4px 0 12px}
@@ -120,7 +121,8 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .people .pn{min-width:0;overflow-wrap:anywhere}
 .pill{flex:none;font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .p-in{color:var(--done);background:rgba(61,220,151,.14)}
-.p-extra{color:var(--accent);background:rgba(255,182,39,.16)}
+.p-extra{color:#8fb0ff;background:rgba(77,123,255,.18)}
+.p-falta{color:var(--accent);background:rgba(255,182,39,.16)}
 .p-out{color:#ff8a8a;background:rgba(255,107,107,.14)}
 .people li.out .pn{color:var(--muted)}
 .leg2 span::before{display:none}
@@ -131,6 +133,8 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .hbar .ht{position:relative;height:26px;border-left:1.5px solid #3a5190}
 .hbar .ht i{position:absolute;left:0;top:2px;bottom:2px;background:#4d7bff;border-radius:0 6px 6px 0;min-width:6px}
 .hbar .ht i.meta{background:var(--done)}
+.hbar .ht i.part{background:var(--accent)}
+.l3::before{background:var(--accent)}
 .hbar .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
 .hgrid{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:12px;margin-top:6px}
 .hticks{position:relative;height:18px;font-size:11px;color:var(--muted)}
@@ -218,7 +222,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 
   <section aria-label="Gráfico de agendamentos do dia" id="grafico-sec">
     <h2>Agendamentos do dia por corretor</h2>
-    <div class="legend"><span class="l1">Bateu a promessa</span><span style="--c:#4d7bff" class="lblue">Agendou</span></div>
+    <div class="legend"><span class="l1">Bateu a promessa</span><span class="l3">Ainda não bateu</span><span style="--c:#4d7bff" class="lblue">Fora da lista</span></div>
     <div class="chart-card">
       <div id="grafico" role="img" aria-label="Gráfico de barras com quantos agendamentos cada corretor criou hoje"></div>
     </div>
@@ -232,7 +236,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
 
   <section aria-label="Corretores por GR e GV" id="equipes-sec">
     <h2>Quem está no corujão, por equipe</h2>
-    <div class="legend leg2"><span class="pill p-in">Na lista</span><span class="pill p-extra">Fora da lista, mas agendou</span><span class="pill p-out">Não colocou o nome</span></div>
+    <div class="legend leg2"><span class="pill p-in">Bateu a promessa</span><span class="pill p-falta">Na lista, ainda não bateu</span><span class="pill p-extra">Fora da lista, mas agendou</span><span class="pill p-out">Não colocou o nome</span></div>
     <div class="grs" id="grs"></div>
   </section>
 
@@ -417,7 +421,7 @@ C.slice().sort((a, b) => (b.feito / b.prometido) - (a.feito / a.prometido) || b.
   const dots = document.createElement("div"); dots.className = "dots";
   for (let i = 0; i < Math.max(c.prometido, c.feito); i++) {
     const x = document.createElement("div");
-    x.className = "dot" + (i < c.feito ? (i >= c.prometido ? " extra" : " done") : "");
+    x.className = "dot" + (i < c.feito ? (i >= c.prometido ? " extra" : (c.feito >= c.prometido ? " done" : " part")) : "");
     dots.appendChild(x);
   }
   const det = document.createElement("div"); det.className = "det";
@@ -495,7 +499,7 @@ function BD_ag(lista) {
         const li = document.createElement("li"); if (p.status === "out") li.className = "out";
         const pn = document.createElement("span"); pn.className = "pn"; pn.textContent = p.nome;
         const pill = document.createElement("span");
-        if (p.status === "in") { pill.className = "pill p-in"; pill.textContent = "Agendou " + p.feito + " de " + p.promessa.prometido; }
+        if (p.status === "in") { pill.className = "pill " + (p.feito >= p.promessa.prometido ? "p-in" : "p-falta"); pill.textContent = "Agendou " + p.feito + " de " + p.promessa.prometido; }
         else if (p.status === "extra") { pill.className = "pill " + (SEM ? "p-in" : "p-extra"); pill.textContent = (SEM ? "Agendou " : "Fora da lista · agendou ") + p.feito; }
         else { pill.className = "pill p-out"; pill.textContent = SEM ? "Não agendou" : "Não colocou o nome"; }
         li.append(pn, pill); ul.appendChild(li);
@@ -531,7 +535,7 @@ function BD_ag(lista) {
     const hn = document.createElement("div"); hn.className = "hn"; hn.textContent = r.nome;
     const sm = document.createElement("small"); sm.textContent = (r.gv ? "Equipe " + r.gv : "") + (r.fora && !SEM ? " · fora da lista" : ""); hn.appendChild(sm);
     const ht = document.createElement("div"); ht.className = "ht";
-    const bar = document.createElement("i"); if (r.bateu) bar.className = "meta";
+    const bar = document.createElement("i"); if (r.bateu) bar.className = "meta"; else if (!r.fora) bar.className = "part";
     const w = r.v / max * 88; bar.style.width = w + "%";
     const val = document.createElement("b"); val.textContent = r.v; val.style.left = "calc(" + w + "% + 8px)";
     ht.append(bar, val);
