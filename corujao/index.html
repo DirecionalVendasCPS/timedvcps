@@ -246,7 +246,7 @@ const DADOS = {
   dia: "2026-11-19",
   ate: "2026-11-22", // só valem agendamentos marcados até esta data (regra do grupo)
   regra: "Só valem agendamentos até 22/11 (domingo).",
-  atualizado: "2026-11-19T18:39:00-03:00",
+  atualizado: "2026-11-19T19:32:00-03:00",
   refresh: "19/11/2026 18:39", // horário dos dados do último corujão
   corretores: [
     {nome: "Larissa", prometido: 3, feito: 2},
@@ -537,7 +537,7 @@ function BD_ag(lista) {
   const lista = typeof CORUJOES !== "undefined" ? CORUJOES : [];
   const porDia = Object.fromEntries(lista.map((c) => [c.dia, c]));
   const comPlacar = lista.filter((c) => c.placar).map((c) => c.dia).sort();
-  const ULTIMO = comPlacar[comPlacar.length - 1];
+  const ATUAL = typeof CORUJAO_ATUAL !== "undefined" ? CORUJAO_ATUAL : comPlacar[comPlacar.length - 1];
   const HOJE = new Date().toLocaleDateString("en-CA", {timeZone: "America/Sao_Paulo"});
   const meses = [...new Set(lista.map((c) => c.dia.slice(0, 7)))].sort();
   const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
@@ -555,13 +555,19 @@ function BD_ag(lista) {
     for (let dd = 1; dd <= n; dd++) {
       const iso = visto + "-" + String(dd).padStart(2, "0");
       const c = porDia[iso];
-      const el = document.createElement(c && c.placar ? "a" : "div");
-      el.className = "cal-d" + (c ? " cor" : "") + (c && c.placar ? " tem" : "") + (iso === HOJE ? " hoje" : "") + (iso === DADOS.dia ? " sel" : "");
+      const passou = c && iso <= HOJE;
+      const el = document.createElement(passou ? "a" : "div");
+      el.className = "cal-d" + (c ? " cor" : "") + (passou ? " tem" : "") + (iso === HOJE ? " hoje" : "") + (iso === DADOS.dia ? " sel" : "");
       el.appendChild(document.createTextNode(dd));
       if (c) {
         const sm = document.createElement("small"); sm.textContent = c.placar || (c.feito != null ? c.feito : "🦉"); el.appendChild(sm);
-        el.title = c.rotulo + (c.placar ? " · " + c.placar + " agendamentos" : iso > HOJE ? " · programado" : " · sem placar salvo");
-        if (c.placar) { el.href = iso === ULTIMO ? "./" : iso + ".html"; if (iso === DADOS.dia) el.setAttribute("aria-current", "page"); }
+        el.title = c.rotulo + (c.placar ? " · " + c.placar + " agendamentos" : iso > HOJE ? " · programado" : " · ver na comparação");
+        // clicar num dia de corujão abre o placar daquele dia: o atual fica em corujao/, os anteriores salvos em AAAA-MM-DD.html;
+        // corujões sem placar salvo (sem lista de promessas) abrem a comparação
+        if (passou) {
+          el.href = iso === ATUAL ? "./" : (c.placar ? iso + ".html" : "comparar.html");
+          if (iso === DADOS.dia) el.setAttribute("aria-current", "page");
+        }
         el.setAttribute("aria-label", dd + "/" + m + ": " + el.title);
       }
       g.appendChild(el);

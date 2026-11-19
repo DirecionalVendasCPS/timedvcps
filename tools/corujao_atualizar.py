@@ -35,3 +35,10 @@ novo = re.sub(r'  refresh: "[^"]*"', '  refresh: "%s"' % sys.argv[1], novo)
 s = s[:a] + novo + s[b:]
 open(P, 'w').write(s)
 print('corujão', dia, '| promessas:', cont, '| extras:', fora)
+
+# placar do dia também no calendário (corujao/datas.js)
+prom = sum(int(x) for x in re.findall(r'\{nome: "[^"]+", prometido: (\d+), feito: \d+\}', novo))
+feito_tot = sum(cont.values()) + sum(fora.values())
+D = 'corujao/datas.js'; ds = open(D).read()
+ds = re.sub(r'  \{dia: "%s", rotulo: "([^"]+)"[^}]*\}' % dia, lambda m: '  {dia: "%s", rotulo: "%s", feito: %d, prometido: %d, placar: "%d/%d"}' % (dia, m.group(1), feito_tot, prom, feito_tot, prom), ds)
+open(D, 'w').write(ds)
