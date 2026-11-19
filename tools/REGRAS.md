@@ -18,7 +18,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
   Um `navigate` por `browser_batch`. O `get_page_text` descarta células vazias (colunas ambíguas pedem consultas separadas).
 - **Recarga automática** (`auto-refresh.js`, atributo `data-minutos` na tag): **2 horas** em gestão, ativações, corretores, vendas, conversão e visitas; **1 hora** em agendamentos e corujão; **sem recarga** na roleta e no calendário; página inicial 10 minutos (pedido de 19/11). Antes era tudo a cada 10 minutos (`auto-refresh.js`: busca a página e os scripts de dados sem cache e recarrega mantendo a rolagem).
 - **Páginas com botão "Atualizar"** mostram "Atualizado em DD/MM às HH:MM" e "Próxima atualização". O botão copia um texto (ex.: "atualizar visitas") e abre a conversa do Claude.
-- **Horário das atualizações automáticas:** 5 minutos depois do refresh das planilhas. Referência: refresh às 17:48 → a tarefa roda às **01:53, 05:53, 09:53, 13:53, 17:53 e 21:53** (horário de Brasília). As páginas calculam a "Próxima atualização" com `HORAS = [1,5,9,13,17,21]` e minuto `53`.
+- **Horário das atualizações automáticas (desde 19/11):** refresh da planilha às **11:03** e a cada 4 horas (03:03, 07:03, 11:03, 15:03, 19:03, 23:03); o site atualiza **5 minutos depois**: **03:08, 07:08, 11:08, 15:08, 19:08 e 23:08** (horário de Brasília). As páginas calculam a "Próxima atualização" com `HORAS = [3,7,11,15,19,23]` e minuto `8`.
 
 ### Privacidade (regras do usuário)
 - Nunca usar o token do Salesforce nem digitar credenciais.
