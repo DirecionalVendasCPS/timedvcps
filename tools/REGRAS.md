@@ -18,7 +18,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
   Um `navigate` por `browser_batch`. O `get_page_text` descarta células vazias (colunas ambíguas pedem consultas separadas).
 - **Recarga automática** (`auto-refresh.js`, atributo `data-minutos` na tag): **2 horas** em gestão, ativações, corretores, vendas, conversão e visitas; **1 hora** em agendamentos e corujão; **sem recarga** na roleta e no calendário; página inicial 10 minutos (pedido de 19/11). Antes era tudo a cada 10 minutos (`auto-refresh.js`: busca a página e os scripts de dados sem cache e recarrega mantendo a rolagem).
 - **Páginas com botão "Atualizar"** mostram "Atualizado em DD/MM às HH:MM" e "Próxima atualização". O botão copia um texto (ex.: "atualizar visitas") e abre a conversa do Claude.
-- **Horário das atualizações automáticas (desde 19/11 12:00):** refresh da planilha às **12:00** e a cada 4 horas (00:00, 04:00, 08:00, 12:00, 16:00, 20:00); o site atualiza **5 minutos depois**: **00:05, 04:05, 08:05, 12:05, 16:05 e 20:05** (horário de Brasília). As páginas calculam a "Próxima atualização" com `HORAS = [0,4,8,12,16,20]` e minuto `5`.
+- **Horário das atualizações automáticas (desde 19/11 18:00):** refresh da planilha às **18:00** e a cada 4 horas (02:00, 06:00, 10:00, 14:00, 18:00, 22:00); o site atualiza **5 minutos depois**: **02:05, 06:05, 10:05, 14:05, 18:05 e 22:05** (horário de Brasília). As páginas calculam a "Próxima atualização" com `HORAS = [2,6,10,14,18,22]` e minuto `5`. Aba nova "Corretores/TTI/CRECI" (gid 1001003) desde 19/11.
 
 ### Privacidade (regras do usuário)
 - Nunca usar o token do Salesforce nem digitar credenciais.

@@ -368,7 +368,7 @@ $("regra").textContent = DADOS.regra || "";
   const prox = (typeof CORUJOES !== "undefined" ? CORUJOES : []).map((c) => c.dia).filter((d) => d >= hoje).sort()[0];
   if (prox === hoje) { // dia de corujão: próxima atualização automática do dia (5 min depois do refresh da planilha)
     const agora = new Date();
-    for (const h of [0, 4, 8, 12, 16, 20]) {
+    for (const h of [2, 6, 10, 14, 18, 22]) {
       const alvo = new Date(hoje + "T" + String(h).padStart(2, "0") + ":05:00-03:00");
       if (alvo > agora) { $("prox").textContent = "hoje às " + String(h).padStart(2, "0") + ":05"; return; }
     }

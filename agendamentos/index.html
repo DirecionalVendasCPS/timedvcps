@@ -305,7 +305,7 @@ $("upd").textContent = fmtDataHora(new Date(DADOS.atualizado));
 $("refresh").textContent = DADOS.refresh || "—";
 // próxima atualização automática: 01:53, 05:53, 09:53, 13:53, 17:53 e 21:53 (horário de Brasília), até o fim de 2026
 (function () {
-  const agora = new Date(), HORAS = [0, 4, 8, 12, 16, 20];
+  const agora = new Date(), HORAS = [2, 6, 10, 14, 18, 22];
   for (let dia = 0; dia < 2; dia++) for (const h of HORAS) {
     const sp = new Date(agora.getTime() - 3 * 3600e3); // relógio de Brasília (UTC−3)
     const alvo = new Date(Date.UTC(sp.getUTCFullYear(), sp.getUTCMonth(), sp.getUTCDate() + dia, h + 3, 5));
