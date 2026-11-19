@@ -73,6 +73,7 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 - **GRs:** Takeashi, Patricia (Paty) e Gustavo (Gustavo Moura).
 - **GVs:** Aldinei, Ícaro, Pina → Takeashi · Mada (Madeleine Borges), Bruno (Bruno Miccoli), Sandro → Patricia · Ivan, Débora → Gustavo.
 - **Corretor → GV:** `tools/gv.json`. Quem não está lá aparece como **"A definir"**; para achar o GV, procurar o corretor na aba Oportunidades (coluna B "EQUIPE X") ou Agendamentos (coluna B). José Carlos de Faria = GV Pina (16/11).
+- **BaseAtivos (desde 19/11):** inclui os GVs; coluna **D Atividade** = "Gerente de Vendas" separa os GVs (não contam como corretores; entram só nos aniversários). Rodar `base_atualizar.py gvs.txt < base.txt`. GRs e outras pessoas fora do relatório ficam em `tools/aniversarios_extra.json` (só dia/mês).
 - **Corretores ativos:** status **Ativo** ou **Reativado** na "base de corretores" (53 em 14/11/2026). Quem tem movimento mas não está ativo aparece como "fora da base".
 
 ---

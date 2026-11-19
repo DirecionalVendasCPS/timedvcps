@@ -131,7 +131,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 1
 
   <section class="aniv-sec" aria-label="Aniversariantes">
     <h2>🎂 Aniversariantes</h2>
-    <p class="sub2" id="aniv-sub">Corretores ativos da base que fazem aniversário neste mês.</p>
+    <p class="sub2" id="aniv-sub">Corretores, GVs e GRs que fazem aniversário neste mês.</p>
     <div class="meses" id="aniv"></div>
   </section>
 
@@ -183,11 +183,17 @@ const ATIVIDADES = [
 // Aniversários dos corretores ativos (aba "base de corretores"; só dia e mês)
 const ANIVERSARIOS = [
   {"nome": "Ellen Cassia Pereira Cassemiro de Campos", "dia": "01-01"},
+  {"nome": "Bruno Miccoli de Oliveira", "dia": "01-02", "papel": "GV"},
+  {"nome": "Ana Carolina de Oliveira Ferreira", "dia": "01-11", "papel": ""},
   {"nome": "Lincoln Farah", "dia": "01-13"},
   {"nome": "Fernanda Guilherme dos Santos", "dia": "01-19"},
   {"nome": "Fabiana Sertori de Oliveira", "dia": "01-20"},
+  {"nome": "Madeleine Kassia de Campos Sena Borges", "dia": "01-31", "papel": "GV"},
   {"nome": "Roseli Martim Tibiriça", "dia": "02-02"},
+  {"nome": "Ivan de Aguiar Nascimento", "dia": "02-22", "papel": "GV"},
+  {"nome": "Shirley do Nascimento Pina", "dia": "02-22", "papel": "GV"},
   {"nome": "José Luis Gomes de Araujo", "dia": "02-23"},
+  {"nome": "Patricia Valentim Bernardes", "dia": "02-24", "papel": "GR"},
   {"nome": "Vanderlucia de Oliveira Batista Pereira", "dia": "03-04"},
   {"nome": "Mayara Soares Diogo", "dia": "03-05"},
   {"nome": "Robson de Oliveira", "dia": "03-07"},
@@ -196,6 +202,7 @@ const ANIVERSARIOS = [
   {"nome": "Taíssa Ayane Oliveira da Silva", "dia": "03-11"},
   {"nome": "Benedito Thomaz Siqueira", "dia": "03-23"},
   {"nome": "Luis Fernando Maestro", "dia": "03-28"},
+  {"nome": "Gustavo Romeiro de Moura Lima", "dia": "03-31", "papel": "GR"},
   {"nome": "Marli Teixeira da Costa", "dia": "04-06"},
   {"nome": "Jonathan Pereira da Silva", "dia": "04-07"},
   {"nome": "Ana Paula de Souza Leite Aguiar", "dia": "04-09"},
@@ -203,37 +210,44 @@ const ANIVERSARIOS = [
   {"nome": "Lucas Vinícius Ferreira Chaves", "dia": "05-02"},
   {"nome": "Sirlene Aparecida da Silva", "dia": "05-06"},
   {"nome": "Teresinha Aparecida Crivelaro Lopes", "dia": "05-07"},
+  {"nome": "Flávio Henrique Peres Whiteman", "dia": "05-08"},
   {"nome": "Ana Lucia Menezes de Paula", "dia": "05-19"},
   {"nome": "Flavia Maria Ramos", "dia": "05-21"},
   {"nome": "Jorge Luiz de Lima", "dia": "05-29"},
   {"nome": "Roseli Sampaio Bastos Ferreira", "dia": "05-31"},
+  {"nome": "Marcio dos Santos Takeashi", "dia": "06-05", "papel": "GR"},
   {"nome": "Valda Terezinha Delanhese Francisco", "dia": "06-05"},
   {"nome": "Marlene Santana Corrêa dos Santos", "dia": "06-06"},
   {"nome": "Márcio Antônio Custódio", "dia": "06-08"},
   {"nome": "Fabio Carlo da Silva", "dia": "06-09"},
   {"nome": "Claudio Sena Borges", "dia": "06-14"},
+  {"nome": "Sandro Antonio da Silva", "dia": "06-16", "papel": "GV"},
   {"nome": "Luciane Aparecida Gomes Barbosa Silva", "dia": "06-18"},
   {"nome": "Guilherme Garcia", "dia": "06-21"},
   {"nome": "Rickelle Quirino de Oliveira", "dia": "06-23"},
-  {"nome": "Taline Fideles da Silva", "dia": "06-23"},
+  {"nome": "João Eduardo de Moraes", "dia": "07-02"},
   {"nome": "Luciana Lemes", "dia": "07-03"},
   {"nome": "Isabella Garcia Silva", "dia": "07-04"},
   {"nome": "José Raimundo da Silva", "dia": "07-17"},
   {"nome": "Mauro de Pinho Micaela", "dia": "07-20"},
-  {"nome": "Emerson Gonçalves Pereira", "dia": "07-21"},
   {"nome": "Roberto Oliveira da Silva Souza", "dia": "08-06"},
   {"nome": "Franciely Gomes", "dia": "08-11"},
   {"nome": "Marcelo Vicentini Coelho", "dia": "08-25"},
   {"nome": "Wanderson de Carvalho Coutinho", "dia": "09-07"},
+  {"nome": "Débora Gracia Feriani Lobo", "dia": "09-22", "papel": "GV"},
   {"nome": "Ana Luiza Martins", "dia": "10-05"},
   {"nome": "Amekion Ferreira Cruz", "dia": "10-07"},
   {"nome": "Sonia Maria de Oliveira Maruki", "dia": "10-07"},
+  {"nome": "José Paulo Salvador Júnior", "dia": "10-09"},
   {"nome": "Aloisio Antonio Mache Tavares", "dia": "10-14"},
   {"nome": "Clarice Pereira", "dia": "10-19"},
   {"nome": "Larissa Gabriele Vitor", "dia": "10-30"},
+  {"nome": "Aldinei Rezende Fagundes", "dia": "11-17", "papel": "GV"},
   {"nome": "Daniel Alves Silva", "dia": "11-21"},
+  {"nome": "Ronaldo Luis de Souza Chaves", "dia": "12-02"},
+  {"nome": "Ícaro Zivko Miranda", "dia": "12-03", "papel": "GV"},
   {"nome": "João Gabriel Campos Carvalho da Silva", "dia": "12-10"},
-  {"nome": "José Carlos de Faria", "dia": "12-16"},
+  {"nome": "Patricia Regina dos Santos", "dia": "12-15", "papel": ""},
   {"nome": "Mariana Lazaretti Salomão", "dia": "12-17"}
 ];
 const ORDEM = {aniv: -1, black: 0, stand: 1, coruja: 2, divul: 3, outro: 4};
@@ -391,7 +405,7 @@ function curto(n) {
 function aniversariantes() {
   const box = $("aniv"); box.replaceChildren();
   const dmHoje = hoje.slice(5), ehAtual = hoje.slice(0, 7) === ANO + "-" + String(mesSel).padStart(2, "0");
-  $("aniv-sub").textContent = "Corretores ativos da base que fazem aniversário em " + MESES_N[mesSel - 1] + ".";
+  $("aniv-sub").textContent = "Corretores, GVs e GRs que fazem aniversário em " + MESES_N[mesSel - 1] + ".";
   for (let k = 0; k < 1; k++) { // só o mês escolhido no calendário
     const m = mesSel, mm = String(m).padStart(2, "0");
     const lista = ANIVERSARIOS.filter((x) => x.dia.slice(0, 2) === mm);
@@ -401,7 +415,7 @@ function aniversariantes() {
     const ul = el("ul");
     lista.forEach((x) => {
       const li = el("li", ehAtual ? (x.dia === dmHoje ? "hoje" : x.dia < dmHoje ? "passou" : null) : null);
-      li.append(el("b", null, x.dia.slice(3) + "/" + mm), el("span", null, x.nome));
+      li.append(el("b", null, x.dia.slice(3) + "/" + mm), el("span", null, x.nome + (x.papel ? " · " + x.papel : "")));
       ul.appendChild(li);
     });
     card.append(h, ul); box.appendChild(card);

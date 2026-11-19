@@ -1,5 +1,7 @@
 # Aplica a aba "base de corretores" às páginas (rodar na raiz do repo).
-# uso: python3 tools/base_atualizar.py < base.txt
+# uso: python3 tools/base_atualizar.py [gvs.txt] < base.txt
+# gvs.txt (opcional) = mesmas colunas, só os Gerentes de Vendas (coluna D Atividade da BaseAtivos): entram só nos aniversários.
+# tools/aniversarios_extra.json = pessoas que não estão no relatório (GRs etc.), só dia/mês.
 # base.txt = texto (get_page_text) da consulta gviz à aba "base de corretores" (gid=232753372):
 #   select A,L,N,AI where A is not null   -> "NOME STATUS dd/mm/aaaa GR (nome completo do proprietário da conta)"
 # - agendamentos/index.html: a lista de corretores (equipe) passa a ter só os ATIVOS (status Ativo ou Reativado).
@@ -41,6 +43,12 @@ antes = {n for n, _, _ in re.findall(r'\{nome: "([^"]+)", gv: "([^"]+)", gr: "([
 txt = '  equipe: [\n' + ',\n'.join(f'    {{nome: {json.dumps(n, ensure_ascii=False)}, gv: {json.dumps(g, ensure_ascii=False)}, gr: {json.dumps(r, ensure_ascii=False)}}}' for n, g, r in equipe)
 s = s[:a] + txt + s[b:]
 open(P, 'w').write(s)
+# GVs (só aniversário) e pessoas extras
+if len(sys.argv) > 1:
+    for l in open(sys.argv[1]).read().splitlines():
+        m = re.match(r'\s*(.+?)\s+(\S+)\s+(\d{1,2})/(\d{1,2})/(\d{4})\s+(.+?)\s*$', l)
+        if m: aniv.append({'nome': bonito(m.group(1)), 'dia': f'{int(m.group(4)):02d}-{int(m.group(3)):02d}', 'papel': 'GV'})
+for x in json.load(open('tools/aniversarios_extra.json')): aniv.append(x)
 # calendário: troca o bloco ANIVERSARIOS
 P2 = 'calendario/index.html'; c = open(P2).read()
 aniv.sort(key=lambda x: (x['dia'], x['nome']))
