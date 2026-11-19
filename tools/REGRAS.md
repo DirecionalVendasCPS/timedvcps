@@ -16,7 +16,7 @@ https://direcionalvendascps.github.io/timedvcps/ (repositório GitHub `Direciona
 - **Leitura das planilhas:** pelo Claude in Chrome (login do usuário), consultas gviz no formato
   `https://docs.google.com/spreadsheets/d/<ID>/gviz/tq?tqx=out:html&gid=<GID>&tq=<consulta>` + `get_page_text`.
   Um `navigate` por `browser_batch`. O `get_page_text` descarta células vazias (colunas ambíguas pedem consultas separadas).
-- **Todas as páginas** recarregam sozinhas a cada **10 minutos** (`auto-refresh.js`: busca a página e os scripts de dados sem cache e recarrega mantendo a rolagem).
+- **Recarga automática** (`auto-refresh.js`, atributo `data-minutos` na tag): **2 horas** em gestão, ativações, corretores, vendas, conversão e visitas; **1 hora** em agendamentos e corujão; **sem recarga** na roleta e no calendário; página inicial 10 minutos (pedido de 19/11). Antes era tudo a cada 10 minutos (`auto-refresh.js`: busca a página e os scripts de dados sem cache e recarrega mantendo a rolagem).
 - **Páginas com botão "Atualizar"** mostram "Atualizado em DD/MM às HH:MM" e "Próxima atualização". O botão copia um texto (ex.: "atualizar visitas") e abre a conversa do Claude.
 - **Horário das atualizações automáticas:** 5 minutos depois do refresh das planilhas. Referência: refresh às 17:48 → a tarefa roda às **01:53, 05:53, 09:53, 13:53, 17:53 e 21:53** (horário de Brasília). As páginas calculam a "Próxima atualização" com `HORAS = [1,5,9,13,17,21]` e minuto `53`.
 

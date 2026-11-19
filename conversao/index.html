@@ -528,6 +528,6 @@ const pedDias = pedido.split(",").filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d) &&
 if (pedDias.length) { if (pedDias.length > 1) modoSoma = true; mostrar({tipo: "dias", dias: pedDias}); }
 else mostrar({tipo: "mes", ym: /^\d{4}-\d{2}$/.test(pedido) && temMes(pedido) && pedido <= DADOS.mes ? pedido : DADOS.mes});
 </script>
-<script src="../auto-refresh.js" defer></script>
+<script src="../auto-refresh.js" data-minutos="120" defer></script>
 </body>
 </html>

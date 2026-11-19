@@ -1,8 +1,10 @@
 // Auto-atualização das páginas do site (como portais de notícia):
-// a cada 10 minutos a página recarrega sozinha, sempre — mesmo com a aba em segundo plano —,
+// a página recarrega sozinha no intervalo do atributo data-minutos da tag <script> (padrão: 10 minutos), sempre — mesmo com a aba em segundo plano —,
 // mantendo o dia/mês escolhido (#...) e a posição da tela.
 (function () {
-  var INTERVALO = 10 * 60 * 1000;
+  var tag = document.currentScript || document.querySelector('script[src*="auto-refresh.js"]');
+  var min = tag && +tag.getAttribute('data-minutos');
+  var INTERVALO = (min > 0 ? min : 10) * 60 * 1000;
   var arquivos = [location.pathname];
   // scripts de dados da própria página (ex.: corujao/datas.js)
   Array.prototype.forEach.call(document.querySelectorAll("script[src]"), function (s) {

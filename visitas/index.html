@@ -549,6 +549,6 @@ $("btn-upd").addEventListener("click", () => {
   try { navigator.clipboard.writeText("atualizar visitas").then(() => { $("upd-ok").hidden = false; }).catch(() => {}); } catch (e) {}
 });
 </script>
-<script src="../auto-refresh.js" defer></script>
+<script src="../auto-refresh.js" data-minutos="120" defer></script>
 </body>
 </html>

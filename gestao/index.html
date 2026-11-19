@@ -412,6 +412,6 @@ fixos();
 const pedido = location.hash.slice(1);
 escolherMes(/^2026-\d{2}$/.test(pedido) && temMes(pedido) ? pedido : MES_ATUAL);
 </script>
-<script src="../auto-refresh.js" defer></script>
+<script src="../auto-refresh.js" data-minutos="120" defer></script>
 </body>
 </html>
