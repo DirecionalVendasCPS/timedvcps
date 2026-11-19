@@ -240,3 +240,7 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 - Páginas de dias passados mostram "corujão encerrado" em vez da próxima atualização.
 - O quadro "Por GR" do comparar.html usa `gr` de datas.js. No dia do corujão, tools/corujao_atualizar.py preenche `gr: {GR: [feito, prometido]}` a cada atualização (promessas pela lista; extras pela base). Corretor fora da base ativa entra só no total.
 - Cores do corujão (todas as páginas): verde só para quem bateu a promessa (feito ≥ prometido); amarelo para quem está na lista e ainda não bateu (inclusive 0); azul para quem agendou fora da lista; vermelho para quem não colocou o nome.
+
+## Recarregar ao publicar
+- auto-refresh.js também confere versao.json a cada minuto; quando muda (cada commit publicado), a página recarrega na hora. Os intervalos continuam (2 h / 1 h). Roleta e calendário não têm o script e nunca recarregam sozinhos.
+- versao.json é gravado pelo hook .git/hooks/pre-commit (local). Se o repositório for clonado de novo, recriar o hook: `printf '{"v": "%s"}\n' "$(date -u +%Y%m%d%H%M%S)" > versao.json; git add versao.json`.

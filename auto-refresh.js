@@ -1,6 +1,8 @@
 // Auto-atualização das páginas do site (como portais de notícia):
 // a página recarrega sozinha no intervalo do atributo data-minutos da tag <script> (padrão: 10 minutos), sempre — mesmo com a aba em segundo plano —,
 // mantendo o dia/mês escolhido (#...) e a posição da tela.
+// Além disso, a cada minuto confere versao.json (muda a cada publicação do site): se houve publicação nova, recarrega na hora.
+// Páginas sem este script (roleta, calendário) nunca recarregam sozinhas.
 (function () {
   var tag = document.currentScript || document.querySelector('script[src*="auto-refresh.js"]');
   var min = tag && +tag.getAttribute('data-minutos');
@@ -24,4 +26,16 @@
       .then(function () { location.reload(); }, function () { location.reload(); });
   }
   setInterval(recarregar, INTERVALO);
+  // recarrega assim que uma atualização nova é publicada
+  var raiz = tag ? new URL("versao.json", tag.src).href : null, versao = null;
+  function confere() {
+    if (!raiz) return;
+    fetch(raiz + "?t=" + Date.now(), {cache: "no-store"}).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || !j.v) return;
+      if (versao === null) versao = j.v;
+      else if (j.v !== versao) { versao = j.v; recarregar(); }
+    }).catch(function () {});
+  }
+  confere();
+  setInterval(confere, 60 * 1000);
 })();
