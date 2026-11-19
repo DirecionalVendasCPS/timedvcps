@@ -38,12 +38,14 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 | Agendamentos | 344937023 | A criação, B GV, E Data, G comparecimento, H Visita Realizada, J corretor. Agendamentos criados no dia e corujão = linhas por A + J |
 | Visitas | 1346363242 | I corretor, K Data |
 | Pastas | 1317441261 | A criação, F corretor |
-| OPs 1° Sem / OPs 2° Sem | 2006625860 / 1837176060 | A criação, B imobiliária, C ID, Q corretor; no site é tudo "2026" (somar as duas abas) |
+| OPs1°Sem / OPs2°Sem (nomes desde 19/11) | 2006625860 / 1837176060 | A criação, B imobiliária, C ID, Q corretor; no site é tudo "2026" (somar as duas abas) |
 | Vendas | 0 | B ID, C GV, D empreendimento, E data venda, F Conf. 2.0, N Status, Q FID, S imobiliária, T corretor, AK mês da venda, AM mês da confirmação. Distratadas contam no total do mês |
-| Base de corretores | 119436953 | A nome, L status, N nascimento, AI GR |
-| Corretores inativos | 707020357 | AA credenciamento, AD reativação, AF descredenciamento, AH motivo, AI GR, AJ GV |
+| BaseAtivos (ex-Base de corretores) | 119436953 | A nome, L status, N nascimento, AI GR |
+| BaseInativos (ex-Corretores inativos) | 707020357 | AA credenciamento, AD reativação, AF descredenciamento, AH motivo, AI GR, AJ GV |
 - Vendas: `select B,Q,F,AK,AM` (+ blocos `B,C`, `B,T`, `B,D`) `where B is not null and (AK >= date '2026-09-01' or AM >= date '2026-09-01')`, mesmo formato do `vendas_atualizar.py`.
-- Ainda não existem (o usuário vai criar): aba do mês (Novembro/26), Calc_Data e Auto Refresh Execution Log. Até lá a Gestão GRs/GVs fica parada, "Dados da planilha até" = horário da atualização manual e a verificação automática fica pausada.
+- Desde 18/11 existe a aba Auto Refresh Execution Log (A horário MM/DD/AAAA HH:MM:SS, linhas novas no topo; refresh a cada 4 h, ex.: 01:40, 09:40, 05:26). Aba Auxiliar_Vendas (A ID, B origem da conta, C GR). Ainda não existe: Calc_Data.
+- **Sem Chrome:** dá para ler pelo conector Google Sheets (get_values), coluna por coluna; as abas vêm ordenadas da criação mais nova para a mais antiga. Nunca ler a coluna C (nome do cliente) do Agendamentos.
+- Ainda não existem (o usuário vai criar): Calc_Data. Até lá a Gestão GRs/GVs fica parada, "Dados da planilha até" = horário da atualização manual e a verificação automática fica pausada.
 
 
 ### "Contadores do mes e corujão"
