@@ -576,7 +576,7 @@ function BD_ag(lista) {
       el.appendChild(document.createTextNode(dd));
       if (c) {
         const sm = document.createElement("small"); sm.textContent = c.placar || (c.feito != null ? c.feito : "🦉"); el.appendChild(sm);
-        el.title = c.rotulo + (c.placar ? " · " + c.placar + " agendamentos" : iso > HOJE ? " · programado" : " · ver na comparação");
+        el.title = c.rotulo + (c.placar ? " · " + c.placar + " agendamentos" : iso > HOJE ? " · programado" : c.pagina ? " · " + c.feito + " agendamentos" : " · ver na comparação");
         // clicar num dia de corujão abre o placar daquele dia: o atual fica em corujao/, os anteriores salvos em AAAA-MM-DD.html;
         // corujões sem placar salvo (sem lista de promessas) abrem a comparação
         if (passou) {
