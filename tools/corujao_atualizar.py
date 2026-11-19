@@ -55,3 +55,9 @@ D = 'corujao/datas.js'; ds = open(D).read()
 ds = re.sub(r'  \{dia: "%s", rotulo: "([^"]+)".*\}(?=,?\n)' % dia, lambda m: '  {dia: "%s", rotulo: "%s", feito: %d, prometido: %d, placar: "%d/%d", gr: {%s}}' % (dia, m.group(1), feito_tot, prom, feito_tot, prom, gtxt), ds)
 open(D, 'w').write(ds)
 print('por GR:', gtxt)
+# muda a versão do datas.js nas páginas para o navegador não usar o calendário/comparativo antigo do cache
+import glob
+v = agora().strftime('%Y%m%d%H%M')
+for f in glob.glob('corujao/*.html'):
+    t = open(f).read(); t2 = re.sub(r'src="datas\.js(\?v=\w+)?"', 'src="datas.js?v=%s"' % v, t)
+    if t2 != t: open(f, 'w').write(t2)
