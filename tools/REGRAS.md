@@ -106,6 +106,7 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 - **Corujão** = dia de agendamentos (normalmente quinta-feira, o usuário avisa). Cada corretor **promete** no grupo do WhatsApp "Time Corretores Direcional Campinas" quantos agendamentos fará.
 - Placar: **feito x prometido** por corretor, GV e GR; agendamentos contados pela data de criação (aba agendamentos normal).
 - `corujao/datas.js` lista as datas (do calendário Black November) e o resultado de cada um (`feito`, `prometido`, `placar`, por GR). Cada placar salvo vira `corujao/AAAA-MM-DD.html`; `corujao/` mostra o mais recente. A página do dia mostra só a data.
+- **Placar do dia (desde 19/11):** `DADOS.dia`, `DADOS.ate` (só valem agendamentos marcados até essa data, regra do grupo) e `DADOS.regra` (texto mostrado no topo). Promessas em `corretores` (nome da lista do grupo) e `equipe[].lista` liga ao corretor da base. Atualizar com `tools/corujao_atualizar.py "DD/MM/AAAA HH:MM" < linhas.txt` (gviz `select A,E,J where A = date 'DIA'`). Antes de montar um corujão novo, salvar o anterior como `corujao/AAAA-MM-DD.html`.
 - `corujao/comparar.html`: compara os corujões (agendamentos em cada um, resultado por GR).
 - Próxima atualização = próxima data de corujão.
 
