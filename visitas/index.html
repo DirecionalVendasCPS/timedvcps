@@ -349,10 +349,10 @@ const fmtDataHora = (d) => d.toLocaleDateString("pt-BR", {day: "2-digit", month:
 $("upd").textContent = fmtDataHora(new Date(DADOS.atualizado));
 // próxima atualização automática: 01:53, 05:53, 09:53, 13:53, 17:53 e 21:53 (horário de Brasília), até o fim de 2026
 (function () {
-  const agora = new Date(), HORAS = [3, 7, 11, 15, 19, 23];
+  const agora = new Date(), HORAS = [0, 4, 8, 12, 16, 20];
   for (let dia = 0; dia < 2; dia++) for (const h of HORAS) {
     const sp = new Date(agora.getTime() - 3 * 3600e3); // relógio de Brasília (UTC−3)
-    const alvo = new Date(Date.UTC(sp.getUTCFullYear(), sp.getUTCMonth(), sp.getUTCDate() + dia, h + 3, 8));
+    const alvo = new Date(Date.UTC(sp.getUTCFullYear(), sp.getUTCMonth(), sp.getUTCDate() + dia, h + 3, 5));
     if (alvo > agora) { $("prox").textContent = alvo.getUTCFullYear() > 2026 ? "—" : fmtDataHora(alvo); return; }
   }
 })();
