@@ -177,7 +177,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
 
 <script>
 // ===== Dados: uma linha por folha fotografada (data, turno M/T, GR da folha, nomes do squad e de fora do squad) =====
-const ATUALIZADO = "19/11 às 09:05";
+const ATUALIZADO = "19/11 às 10:00";
 const REGISTROS = [
   {data: "2026-11-16", turno: "M", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: []},
   {data: "2026-11-16", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Isabella Garcia Silva", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
@@ -193,6 +193,9 @@ const REGISTROS = [
   {data: "2026-11-18", turno: "M", gr: "Takeashi", squad: ["Luciana Lemes", "Ana Luiza Martins", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Roberto Oliveira da Silva Souza", "José Luis Gomes de Araujo"]},
   {data: "2026-11-18", turno: "M", gr: "Patricia", squad: ["Guilherme Garcia", "Fabio Carlo da Silva", "Claudio Sena Borges", "Flavia Maria Ramos", "Sonia Maria de Oliveira Maruki"], fora: []},
   {data: "2026-11-18", turno: "M", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho"], fora: ["Rickelle Quirino de Oliveira", "Daniel Alves Silva", "Ana Paula de Souza Leite Aguiar", "Lincoln Farah"]},
+  {data: "2026-11-18", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Ana Luiza Martins", "Teresinha Aparecida Crivelaro Lopes", "Luciana Lemes"], fora: ["Vanessa", "Ronaldo", "J. Eduardo"]},
+  {data: "2026-11-18", turno: "T", gr: "Patricia", squad: ["Fernanda Guilherme dos Santos", "Layane Silva Santos Bispo", "Guilherme Garcia", "Jorge Luiz de Lima", "Fabiana Sertori de Oliveira", "Claudio Sena Borges", "Ellen Cassia Pereira Cassemiro de Campos", "Fabio Carlo da Silva", "Franciely Gomes", "Amekion Ferreira Cruz", "Sonia Maria de Oliveira Maruki", "Flavia Maria Ramos"], fora: ["João Gabriel Campos Carvalho da Silva", "Marlene Santana Corrêa dos Santos", "Márcio Antônio Custódio", "Aloisio Antonio Mache Tavares", "Paulo"]},
+  {data: "2026-11-18", turno: "T", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho", "Roseli Sampaio Bastos Ferreira"], fora: ["Ana Paula de Souza Leite Aguiar", "Mayara Soares Diogo", "Daniel Alves Silva", "Rickelle Quirino de Oliveira", "Lincoln Farah", "Larissa Gabriele Vitor"]},
 ];
 const EQUIPE = [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
@@ -257,7 +260,7 @@ const SEM = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
 const GRS = ["Takeashi", "Patricia", "Gustavo"];
 const NOME_GR = {Takeashi: "GR Takeashi", Patricia: "GR Patricia", Gustavo: "GR Gustavo Moura"};
 // nomes da folha que não estão na base de corretores ativos: GV/GR como escrito na folha
-const FORA_BASE = {"Ronaldo": {gv: "Pina", gr: "Takeashi"}, "J. Eduardo": {gv: "Aldinei", gr: "Takeashi"}, "Paulo": {gv: "Bruno", gr: "Patricia"}};
+const FORA_BASE = {"Vanessa": {gv: "Pina", gr: "Takeashi"}, "Ronaldo": {gv: "Pina", gr: "Takeashi"}, "J. Eduardo": {gv: "Aldinei", gr: "Takeashi"}, "Paulo": {gv: "Bruno", gr: "Patricia"}};
 const POR_NOME = Object.fromEntries(EQUIPE.map((p) => [p.nome, p]));
 const curto = (n) => { const p = n.split(" "); return p.length > 1 ? p[0] + " " + p[p.length - 1] : n; };
 const fmtD = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
