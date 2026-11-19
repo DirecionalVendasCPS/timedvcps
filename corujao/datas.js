@@ -7,7 +7,7 @@ const CORUJOES = [
   {dia: "2026-11-10", rotulo: "Corujão p/ 11/11", feito: 55, pagina: true, corretores: 27, gr: {Takeashi: [8], Patricia: [32], Gustavo: [15]}},
   {dia: "2026-11-12", rotulo: "Corujão p/ 14/11", feito: 60, prometido: 85, placar: "60/85", corretores: 28, cumpriram: 11, prometeram: 35,
    gr: {Takeashi: [8, 19], Patricia: [34, 42], Gustavo: [18, 24]}},
-  {dia: "2026-11-19", rotulo: "Corujão p/ 21/11", feito: 31, prometido: 71, placar: "31/71", gr: {Takeashi: [4, 11], Patricia: [22, 45], Gustavo: [5, 15]}},
+  {dia: "2026-11-19", rotulo: "Corujão p/ 21/11", feito: 41, prometido: 71, placar: "41/71", gr: {Takeashi: [4, 11], Patricia: [32, 45], Gustavo: [5, 15]}},
   {dia: "2026-11-26", rotulo: "Corujão p/ 28/11"}
 ];
 
