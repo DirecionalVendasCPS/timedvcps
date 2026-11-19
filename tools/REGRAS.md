@@ -234,3 +234,8 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 ## Linha "Dados da planilha até" (todas as páginas com botão Atualizar)
 - Cada página mostra: Atualizado em (momento em que o site foi atualizado), **Dados da planilha até** (horário do último refresh da planilha, do "Auto Refresh Execution Log") e Próxima atualização.
 - Rodar os scripts com `REFRESH_PLANILHA="DD/MM/AAAA HH:MM"` (agend_hoje, vendas_atualizar); visitas, corretores e gestão recebem o horário no 1º argumento. Agendamentos e Vendas usam o log da planilha "Contadores"; Visitas, Conversão (copia da página de visitas), Corretores e Gestão usam o da planilha de Gestão.
+
+## Corujão — páginas de dias passados e comparativo por GR
+- Todo dia de corujão já passado é link no calendário. 12/11 e 19/11 têm placar de promessas; 05/11 e 10/11 (corujao/2026-11-05.html e 2026-11-10.html) não tiveram lista de promessas: a página mostra só os agendamentos criados no dia (modo `SEM`, ativado quando `DADOS.corretores` está vazio). Em datas.js esses dias têm `pagina: true`.
+- Páginas de dias passados mostram "corujão encerrado" em vez da próxima atualização.
+- O quadro "Por GR" do comparar.html usa `gr` de datas.js. No dia do corujão, tools/corujao_atualizar.py preenche `gr: {GR: [feito, prometido]}` a cada atualização (promessas pela lista; extras pela base). Corretor fora da base ativa entra só no total.

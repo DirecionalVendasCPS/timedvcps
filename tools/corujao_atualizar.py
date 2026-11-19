@@ -36,9 +36,22 @@ s = s[:a] + novo + s[b:]
 open(P, 'w').write(s)
 print('corujão', dia, '| promessas:', cont, '| extras:', fora)
 
-# placar do dia também no calendário (corujao/datas.js)
+# placar do dia também no calendário e no comparativo por GR (corujao/datas.js)
 prom = sum(int(x) for x in re.findall(r'\{nome: "[^"]+", prometido: (\d+), feito: \d+\}', novo))
 feito_tot = sum(cont.values()) + sum(fora.values())
+gr_de = {norm(n): g for n, g in re.findall(r'\{nome: "([^"]+)", gv: "[^"]+", gr: "([^"]+)"', novo)}
+gr_lista = {l: g for n, g, l in re.findall(r'\{nome: "([^"]+)", gv: "[^"]+", gr: "([^"]+)", lista: "([^"]+)"\}', novo)}
+gr_lista.update({'Vanessa': 'Takeashi'})  # fora da base (mesma regra da roleta)
+grs = {}
+for n, pr in re.findall(r'\{nome: "([^"]+)", prometido: (\d+), feito: \d+\}', novo):
+    g = gr_lista.get(n)
+    if g: grs.setdefault(g, [0, 0]); grs[g][0] += cont.get(n, 0); grs[g][1] += int(pr)
+for n, v in fora.items():
+    g = gr_de.get(norm(n))
+    if g: grs.setdefault(g, [0, 0]); grs[g][0] += v
+ordem = ['Takeashi', 'Patricia', 'Gustavo']
+gtxt = ', '.join('%s: [%d, %d]' % (g, *grs.get(g, [0, 0])) for g in ordem)
 D = 'corujao/datas.js'; ds = open(D).read()
-ds = re.sub(r'  \{dia: "%s", rotulo: "([^"]+)"[^}]*\}' % dia, lambda m: '  {dia: "%s", rotulo: "%s", feito: %d, prometido: %d, placar: "%d/%d"}' % (dia, m.group(1), feito_tot, prom, feito_tot, prom), ds)
+ds = re.sub(r'  \{dia: "%s", rotulo: "([^"]+)".*\}(?=,?\n)' % dia, lambda m: '  {dia: "%s", rotulo: "%s", feito: %d, prometido: %d, placar: "%d/%d", gr: {%s}}' % (dia, m.group(1), feito_tot, prom, feito_tot, prom, gtxt), ds)
 open(D, 'w').write(ds)
+print('por GR:', gtxt)

@@ -356,7 +356,8 @@ const prometido = C.reduce((a, c) => a + c.prometido, 0);
 const E = DADOS.extras || [];
 const feito = C.reduce((a, c) => a + c.feito, 0) + E.reduce((a, c) => a + c.feito, 0);
 const faltam = Math.max(0, prometido - feito);
-const pct = Math.round(feito / prometido * 100);
+const pct = prometido ? Math.round(feito / prometido * 100) : 0;
+const SEM = !C.length; // corujão sem lista de promessas (05/11 e 10/11): mostra só o que foi agendado
 
 const d = new Date(DADOS.dia + "T12:00:00-03:00");
 $("dia").textContent = d.toLocaleDateString("pt-BR", {weekday: "long", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"});
@@ -368,6 +369,7 @@ $("regra").textContent = DADOS.regra || "";
 (function () {
   const hoje = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   const prox = (typeof CORUJOES !== "undefined" ? CORUJOES : []).map((c) => c.dia).filter((d) => d >= hoje).sort()[0];
+  if (typeof CORUJAO_ATUAL !== "undefined" && DADOS.dia < CORUJAO_ATUAL) { $("prox").textContent = "corujão encerrado"; return; }
   if (prox === hoje) { // dia de corujão: próxima atualização automática do dia (5 min depois do refresh da planilha)
     const agora = new Date();
     for (const h of [2, 6, 10, 14, 18, 22]) {
@@ -384,11 +386,32 @@ $("feito").textContent = feito;
 $("pct").textContent = pct + "%";
 $("barra-i").style.width = Math.min(100, pct) + "%";
 $("barra").setAttribute("aria-label", feito + " de " + prometido + " agendamentos prometidos");
-if (faltam === 0) $("hero").classList.add("hit");
+if (faltam === 0 && !SEM) $("hero").classList.add("hit");
+if (SEM) {
+  document.querySelector("#hero .faltam-block .lbl").textContent = "Agendamentos criados";
+  $("faltam").textContent = feito;
+  const sub = document.querySelector("#hero .sub"); sub.textContent = "";
+  const bq = document.createElement("b"); bq.textContent = E.filter((c) => c.feito > 0).length;
+  sub.append("Criados no sistema no dia do corujão por ", bq, " corretores. Este corujão não teve lista de promessas no grupo.");
+  $("barra").hidden = true;
+  document.querySelector('section[aria-label="Placar por corretor"]').hidden = true;
+  $("extras-sec").hidden = true;
+  const lg = document.querySelector("#grafico-sec .legend"); if (lg) lg.style.display = "none";
+  const l2 = document.querySelector("#equipes-sec .leg2"); if (l2) { l2.textContent = ""; [["p-in", "Agendou"], ["p-out", "Não agendou"]].forEach(([c, t]) => { const x = document.createElement("span"); x.className = "pill " + c; x.textContent = t; l2.appendChild(x); }); }
+  const h2 = document.querySelector("#equipes-sec h2"); if (h2) h2.textContent = "Quem agendou no corujão, por equipe";
+}
 
+if (SEM) {
+  const st = document.querySelectorAll(".stats .stat .t");
+  st[0].textContent = "corretores agendaram"; st[1].textContent = "agendamentos criados"; st[2].textContent = "corretores da base sem agendamento";
+  const nomes = new Set(E.filter((c) => c.feito > 0).map((c) => c.nome));
+  $("s-ok").textContent = nomes.size; $("s-and").textContent = feito;
+  $("s-zero").textContent = (DADOS.equipe || []).filter((p) => !nomes.has(p.nome)).length;
+} else {
 $("s-ok").textContent = C.filter((c) => c.feito >= c.prometido).length;
 $("s-and").textContent = C.filter((c) => c.feito > 0 && c.feito < c.prometido).length;
 $("s-zero").textContent = C.filter((c) => c.feito === 0).length;
+}
 
 // quem cumpriu primeiro, depois quem está mais perto; empate por nome
 const list = $("list");
@@ -417,7 +440,7 @@ C.slice().sort((a, b) => (b.feito / b.prometido) - (a.feito / a.prometido) || b.
 });
 
 const ex = $("extras");
-if (!E.length) $("extras-sec").hidden = true;
+if (!E.length || SEM) $("extras-sec").hidden = true;
 E.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
   const row = document.createElement("div"); row.className = "row ok";
   const nm = document.createElement("div"); nm.className = "nome"; nm.textContent = c.nome;
@@ -435,7 +458,7 @@ function BD_ag(lista) {
   const b1 = document.createElement("b"); b1.textContent = prom;
   const b2 = document.createElement("b"); b2.className = "real"; b2.textContent = real;
   const pc = document.createElement("span"); pc.className = "pct"; pc.textContent = prom ? "(" + Math.round(real / prom * 100) + "%)" : "";
-  d.append("Prometido ", b1, " · Realizado no sistema ", b2, pc);
+  if (SEM) d.append("Agendamentos criados ", b2); else d.append("Prometido ", b1, " · Realizado no sistema ", b2, pc);
   return d;
 }
 // ===== Painel por GR / GV =====
@@ -460,7 +483,8 @@ function BD_ag(lista) {
     const b1 = document.createElement("b"); b1.textContent = na;
     const b2 = document.createElement("b"); b2.textContent = doGr.length;
     const b3 = document.createElement("b"); b3.textContent = Math.round(na / doGr.length * 100) + "%";
-    gs.append(b1, " de ", b2, " corretores na lista (", b3, ")");
+    if (SEM) { const nAg = doGr.filter((p) => p.feito > 0).length; b1.textContent = nAg; b3.textContent = Math.round(nAg / doGr.length * 100) + "%"; gs.append(b1, " de ", b2, " corretores agendaram (", b3, ")"); }
+    else gs.append(b1, " de ", b2, " corretores na lista (", b3, ")");
     head.append(gn, gs, BD_ag(doGr));
     const gvs = document.createElement("div"); gvs.className = "gvs";
     [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
@@ -471,18 +495,19 @@ function BD_ag(lista) {
       const nm = document.createElement("div"); nm.className = "gv-name"; nm.textContent = "Equipe " + gv;
       const ct = document.createElement("div"); ct.className = "gv-count";
       const c1 = document.createElement("b"); c1.textContent = nIn;
-      ct.append(c1, " de " + doGv.length + " na lista");
+      if (SEM) { c1.textContent = doGv.filter((p) => p.feito > 0).length; ct.append(c1, " de " + doGv.length + " agendaram"); }
+      else ct.append(c1, " de " + doGv.length + " na lista");
       top.append(nm, ct);
       const mini = document.createElement("div"); mini.className = "mini";
-      const mi = document.createElement("i"); mi.style.width = (nIn / doGv.length * 100) + "%"; mini.appendChild(mi);
+      const mi = document.createElement("i"); mi.style.width = ((SEM ? doGv.filter((p) => p.feito > 0).length : nIn) / doGv.length * 100) + "%"; mini.appendChild(mi);
       const ul = document.createElement("ul"); ul.className = "people";
       doGv.forEach((p) => {
         const li = document.createElement("li"); if (p.status === "out") li.className = "out";
         const pn = document.createElement("span"); pn.className = "pn"; pn.textContent = p.nome;
         const pill = document.createElement("span");
         if (p.status === "in") { pill.className = "pill p-in"; pill.textContent = "Agendou " + p.feito + " de " + p.promessa.prometido; }
-        else if (p.status === "extra") { pill.className = "pill p-extra"; pill.textContent = "Fora da lista · agendou " + p.feito; }
-        else { pill.className = "pill p-out"; pill.textContent = "Não colocou o nome"; }
+        else if (p.status === "extra") { pill.className = "pill " + (SEM ? "p-in" : "p-extra"); pill.textContent = (SEM ? "Agendou " : "Fora da lista · agendou ") + p.feito; }
+        else { pill.className = "pill p-out"; pill.textContent = SEM ? "Não agendou" : "Não colocou o nome"; }
         li.append(pn, pill); ul.appendChild(li);
       });
       const agv = BD_ag(doGv);
@@ -514,7 +539,7 @@ function BD_ag(lista) {
   const grid = document.createElement("div"); grid.className = "hbar";
   rows.forEach((r) => {
     const hn = document.createElement("div"); hn.className = "hn"; hn.textContent = r.nome;
-    const sm = document.createElement("small"); sm.textContent = (r.gv ? "Equipe " + r.gv : "") + (r.fora ? " · fora da lista" : ""); hn.appendChild(sm);
+    const sm = document.createElement("small"); sm.textContent = (r.gv ? "Equipe " + r.gv : "") + (r.fora && !SEM ? " · fora da lista" : ""); hn.appendChild(sm);
     const ht = document.createElement("div"); ht.className = "ht";
     const bar = document.createElement("i"); if (r.bateu) bar.className = "meta";
     const w = r.v / max * 88; bar.style.width = w + "%";
@@ -528,7 +553,7 @@ function BD_ag(lista) {
   const ticks = document.createElement("div"); ticks.className = "hticks";
   for (let t = 0; t <= max; t++) { const s = document.createElement("span"); s.style.left = (t / max * 88) + "%"; s.textContent = t; ticks.appendChild(s); }
   g2.append(vazio, ticks); box.appendChild(g2);
-  const cap = document.createElement("div"); cap.className = "hcap"; cap.textContent = "Número de agendamentos criados hoje"; box.appendChild(cap);
+  const cap = document.createElement("div"); cap.className = "hcap"; cap.textContent = SEM ? "Número de agendamentos criados no dia" : "Número de agendamentos criados hoje"; box.appendChild(cap);
 })();
 
 
@@ -565,7 +590,7 @@ function BD_ag(lista) {
         // clicar num dia de corujão abre o placar daquele dia: o atual fica em corujao/, os anteriores salvos em AAAA-MM-DD.html;
         // corujões sem placar salvo (sem lista de promessas) abrem a comparação
         if (passou) {
-          el.href = iso === ATUAL ? "./" : (c.placar ? iso + ".html" : "comparar.html");
+          el.href = iso === ATUAL ? "./" : (c.placar || c.pagina ? iso + ".html" : "comparar.html");
           if (iso === DADOS.dia) el.setAttribute("aria-current", "page");
         }
         el.setAttribute("aria-label", dd + "/" + m + ": " + el.title);

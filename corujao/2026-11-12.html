@@ -548,7 +548,7 @@ function BD_ag(lista) {
         // clicar num dia de corujão abre o placar daquele dia: o atual fica em corujao/, os anteriores salvos em AAAA-MM-DD.html;
         // corujões sem placar salvo (sem lista de promessas) abrem a comparação
         if (passou) {
-          el.href = iso === ATUAL ? "./" : (c.placar ? iso + ".html" : "comparar.html");
+          el.href = iso === ATUAL ? "./" : (c.placar || c.pagina ? iso + ".html" : "comparar.html");
           if (iso === DADOS.dia) el.setAttribute("aria-current", "page");
         }
         el.setAttribute("aria-label", dd + "/" + m + ": " + el.title);

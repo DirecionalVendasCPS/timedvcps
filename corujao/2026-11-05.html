@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Placar do Corujão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Placar noturno do corujão: mesmo azul-noite do contador de vendas, âmbar para o que falta, verde para promessa cumprida */
+:root{
+  --bg:#0b1630;
+  --panel:#12224a;
+  --line:#22376b;
+  --ink:#eef2fb;
+  --muted:#93a3c8;
+  --accent:#ffb627;
+  --done:#3ddc97;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase;text-wrap:balance}
+.upd{font-size:13px;color:var(--muted);text-align:right}
+.upd b{color:var(--ink)}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(150px,230px) minmax(0,320px);gap:20px;align-items:center;overflow:hidden}
+.owl{width:100%;max-width:230px;justify-self:center}
+@media (max-width:960px){.hero{grid-template-columns:1fr 1fr}.hero>div:first-child{grid-column:1/-1}}
+@media (max-width:700px){.hero{grid-template-columns:1fr;text-align:center}}
+.lbl{font-family:var(--display);font-weight:800;font-size:clamp(26px,3.6vw,38px);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;line-height:1}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(130px,20vw,220px);line-height:.85;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(255,182,39,.25);margin:6px 0}
+.unit{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.sub{margin-top:14px;font-size:17px;color:var(--muted)}
+.sub b{color:var(--ink)}
+.hit .faltam-block{display:none}
+.bateu{display:none;font-family:var(--display);font-weight:900;color:var(--done);font-size:clamp(56px,9vw,100px);line-height:.9;text-transform:uppercase}
+.hit .bateu{display:block}
+.cal{justify-self:end;width:100%;max-width:330px;background:#0f1d40;border:1px solid var(--line);border-radius:18px;padding:14px}
+@media (max-width:700px){.cal{justify-self:center}}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.cal-nav{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:700 16px var(--body);cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-nav:focus-visible,.cal-d:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-w{font-size:11px;font-weight:700;color:var(--muted);text-align:center;padding:2px 0 4px}
+.cal-d{aspect-ratio:1;border-radius:9px;border:1px solid transparent;background:transparent;color:#3a5190;font:600 13px var(--body);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;font-variant-numeric:tabular-nums;text-decoration:none}
+.cal-d small{font-size:10px;font-weight:700;line-height:1}
+.cal-d.cor{background:var(--panel);color:var(--ink)}
+.cal-d.cor small{color:var(--muted)}
+.cal-d.tem{cursor:pointer}
+.cal-d.tem small{color:var(--done)}
+.cal-d.tem:hover{border-color:var(--accent)}
+.cal-d.hoje{border-color:var(--muted)}
+.cal-d.sel{background:var(--accent);color:var(--bg)}
+.cal-d.sel small{color:var(--bg)}
+.cal-btn{display:block;margin-top:10px;text-align:center;background:var(--accent);color:var(--bg);font:700 14px var(--body);text-decoration:none;border-radius:999px;padding:9px 14px}
+.cal-btn:hover{filter:brightness(1.08)}
+.cal-btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.4}
+.bar{height:14px;border-radius:7px;background:#0f1d40;border:1px solid var(--line);overflow:hidden;margin-top:16px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#ffd27a);border-radius:7px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:560px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.row.ok{border-color:rgba(61,220,151,.55);background:linear-gradient(0deg,rgba(61,220,151,.08),rgba(61,220,151,.08)),var(--panel)}
+.nome{font-weight:700;font-size:16px}
+.tag{font-family:var(--display);font-weight:800;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums;text-align:right;line-height:1}
+.tag small{display:block;font-family:var(--body);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.row.ok .tag{color:var(--done)}
+.dots{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:5px}
+.dot{width:16px;height:16px;border-radius:4px;border:1.5px dashed #3a5190}
+.dot.done{background:var(--done);border:1.5px solid var(--done)}
+.dot.extra{background:var(--accent);border:1.5px solid var(--accent)}
+.det{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.det b{color:var(--ink)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:-4px 0 12px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.l1::before{background:var(--done)}
+.l2::before{border:1.5px dashed var(--muted)}
+.l3::before{background:var(--accent)}
+.lblue::before{background:#4d7bff}
+.grs{display:flex;flex-direction:column;gap:22px}
+.gr-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.gr-name{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.03em;text-transform:uppercase}
+.gr-sum{font-size:14px;color:var(--muted)}
+.gr-sum b{color:var(--ink);font-variant-numeric:tabular-nums}
+.gvs{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.gv{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.gv-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gv-name{font-weight:700;font-size:17px}
+.gv-count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.gv-count b{color:var(--ink)}
+.mini{height:8px;border-radius:4px;background:#0f1d40;overflow:hidden}
+.mini i{display:block;height:100%;background:var(--done)}
+.ag{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.ag b{font-family:var(--display);font-weight:800;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.ag b.real{color:var(--accent)}
+.ag .pct{font-weight:700;color:var(--ink)}
+.gr-head .ag{width:100%}
+.mini.ag-bar i{background:var(--accent)}
+.people{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.people li{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:6px 8px;border-radius:8px;background:#0f1d40}
+.people .pn{min-width:0;overflow-wrap:anywhere}
+.pill{flex:none;font-size:11px;font-weight:700;letter-spacing:.03em;padding:3px 8px;border-radius:999px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.p-in{color:var(--done);background:rgba(61,220,151,.14)}
+.p-extra{color:var(--accent);background:rgba(255,182,39,.16)}
+.p-out{color:#ff8a8a;background:rgba(255,107,107,.14)}
+.people li.out .pn{color:var(--muted)}
+.leg2 span::before{display:none}
+.chart-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 18px 12px}
+.hbar{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:8px 12px;align-items:center}
+.hbar .hn{font-size:14px;text-align:right;line-height:1.2}
+.hbar .hn small{display:block;font-size:11px;color:var(--muted)}
+.hbar .ht{position:relative;height:26px;border-left:1.5px solid #3a5190}
+.hbar .ht i{position:absolute;left:0;top:2px;bottom:2px;background:#4d7bff;border-radius:0 6px 6px 0;min-width:6px}
+.hbar .ht i.meta{background:var(--done)}
+.hbar .ht b{position:absolute;top:50%;transform:translateY(-50%);font-family:var(--display);font-weight:800;font-size:18px;color:var(--ink);font-variant-numeric:tabular-nums}
+.hgrid{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:12px;margin-top:6px}
+.hticks{position:relative;height:18px;font-size:11px;color:var(--muted)}
+.hticks span{position:absolute;transform:translateX(-50%)}
+.hcap{margin-top:6px;font-size:12px;color:var(--muted);text-align:center}
+.vazio{color:var(--muted);text-align:center;padding:12px}
+.upd-box{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.btn-upd{display:inline-flex;align-items:center;gap:8px;font:700 14px var(--body);color:var(--bg);background:var(--accent);border:none;border-radius:999px;padding:9px 16px;text-decoration:none;cursor:pointer}
+.btn-upd:hover{filter:brightness(1.08)}
+.btn-upd:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn-upd svg{width:16px;height:16px}
+.upd-ok{font-size:12px;color:var(--done)}
+footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a href="../" style="color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px">← Direcional Vendas CPS</a>
+      <div class="eyebrow">Direcional Vendas · Campinas · <span id="dia">—</span></div>
+      <h1>Placar do Corujão · Agendamentos</h1>
+    </div>
+    <div class="upd-box">
+      <a class="btn-upd" id="btn-upd" href="https://claude.ai/code/session_0172nLXY28TiKGBuvAfugnUo" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Atualizar
+      </a>
+      <div class="upd">Atualizado em <span id="upd">—</span><br>Dados da planilha até <b id="refresh">—</b><br>Próxima atualização: <span id="prox">—</span></div>
+      <div class="upd-ok" id="upd-ok" hidden>"atualizar" copiado. Cole na conversa e envie.</div>
+    </div>
+  </header>
+
+  <section class="hero" id="hero" aria-live="polite">
+    <div>
+      <div class="bateu">Promessa cumprida!</div>
+      <div class="faltam-block">
+        <div class="lbl">Faltam</div>
+        <div class="big" id="faltam">—</div>
+        <div class="unit" id="faltam-unit">agendamentos</div>
+      </div>
+      <div class="sub">O time prometeu <b id="prometido">—</b> e já criou <b id="feito">—</b> no sistema hoje (<b id="pct">—</b>)</div>
+      <div class="sub" id="regra" style="margin-top:4px"></div>
+      <div class="bar" role="img" id="barra"><i id="barra-i" style="width:0"></i></div>
+    </div>
+    <svg class="owl" viewBox="0 0 200 210" role="img" aria-label="Coruja do corujão com o logo da DV tatuado no peito">
+      <circle cx="160" cy="34" r="16" fill="#ffe7a8" opacity=".85"/>
+      <circle cx="30" cy="22" r="1.6" fill="#c9d6f5"/><circle cx="58" cy="48" r="1.3" fill="#c9d6f5"/><circle cx="182" cy="86" r="1.4" fill="#c9d6f5"/>
+      <rect x="10" y="182" width="180" height="10" rx="5" fill="#5a4630"/>
+      <path d="M58 70 L66 38 L84 60 Z" fill="#6b5a8e"/><path d="M142 70 L134 38 L116 60 Z" fill="#6b5a8e"/>
+      <ellipse cx="100" cy="122" rx="56" ry="64" fill="#7a68a3"/>
+      <ellipse cx="100" cy="140" rx="36" ry="42" fill="#c9bfe0"/>
+      <path d="M90 168 q5 5 10 0 M100 168 q5 5 10 0" stroke="#9a8cc0" stroke-width="2" fill="none"/>
+      <image href="dv-tatuagem.png" x="71" y="126" width="58" height="34" opacity=".92" preserveAspectRatio="xMidYMid meet"/>
+      <circle cx="76" cy="92" r="24" fill="#fff"/><circle cx="124" cy="92" r="24" fill="#fff"/>
+      <circle cx="78" cy="94" r="12" fill="#ffb627"/><circle cx="122" cy="94" r="12" fill="#ffb627"/>
+      <circle cx="80" cy="95" r="6" fill="#0b1630"/><circle cx="120" cy="95" r="6" fill="#0b1630"/>
+      <circle cx="83" cy="91" r="2" fill="#fff"/><circle cx="123" cy="91" r="2" fill="#fff"/>
+      <path d="M94 108 L100 122 L106 108 Z" fill="#ffb627"/>
+      <path d="M44 120 q-12 30 8 56 q10 -26 6 -50 Z" fill="#6b5a8e"/><path d="M156 120 q12 30 -8 56 q-10 -26 -6 -50 Z" fill="#6b5a8e"/>
+      <path d="M78 184 l-6 8 M84 184 l0 9 M90 184 l6 8 M110 184 l-6 8 M116 184 l0 9 M122 184 l6 8" stroke="#ffb627" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="cal" id="cal" role="group" aria-label="Datas do corujão">
+      <div class="cal-top">
+        <button class="cal-nav" id="cal-prev" type="button" aria-label="Mês anterior">‹</button>
+        <div class="cal-mes" id="cal-mes">—</div>
+        <button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <a class="cal-btn" href="comparar.html">Comparar corujões →</a>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="Resumo dos corretores">
+    <div class="stat g"><div class="n" id="s-ok">—</div><div class="t">corretores já cumpriram a promessa</div></div>
+    <div class="stat"><div class="n" id="s-and">—</div><div class="t">corretores no caminho</div></div>
+    <div class="stat"><div class="n" id="s-zero">—</div><div class="t">corretores ainda sem agendamento</div></div>
+  </section>
+
+  <section aria-label="Placar por corretor">
+    <h2>Placar por corretor</h2>
+    <div class="legend"><span class="l1">Agendado</span><span class="l2">Falta agendar</span><span class="l3">Acima da promessa</span></div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <section aria-label="Gráfico de agendamentos do dia" id="grafico-sec">
+    <h2>Agendamentos do dia por corretor</h2>
+    <div class="legend"><span class="l1">Bateu a promessa</span><span style="--c:#4d7bff" class="lblue">Agendou</span></div>
+    <div class="chart-card">
+      <div id="grafico" role="img" aria-label="Gráfico de barras com quantos agendamentos cada corretor criou hoje"></div>
+    </div>
+  </section>
+
+  <section aria-label="Agendaram sem promessa" id="extras-sec">
+    <h2>Também agendaram hoje</h2>
+    <div class="legend" style="margin-top:-6px">Corretores que não estavam na lista de promessas do grupo. Os agendamentos deles contam para o time.</div>
+    <div class="list" id="extras"></div>
+  </section>
+
+  <section aria-label="Corretores por GR e GV" id="equipes-sec">
+    <h2>Quem está no corujão, por equipe</h2>
+    <div class="legend leg2"><span class="pill p-in">Na lista</span><span class="pill p-extra">Fora da lista, mas agendou</span><span class="pill p-out">Não colocou o nome</span></div>
+    <div class="grs" id="grs"></div>
+  </section>
+
+  <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
+</div>
+
+<script src="datas.js"></script>
+<script>
+// ===== Dados (atualizar a cada leitura do relatório) =====
+const DADOS = {
+  dia: "2026-11-05",
+  regra: "",
+  atualizado: "2026-11-19T19:45:00-03:00",
+  refresh: "19/11/2026 19:45", // agendamentos criados no dia, contados na planilha nova
+  corretores: [
+  ],
+  // base de corretores por GR e GV (base de 19/11)
+  equipe: [
+    {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "João Eduardo de Moraes", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Ronaldo Luis de Souza Chaves", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Flávio Henrique Peres Whiteman", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "José Paulo Salvador Júnior", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia", lista: null},
+    {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo", lista: null},
+    {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo", lista: null},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Lincoln Farah", gv: "Débora", gr: "Gustavo", lista: null},
+    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo", lista: null}
+  ],
+  // corujão sem lista de promessas: todos os agendamentos do dia ficam aqui
+  extras: [
+    {nome: "Aloisio Antonio Mache Tavares", feito: 3},
+    {nome: "Amekion Ferreira Cruz", feito: 1},
+    {nome: "Ana Luiza Martins", feito: 1},
+    {nome: "Benedito Thomaz Siqueira", feito: 2},
+    {nome: "Claudio Sena Borges", feito: 4},
+    {nome: "Daniel Alves Silva", feito: 1},
+    {nome: "Emerson Gonçalves Pereira", feito: 1},
+    {nome: "Fernanda Guilherme dos Santos", feito: 3},
+    {nome: "Flavia Maria Ramos", feito: 2},
+    {nome: "Franciely Gomes", feito: 1},
+    {nome: "Guilherme Garcia", feito: 1},
+    {nome: "Isabella Garcia Silva", feito: 2},
+    {nome: "Jorge Luiz de Lima", feito: 2},
+    {nome: "João Gabriel Campos Carvalho da Silva", feito: 1},
+    {nome: "Larissa Gabriele Vitor", feito: 1},
+    {nome: "Layane Silva Santos Bispo", feito: 1},
+    {nome: "Lincoln Farah", feito: 1},
+    {nome: "Luciana Lemes", feito: 1},
+    {nome: "Marlene Santana Corrêa dos Santos", feito: 1},
+    {nome: "Paola Cassanelli da Rocha", feito: 1},
+    {nome: "Roseli Martim Tibiriça", feito: 1},
+    {nome: "Sonia Maria de Oliveira Maruki", feito: 3},
+    {nome: "Teresinha Aparecida Crivelaro Lopes", feito: 1}
+  ]
+};
+// ==========================================================
+
+const $ = (id) => document.getElementById(id);
+const plural = (n, s, p) => n === 1 ? s : p;
+const C = DADOS.corretores;
+const prometido = C.reduce((a, c) => a + c.prometido, 0);
+const E = DADOS.extras || [];
+const feito = C.reduce((a, c) => a + c.feito, 0) + E.reduce((a, c) => a + c.feito, 0);
+const faltam = Math.max(0, prometido - feito);
+const pct = prometido ? Math.round(feito / prometido * 100) : 0;
+const SEM = !C.length; // corujão sem lista de promessas (05/11 e 10/11): mostra só o que foi agendado
+
+const d = new Date(DADOS.dia + "T12:00:00-03:00");
+$("dia").textContent = d.toLocaleDateString("pt-BR", {weekday: "long", day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"});
+const fmtDataHora = (d) => d.toLocaleDateString("pt-BR", {day: "2-digit", month: "2-digit", timeZone: "America/Sao_Paulo"}) + " às " + d.toLocaleTimeString("pt-BR", {hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo"});
+$("upd").textContent = fmtDataHora(new Date(DADOS.atualizado));
+$("refresh").textContent = DADOS.refresh || "—";
+$("regra").textContent = DADOS.regra || "";
+// corujão: a próxima atualização é no próximo corujão do calendário
+(function () {
+  const hoje = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+  const prox = (typeof CORUJOES !== "undefined" ? CORUJOES : []).map((c) => c.dia).filter((d) => d >= hoje).sort()[0];
+  if (typeof CORUJAO_ATUAL !== "undefined" && DADOS.dia < CORUJAO_ATUAL) { $("prox").textContent = "corujão encerrado"; return; }
+  if (prox === hoje) { // dia de corujão: próxima atualização automática do dia (5 min depois do refresh da planilha)
+    const agora = new Date();
+    for (const h of [2, 6, 10, 14, 18, 22]) {
+      const alvo = new Date(hoje + "T" + String(h).padStart(2, "0") + ":05:00-03:00");
+      if (alvo > agora) { $("prox").textContent = "hoje às " + String(h).padStart(2, "0") + ":05"; return; }
+    }
+  }
+  $("prox").textContent = prox ? "no corujão de " + prox.slice(8, 10) + "/" + prox.slice(5, 7) : "quando houver novo corujão";
+})();
+$("faltam").textContent = faltam;
+$("faltam-unit").textContent = plural(faltam, "agendamento", "agendamentos");
+$("prometido").textContent = prometido;
+$("feito").textContent = feito;
+$("pct").textContent = pct + "%";
+$("barra-i").style.width = Math.min(100, pct) + "%";
+$("barra").setAttribute("aria-label", feito + " de " + prometido + " agendamentos prometidos");
+if (faltam === 0 && !SEM) $("hero").classList.add("hit");
+if (SEM) {
+  document.querySelector("#hero .faltam-block .lbl").textContent = "Agendamentos criados";
+  $("faltam").textContent = feito;
+  const sub = document.querySelector("#hero .sub"); sub.textContent = "";
+  const bq = document.createElement("b"); bq.textContent = E.filter((c) => c.feito > 0).length;
+  sub.append("Criados no sistema no dia do corujão por ", bq, " corretores. Este corujão não teve lista de promessas no grupo.");
+  $("barra").hidden = true;
+  document.querySelector('section[aria-label="Placar por corretor"]').hidden = true;
+  $("extras-sec").hidden = true;
+  const lg = document.querySelector("#grafico-sec .legend"); if (lg) lg.style.display = "none";
+  const l2 = document.querySelector("#equipes-sec .leg2"); if (l2) { l2.textContent = ""; [["p-in", "Agendou"], ["p-out", "Não agendou"]].forEach(([c, t]) => { const x = document.createElement("span"); x.className = "pill " + c; x.textContent = t; l2.appendChild(x); }); }
+  const h2 = document.querySelector("#equipes-sec h2"); if (h2) h2.textContent = "Quem agendou no corujão, por equipe";
+}
+
+if (SEM) {
+  const st = document.querySelectorAll(".stats .stat .t");
+  st[0].textContent = "corretores agendaram"; st[1].textContent = "agendamentos criados"; st[2].textContent = "corretores da base sem agendamento";
+  const nomes = new Set(E.filter((c) => c.feito > 0).map((c) => c.nome));
+  $("s-ok").textContent = nomes.size; $("s-and").textContent = feito;
+  $("s-zero").textContent = (DADOS.equipe || []).filter((p) => !nomes.has(p.nome)).length;
+} else {
+$("s-ok").textContent = C.filter((c) => c.feito >= c.prometido).length;
+$("s-and").textContent = C.filter((c) => c.feito > 0 && c.feito < c.prometido).length;
+$("s-zero").textContent = C.filter((c) => c.feito === 0).length;
+}
+
+// quem cumpriu primeiro, depois quem está mais perto; empate por nome
+const list = $("list");
+C.slice().sort((a, b) => (b.feito / b.prometido) - (a.feito / a.prometido) || b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
+  const f = Math.max(0, c.prometido - c.feito);
+  const row = document.createElement("div");
+  row.className = "row" + (f === 0 ? " ok" : "");
+  const nm = document.createElement("div"); nm.className = "nome"; nm.textContent = c.nome;
+  const tag = document.createElement("div"); tag.className = "tag";
+  tag.textContent = f === 0 ? "✓" : f;
+  const sm = document.createElement("small"); sm.textContent = f === 0 ? "cumpriu" : plural(f, "falta", "faltam");
+  tag.appendChild(sm);
+  const dots = document.createElement("div"); dots.className = "dots";
+  for (let i = 0; i < Math.max(c.prometido, c.feito); i++) {
+    const x = document.createElement("div");
+    x.className = "dot" + (i < c.feito ? (i >= c.prometido ? " extra" : " done") : "");
+    dots.appendChild(x);
+  }
+  const det = document.createElement("div"); det.className = "det";
+  det.append("Prometeu ");
+  const b1 = document.createElement("b"); b1.textContent = c.prometido; det.appendChild(b1);
+  det.append(" · Agendou ");
+  const b2 = document.createElement("b"); b2.textContent = c.feito; det.appendChild(b2);
+  row.append(nm, tag, dots, det);
+  list.appendChild(row);
+});
+
+const ex = $("extras");
+if (!E.length || SEM) $("extras-sec").hidden = true;
+E.slice().sort((a, b) => b.feito - a.feito || a.nome.localeCompare(b.nome)).forEach((c) => {
+  const row = document.createElement("div"); row.className = "row ok";
+  const nm = document.createElement("div"); nm.className = "nome"; nm.textContent = c.nome;
+  const tag = document.createElement("div"); tag.className = "tag"; tag.textContent = "+" + c.feito;
+  const sm = document.createElement("small"); sm.textContent = plural(c.feito, "agendamento", "agendamentos"); tag.appendChild(sm);
+  row.append(nm, tag);
+  ex.appendChild(row);
+});
+
+// prometido x realizado de um grupo de corretores (GR ou GV)
+function BD_ag(lista) {
+  const prom = lista.reduce((a, p) => a + (p.promessa ? p.promessa.prometido : 0), 0);
+  const real = lista.reduce((a, p) => a + p.feito, 0);
+  const d = document.createElement("div"); d.className = "ag";
+  const b1 = document.createElement("b"); b1.textContent = prom;
+  const b2 = document.createElement("b"); b2.className = "real"; b2.textContent = real;
+  const pc = document.createElement("span"); pc.className = "pct"; pc.textContent = prom ? "(" + Math.round(real / prom * 100) + "%)" : "";
+  if (SEM) d.append("Agendamentos criados ", b2); else d.append("Prometido ", b1, " · Realizado no sistema ", b2, pc);
+  return d;
+}
+// ===== Painel por GR / GV =====
+(function equipes() {
+  const porLista = Object.fromEntries(C.map((c) => [c.nome, c]));
+  const porExtra = Object.fromEntries(E.map((c) => [c.nome, c]));
+  const pessoas = DADOS.equipe.map((p) => {
+    const promessa = p.lista ? porLista[p.lista] : null;
+    const feitoP = promessa ? promessa.feito : (porExtra[p.nome] ? porExtra[p.nome].feito : 0);
+    const status = promessa ? "in" : (feitoP > 0 ? "extra" : "out");
+    return {...p, promessa, feito: feitoP, status};
+  });
+  const ordem = {in: 0, extra: 1, out: 2};
+  const root = $("grs");
+  [...new Set(pessoas.map((p) => p.gr))].forEach((gr) => {
+    const doGr = pessoas.filter((p) => p.gr === gr);
+    const block = document.createElement("div");
+    const head = document.createElement("div"); head.className = "gr-head";
+    const gn = document.createElement("div"); gn.className = "gr-name"; gn.textContent = "GR " + gr;
+    const gs = document.createElement("div"); gs.className = "gr-sum";
+    const na = doGr.filter((p) => p.status === "in").length;
+    const b1 = document.createElement("b"); b1.textContent = na;
+    const b2 = document.createElement("b"); b2.textContent = doGr.length;
+    const b3 = document.createElement("b"); b3.textContent = Math.round(na / doGr.length * 100) + "%";
+    if (SEM) { const nAg = doGr.filter((p) => p.feito > 0).length; b1.textContent = nAg; b3.textContent = Math.round(nAg / doGr.length * 100) + "%"; gs.append(b1, " de ", b2, " corretores agendaram (", b3, ")"); }
+    else gs.append(b1, " de ", b2, " corretores na lista (", b3, ")");
+    head.append(gn, gs, BD_ag(doGr));
+    const gvs = document.createElement("div"); gvs.className = "gvs";
+    [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
+      const doGv = doGr.filter((p) => p.gv === gv).sort((a, b) => ordem[a.status] - ordem[b.status] || a.nome.localeCompare(b.nome));
+      const nIn = doGv.filter((p) => p.status === "in").length;
+      const card = document.createElement("div"); card.className = "gv";
+      const top = document.createElement("div"); top.className = "gv-top";
+      const nm = document.createElement("div"); nm.className = "gv-name"; nm.textContent = "Equipe " + gv;
+      const ct = document.createElement("div"); ct.className = "gv-count";
+      const c1 = document.createElement("b"); c1.textContent = nIn;
+      if (SEM) { c1.textContent = doGv.filter((p) => p.feito > 0).length; ct.append(c1, " de " + doGv.length + " agendaram"); }
+      else ct.append(c1, " de " + doGv.length + " na lista");
+      top.append(nm, ct);
+      const mini = document.createElement("div"); mini.className = "mini";
+      const mi = document.createElement("i"); mi.style.width = ((SEM ? doGv.filter((p) => p.feito > 0).length : nIn) / doGv.length * 100) + "%"; mini.appendChild(mi);
+      const ul = document.createElement("ul"); ul.className = "people";
+      doGv.forEach((p) => {
+        const li = document.createElement("li"); if (p.status === "out") li.className = "out";
+        const pn = document.createElement("span"); pn.className = "pn"; pn.textContent = p.nome;
+        const pill = document.createElement("span");
+        if (p.status === "in") { pill.className = "pill p-in"; pill.textContent = "Agendou " + p.feito + " de " + p.promessa.prometido; }
+        else if (p.status === "extra") { pill.className = "pill " + (SEM ? "p-in" : "p-extra"); pill.textContent = (SEM ? "Agendou " : "Fora da lista · agendou ") + p.feito; }
+        else { pill.className = "pill p-out"; pill.textContent = SEM ? "Não agendou" : "Não colocou o nome"; }
+        li.append(pn, pill); ul.appendChild(li);
+      });
+      const agv = BD_ag(doGv);
+      const mini2 = document.createElement("div"); mini2.className = "mini ag-bar";
+      const prom = doGv.reduce((a, p) => a + (p.promessa ? p.promessa.prometido : 0), 0);
+      const real = doGv.reduce((a, p) => a + p.feito, 0);
+      const m2 = document.createElement("i"); m2.style.width = Math.min(100, prom ? real / prom * 100 : (real ? 100 : 0)) + "%"; mini2.appendChild(m2);
+      card.append(top, mini, agv, mini2, ul);
+      gvs.appendChild(card);
+    });
+    block.append(head, gvs);
+    root.appendChild(block);
+  });
+})();
+
+// gráfico de barras: quem agendou hoje (inclui quem está fora da lista)
+(function grafico() {
+  const box = $("grafico");
+  const nomeCompleto = {};
+  (DADOS.equipe || []).forEach((p) => { if (p.lista) nomeCompleto[p.lista] = p; });
+  const rows = C.filter((c) => c.feito > 0).map((c) => ({nome: (nomeCompleto[c.nome] || {}).nome || c.nome, gv: (nomeCompleto[c.nome] || {}).gv, v: c.feito, bateu: c.feito >= c.prometido}))
+    .concat(E.filter((c) => c.feito > 0).map((c) => {
+      const p = (DADOS.equipe || []).find((x) => x.nome === c.nome) || {};
+      return {nome: c.nome, gv: p.gv, v: c.feito, bateu: false, fora: true};
+    }))
+    .sort((a, b) => b.v - a.v || a.nome.localeCompare(b.nome));
+  if (!rows.length) { const d = document.createElement("div"); d.className = "vazio"; d.textContent = "Ninguém agendou ainda hoje."; box.appendChild(d); return; }
+  const max = Math.max(...rows.map((r) => r.v));
+  const grid = document.createElement("div"); grid.className = "hbar";
+  rows.forEach((r) => {
+    const hn = document.createElement("div"); hn.className = "hn"; hn.textContent = r.nome;
+    const sm = document.createElement("small"); sm.textContent = (r.gv ? "Equipe " + r.gv : "") + (r.fora && !SEM ? " · fora da lista" : ""); hn.appendChild(sm);
+    const ht = document.createElement("div"); ht.className = "ht";
+    const bar = document.createElement("i"); if (r.bateu) bar.className = "meta";
+    const w = r.v / max * 88; bar.style.width = w + "%";
+    const val = document.createElement("b"); val.textContent = r.v; val.style.left = "calc(" + w + "% + 8px)";
+    ht.append(bar, val);
+    grid.append(hn, ht);
+  });
+  box.appendChild(grid);
+  const g2 = document.createElement("div"); g2.className = "hgrid";
+  const vazio = document.createElement("div");
+  const ticks = document.createElement("div"); ticks.className = "hticks";
+  for (let t = 0; t <= max; t++) { const s = document.createElement("span"); s.style.left = (t / max * 88) + "%"; s.textContent = t; ticks.appendChild(s); }
+  g2.append(vazio, ticks); box.appendChild(g2);
+  const cap = document.createElement("div"); cap.className = "hcap"; cap.textContent = SEM ? "Número de agendamentos criados no dia" : "Número de agendamentos criados hoje"; box.appendChild(cap);
+})();
+
+
+// ===== calendário dos corujões =====
+(function () {
+  const lista = typeof CORUJOES !== "undefined" ? CORUJOES : [];
+  const porDia = Object.fromEntries(lista.map((c) => [c.dia, c]));
+  const comPlacar = lista.filter((c) => c.placar).map((c) => c.dia).sort();
+  const ATUAL = typeof CORUJAO_ATUAL !== "undefined" ? CORUJAO_ATUAL : comPlacar[comPlacar.length - 1];
+  const HOJE = new Date().toLocaleDateString("en-CA", {timeZone: "America/Sao_Paulo"});
+  const meses = [...new Set(lista.map((c) => c.dia.slice(0, 7)))].sort();
+  const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+  let visto = DADOS.dia.slice(0, 7);
+  function desenha() {
+    const [y, m] = visto.split("-").map(Number);
+    $("cal-mes").textContent = MESES[m - 1] + " " + y;
+    $("cal-prev").disabled = !meses.length || visto <= meses[0];
+    $("cal-next").disabled = !meses.length || visto >= meses[meses.length - 1];
+    const g = $("cal-grid"); g.textContent = "";
+    ["D", "S", "T", "Q", "Q", "S", "S"].forEach((w) => { const e = document.createElement("div"); e.className = "cal-w"; e.textContent = w; g.appendChild(e); });
+    const dow = new Date(Date.UTC(y, m - 1, 1)).getUTCDay();
+    for (let i = 0; i < dow; i++) g.appendChild(document.createElement("div"));
+    const n = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    for (let dd = 1; dd <= n; dd++) {
+      const iso = visto + "-" + String(dd).padStart(2, "0");
+      const c = porDia[iso];
+      const passou = c && iso <= HOJE;
+      const el = document.createElement(passou ? "a" : "div");
+      el.className = "cal-d" + (c ? " cor" : "") + (passou ? " tem" : "") + (iso === HOJE ? " hoje" : "") + (iso === DADOS.dia ? " sel" : "");
+      el.appendChild(document.createTextNode(dd));
+      if (c) {
+        const sm = document.createElement("small"); sm.textContent = c.placar || (c.feito != null ? c.feito : "🦉"); el.appendChild(sm);
+        el.title = c.rotulo + (c.placar ? " · " + c.placar + " agendamentos" : iso > HOJE ? " · programado" : " · ver na comparação");
+        // clicar num dia de corujão abre o placar daquele dia: o atual fica em corujao/, os anteriores salvos em AAAA-MM-DD.html;
+        // corujões sem placar salvo (sem lista de promessas) abrem a comparação
+        if (passou) {
+          el.href = iso === ATUAL ? "./" : (c.placar || c.pagina ? iso + ".html" : "comparar.html");
+          if (iso === DADOS.dia) el.setAttribute("aria-current", "page");
+        }
+        el.setAttribute("aria-label", dd + "/" + m + ": " + el.title);
+      }
+      g.appendChild(el);
+    }
+  }
+  $("cal-prev").addEventListener("click", () => { const i = meses.indexOf(visto); visto = i > 0 ? meses[i - 1] : meses[0]; desenha(); });
+  $("cal-next").addEventListener("click", () => { const i = meses.indexOf(visto); visto = i >= 0 && i < meses.length - 1 ? meses[i + 1] : meses[meses.length - 1]; desenha(); });
+  desenha();
+})();
+
+
+// botão Atualizar: abre a conversa do Claude e copia a palavra "atualizar" para colar
+(function () {
+  const b = document.getElementById("btn-upd");
+  if (!b) return;
+  b.addEventListener("click", () => {
+    try {
+      navigator.clipboard.writeText("atualizar").then(() => { document.getElementById("upd-ok").hidden = false; }).catch(() => {});
+    } catch (e) {}
+  });
+})();
+</script>
+<script src="../auto-refresh.js" data-minutos="60" defer></script>
+</body>
+</html>
