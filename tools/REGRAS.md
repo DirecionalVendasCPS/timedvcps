@@ -252,3 +252,4 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 ## Roleta — período integral
 - Em feriado a roleta é uma só, "integral": REGISTROS com turno "I" (conta como 1 roleta; coluna "Int." nas tabelas; barra verde no ranking). Ex.: 20/11/2026.
 - Apelido "Teco" = Teresinha Aparecida Crivelaro Lopes (CRECI 92.720).
+- "Rose" ou "Rose T" = Roseli Martim Tibiriça (GV Ícaro); "Roseli" = Roseli Sampaio Bastos Ferreira (GV Ivan).
