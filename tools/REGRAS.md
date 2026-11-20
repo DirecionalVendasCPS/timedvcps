@@ -253,3 +253,6 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 - Em feriado a roleta é uma só, "integral": REGISTROS com turno "I" (conta como 1 roleta; coluna "Int." nas tabelas; barra verde no ranking). Ex.: 20/11/2026.
 - Apelido "Teco" = Teresinha Aparecida Crivelaro Lopes (CRECI 92.720).
 - "Rose" ou "Rose T" = Roseli Martim Tibiriça (GV Ícaro); "Roseli" = Roseli Sampaio Bastos Ferreira (GV Ivan).
+
+## Visitas realizadas — fonte
+- Conferir SEMPRE a aba Visitas (I corretor, K data do comparecimento): ela recebe as visitas do dia antes da coluna H do Agendamentos ser marcada (ex.: 20/11 às 09:49, Visitas tinha 2 e H ainda 0). Não ler a coluna C da Visitas (nome do cliente).
