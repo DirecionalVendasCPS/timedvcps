@@ -244,3 +244,7 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 ## Recarregar ao publicar
 - auto-refresh.js também confere versao.json a cada minuto; quando muda (cada commit publicado), a página recarrega na hora. Os intervalos continuam (2 h / 1 h). Roleta e calendário não têm o script e nunca recarregam sozinhos.
 - versao.json é gravado pelo hook .git/hooks/pre-commit (local). Se o repositório for clonado de novo, recriar o hook: `printf '{"v": "%s"}\n' "$(date -u +%Y%m%d%H%M%S)" > versao.json; git add versao.json`.
+
+## BaseAtivos — colunas novas (desde 19/11 21:49)
+- Entraram L "Camiseta" e N "Origem"; as colunas seguintes andaram. Agora: A nome, D Atividade, E CRECI, M Status Corretor, O Data de nascimento, AI GR (Gerente), AL "Nome da conta" (= GV). P em diante tem CPF/RG/contato/banco: não ler.
+- Atividade "Captador" (ex.: Márcia Regina Masini Visibelli, Vanessa Ribeiro de Lima, conta Ana Carolina) não entra como corretor.
