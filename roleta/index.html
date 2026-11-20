@@ -66,7 +66,7 @@ h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04e
 .rk .who small{color:var(--muted);font-size:12px}
 .trk{height:18px;border-radius:9px;background:#0f1d40;overflow:hidden;display:flex}
 .trk i{display:block;height:100%}
-.trk .m{background:var(--accent)} .trk .t{background:var(--blue)}
+.trk .m{background:var(--accent)} .trk .t{background:var(--blue)} .trk .ig{background:#2bd4a4}
 .rk .tot{font-family:var(--display);font-weight:900;font-size:26px;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums}
 .leg{display:flex;gap:16px;font-size:13px;color:var(--muted);margin:-4px 0 12px;flex-wrap:wrap}
 .leg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--c)}
@@ -124,8 +124,9 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
       <div class="unit">corretores participaram</div>
       <div class="sub"><span id="quando">—</span> · <b id="n-rol">—</b> <span id="rol-txt">roletas</span>.</div>
       <div class="turnos">
-        <div class="turno"><b id="t-m">—</b>corretores de manhã · 8:45</div>
-        <div class="turno"><b id="t-t">—</b>corretores à tarde · 13:45</div>
+        <div class="turno" id="turno-m"><b id="t-m">—</b>corretores de manhã · 8:45</div>
+        <div class="turno" id="turno-t"><b id="t-t">—</b>corretores à tarde · 13:45</div>
+        <div class="turno" id="turno-i" hidden><b id="t-i">—</b>corretores no período integral (feriado)</div>
       </div>
     </div>
     <div class="cal" role="group" aria-label="Escolha um dia">
@@ -150,7 +151,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
 
   <section>
     <h2>Ranking de presenças</h2>
-    <div class="leg"><span style="--c:var(--accent)">Manhã (8:45)</span><span style="--c:var(--blue)">Tarde (13:45)</span></div>
+    <div class="leg"><span style="--c:var(--accent)">Manhã (8:45)</span><span style="--c:var(--blue)">Tarde (13:45)</span><span style="--c:#2bd4a4">Integral (feriado)</span></div>
     <div class="card rk" id="ranking"></div>
   </section>
 
@@ -176,8 +177,8 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
 </div>
 
 <script>
-// ===== Dados: uma linha por folha fotografada (data, turno M/T, GR da folha, nomes do squad e de fora do squad) =====
-const ATUALIZADO = "19/11 às 14:10";
+// ===== Dados: uma linha por folha fotografada (data, turno M/T/I = integral em feriado, GR da folha, nomes do squad e de fora do squad) =====
+const ATUALIZADO = "20/11 às 10:00";
 const REGISTROS = [
   {data: "2026-11-16", turno: "M", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: []},
   {data: "2026-11-16", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Isabella Garcia Silva", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
@@ -202,6 +203,9 @@ const REGISTROS = [
   {data: "2026-11-19", turno: "T", gr: "Takeashi", squad: [], fora: ["Paola Cassanelli da Rocha", "Mauro de Pinho Micaela", "Vanessa", "Robson de Oliveira", "Roberto Oliveira da Silva Souza"]},
   {data: "2026-11-19", turno: "T", gr: "Gustavo", squad: ["Sirlene Aparecida da Silva", "Roseli Sampaio Bastos Ferreira", "Marcelo Vicentini Coelho"], fora: ["Taíssa Ayane Oliveira da Silva", "Lincoln Farah"]},
   {data: "2026-11-19", turno: "T", gr: "Patricia", squad: ["Claudio Sena Borges", "Fabiana Sertori de Oliveira", "Flavia Maria Ramos", "Amekion Ferreira Cruz", "Ellen Cassia Pereira Cassemiro de Campos", "Fernanda Guilherme dos Santos", "Guilherme Garcia", "Sonia Maria de Oliveira Maruki", "Fabio Carlo da Silva", "Jorge Luiz de Lima", "Franciely Gomes"], fora: ["Aloisio Antonio Mache Tavares", "Márcio Antônio Custódio", "Clarice Pereira"]},
+  {data: "2026-11-20", turno: "I", gr: "Takeashi", squad: ["Robson de Oliveira", "Teresinha Aparecida Crivelaro Lopes", "Roseli Martim Tibiriça", "Isabella Garcia Silva"], fora: ["Roberto Oliveira da Silva Souza", "Ronaldo Luis de Souza Chaves", "Mauro de Pinho Micaela", "José Luis Gomes de Araujo", "Paola Cassanelli da Rocha"]},
+  {data: "2026-11-20", turno: "I", gr: "Patricia", squad: ["Flavia Maria Ramos", "Guilherme Garcia", "Claudio Sena Borges", "Amekion Ferreira Cruz", "Fabio Carlo da Silva", "Fabiana Sertori de Oliveira", "Jorge Luiz de Lima", "Ellen Cassia Pereira Cassemiro de Campos"], fora: []},
+  {data: "2026-11-20", turno: "I", gr: "Gustavo", squad: ["Roseli Sampaio Bastos Ferreira", "Sirlene Aparecida da Silva"], fora: ["Larissa Gabriele Vitor", "Lincoln Farah"]},
 ];
 const EQUIPE = [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
@@ -275,6 +279,7 @@ const DIAS = [...new Set(REGISTROS.map((r) => r.data))].sort();
 let sel = {tipo: "dia", dia: DIAS[DIAS.length - 1]};
 let calYm = sel.dia.slice(0, 7);
 
+const k = (r) => r.turno === "M" ? "m" : r.turno === "I" ? "i" : "t";
 let somando = false;
 function filtrar() { return REGISTROS.filter((r) => sel.tipo === "mes" ? r.data.startsWith(sel.ym) : sel.tipo === "dias" ? sel.dias.includes(r.data) : r.data === sel.dia); }
 
@@ -282,10 +287,10 @@ function render() {
   const regs = filtrar();
   const por = {};
   regs.forEach((r) => [...r.squad.map((n) => [n, false]), ...r.fora.map((n) => [n, true])].forEach(([n, fs]) => {
-    const p = por[n] || (por[n] = {nome: n, m: 0, t: 0, fs: 0, ult: ""});
-    p[r.turno === "M" ? "m" : "t"]++; if (fs) p.fs++; if (r.data > p.ult) p.ult = r.data;
+    const p = por[n] || (por[n] = {nome: n, m: 0, t: 0, i: 0, fs: 0, ult: ""});
+    p[k(r)]++; if (fs) p.fs++; if (r.data > p.ult) p.ult = r.data;
   }));
-  const lista = Object.values(por).map((p) => ({...p, tot: p.m + p.t, ...(POR_NOME[p.nome] || (FORA_BASE[p.nome] ? {gv: FORA_BASE[p.nome].gv + " (fora da base)", gr: FORA_BASE[p.nome].gr} : {gv: "Fora da base", gr: ""}))}));
+  const lista = Object.values(por).map((p) => ({...p, tot: p.m + p.t + p.i, ...(POR_NOME[p.nome] || (FORA_BASE[p.nome] ? {gv: FORA_BASE[p.nome].gv + " (fora da base)", gr: FORA_BASE[p.nome].gr} : {gv: "Fora da base", gr: ""}))}));
   lista.sort((a, b) => b.tot - a.tot || b.t - a.t || a.nome.localeCompare(b.nome, "pt"));
   const tot = lista.reduce((a, p) => a + p.tot, 0);
   const roletas = new Set(regs.map((r) => r.data + r.turno)).size;
@@ -296,6 +301,8 @@ function render() {
   else { const d = new Date(sel.dia + "T12:00:00-03:00"); $("lbl").textContent = "Corretores no dia"; $("quando").textContent = SEM[d.getDay()].replace(/^./, (c) => c.toUpperCase()) + ", " + fmtD(sel.dia); $("periodo-top").textContent = fmtD(sel.dia); }
   $("total").textContent = lista.length; $("n-rol").textContent = roletas; $("rol-txt").textContent = roletas === 1 ? "roleta" : "roletas";
   $("t-m").textContent = lista.filter((p) => p.m).length; $("t-t").textContent = lista.filter((p) => p.t).length;
+  const temI = regs.some((r) => r.turno === "I"); $("t-i").textContent = lista.filter((p) => p.i).length; $("turno-i").hidden = !temI;
+  $("turno-m").hidden = temI && !regs.some((r) => r.turno === "M"); $("turno-t").hidden = temI && !regs.some((r) => r.turno === "T");
   $("s-cor").textContent = new Set(regs.flatMap((r) => r.squad)).size;
   // % da base que veio ao stand: corretores ativos presentes no dia ÷ corretores ativos (média dos dias, quando é o mês)
   const diasP = [...new Set(regs.map((r) => r.data))];
@@ -311,8 +318,8 @@ function render() {
   const max = Math.max(1, ...lista.map((p) => p.tot));
   lista.forEach((p, i) => {
     const who = el("div", "who"); who.append(el("b", null, p.nome), el("small", null, p.gv + (p.gr ? " · " + p.gr : "") + (p.fs ? " · " + p.fs + "× fora do squad" : "")));
-    const trk = el("div", "trk"); trk.title = p.m + " manhã · " + p.t + " tarde";
-    const a = el("i", "m"); a.style.width = p.m / max * 100 + "%"; const b = el("i", "t"); b.style.width = p.t / max * 100 + "%"; trk.append(a, b);
+    const trk = el("div", "trk"); trk.title = p.m + " manhã · " + p.t + " tarde" + (p.i ? " · " + p.i + " integral" : "");
+    const a = el("i", "m"); a.style.width = p.m / max * 100 + "%"; const b = el("i", "t"); b.style.width = p.t / max * 100 + "%"; const c2 = el("i", "ig"); c2.style.width = p.i / max * 100 + "%"; trk.append(a, b, c2);
     rk.append(el("div", "pos", i + 1 + "º"), who, trk, el("div", "tot", p.tot));
   });
   if (!lista.length) rk.append(el("div", null, "Nenhuma lista registrada no período."));
@@ -320,18 +327,19 @@ function render() {
   // tabelas squad x fora do squad
   [["squad", "tb-squad", "n-sq"], ["fora", "tb-fora", "n-fs"]].forEach(([campo, id, nid]) => {
     const pp = {};
-    regs.forEach((r) => r[campo].forEach((n) => { const x = pp[n] || (pp[n] = {nome: n, m: 0, t: 0}); x[r.turno === "M" ? "m" : "t"]++; }));
-    const ls = Object.values(pp).map((x) => ({...x, tot: x.m + x.t, ...(POR_NOME[x.nome] || (FORA_BASE[x.nome] ? {gv: FORA_BASE[x.nome].gv + " (fora da base)", gr: FORA_BASE[x.nome].gr} : {gv: "Fora da base", gr: ""}))}))
+    regs.forEach((r) => r[campo].forEach((n) => { const x = pp[n] || (pp[n] = {nome: n, m: 0, t: 0, i: 0}); x[k(r)]++; }));
+    const temI = regs.some((r) => r.turno === "I");
+    const ls = Object.values(pp).map((x) => ({...x, tot: x.m + x.t + x.i, ...(POR_NOME[x.nome] || (FORA_BASE[x.nome] ? {gv: FORA_BASE[x.nome].gv + " (fora da base)", gr: FORA_BASE[x.nome].gr} : {gv: "Fora da base", gr: ""}))}))
       .sort((a, b) => b.tot - a.tot || a.nome.localeCompare(b.nome, "pt"));
     const tb = $(id); tb.replaceChildren();
-    const th = el("thead"); const hr = el("tr"); [["Corretor", ""], ["GV · GR", ""], ["Manhã", "n"], ["Tarde", "n"], ["Total", "n"]].forEach(([t, c]) => hr.append(el("th", c, t))); th.append(hr);
+    const th = el("thead"); const hr = el("tr"); [["Corretor", ""], ["GV · GR", ""], ["Manhã", "n"], ["Tarde", "n"], ...(temI ? [["Int.", "n"]] : []), ["Total", "n"]].forEach(([t, c]) => hr.append(el("th", c, t))); th.append(hr);
     const bd = el("tbody");
     ls.forEach((x) => { const tr = el("tr"); const nm = el("td", null, curto(x.nome)); nm.title = x.nome;
       const gg = el("td"); gg.append(el("small", null, x.gv + (x.gr ? " · " + x.gr : "")));
-      tr.append(nm, gg, el("td", "n", x.m), el("td", "n", x.t), el("td", "n tot", x.tot)); bd.append(tr); });
-    if (!ls.length) { const tr = el("tr"); const td = el("td", null, "Ninguém no período."); td.colSpan = 5; tr.append(td); bd.append(tr); }
+      tr.append(nm, gg, el("td", "n", x.m), el("td", "n", x.t), ...(temI ? [el("td", "n", x.i)] : []), el("td", "n tot", x.tot)); bd.append(tr); });
+    if (!ls.length) { const tr = el("tr"); const td = el("td", null, "Ninguém no período."); td.colSpan = temI ? 6 : 5; tr.append(td); bd.append(tr); }
     const ft = el("tfoot"); const fr = el("tr"); const f0 = el("td", null, ls.length + " corretores"); f0.colSpan = 2;
-    fr.append(f0, el("td", "n", ls.reduce((a, x) => a + x.m, 0)), el("td", "n", ls.reduce((a, x) => a + x.t, 0)), el("td", "n tot", ls.reduce((a, x) => a + x.tot, 0))); ft.append(fr);
+    fr.append(f0, el("td", "n", ls.reduce((a, x) => a + x.m, 0)), el("td", "n", ls.reduce((a, x) => a + x.t, 0)), ...(temI ? [el("td", "n", ls.reduce((a, x) => a + x.i, 0))] : []), el("td", "n tot", ls.reduce((a, x) => a + x.tot, 0))); ft.append(fr);
     tb.append(th, bd, ft); $(nid).textContent = ls.length;
   });
 
@@ -340,11 +348,11 @@ function render() {
   GRS.forEach((gr) => {
     const doGr = EQUIPE.filter((p) => p.gr === gr);
     const c = el("div", "card gr");
-    const totGr = doGr.reduce((a, p) => a + ((por[p.nome] || {}).m || 0) + ((por[p.nome] || {}).t || 0), 0);
+    const totGr = doGr.reduce((a, p) => a + ((por[p.nome] || {}).m || 0) + ((por[p.nome] || {}).t || 0) + ((por[p.nome] || {}).i || 0), 0);
     const h = el("h3", null, NOME_GR[gr]); h.append(el("span", null, totGr)); c.append(h);
     c.append(el("div", "cap", doGr.filter((p) => por[p.nome]).length + " de " + doGr.length + " corretores ativos foram"));
     [...new Set(doGr.map((p) => p.gv))].forEach((gv) => {
-      const ps = doGr.filter((p) => p.gv === gv).map((p) => ({...p, tot: por[p.nome] ? por[p.nome].m + por[p.nome].t : 0})).sort((a, b) => b.tot - a.tot || a.nome.localeCompare(b.nome, "pt"));
+      const ps = doGr.filter((p) => p.gv === gv).map((p) => ({...p, tot: por[p.nome] ? por[p.nome].m + por[p.nome].t + por[p.nome].i : 0})).sort((a, b) => b.tot - a.tot || a.nome.localeCompare(b.nome, "pt"));
       const box = el("div", "gv"); const t = el("div", "gv-t", "GV " + gv); t.append(el("b", null, ps.reduce((a, p) => a + p.tot, 0))); box.append(t);
       ps.forEach((p) => { const l = el("div", "p" + (p.tot ? "" : " zero")); l.append(el("span", null, curto(p.nome)), el("b", null, p.tot)); box.append(l); });
       c.append(box);
@@ -354,9 +362,9 @@ function render() {
 
   // listas
   const rg = $("registros"); rg.replaceChildren();
-  regs.slice().sort((a, b) => b.data.localeCompare(a.data) || b.turno.localeCompare(a.turno) || GRS.indexOf(a.gr) - GRS.indexOf(b.gr)).forEach((r) => {
+  regs.slice().sort((a, b) => b.data.localeCompare(a.data) || "MIT".indexOf(b.turno) - "MIT".indexOf(a.turno) || GRS.indexOf(a.gr) - GRS.indexOf(b.gr)).forEach((r) => {
     const d = new Date(r.data + "T12:00:00-03:00");
-    const q = el("div", "q", fmtD(r.data) + " · " + (r.turno === "M" ? "manhã 8:45" : "tarde 13:45")); q.append(el("small", null, SEM[d.getDay()] + " · folha do " + NOME_GR[r.gr]));
+    const q = el("div", "q", fmtD(r.data) + " · " + (r.turno === "M" ? "manhã 8:45" : r.turno === "I" ? "integral (feriado)" : "tarde 13:45")); q.append(el("small", null, SEM[d.getDay()] + " · folha do " + NOME_GR[r.gr]));
     const ch = el("div", "chips");
     r.squad.forEach((n) => ch.append(el("span", "chip", curto(n))));
     r.fora.forEach((n) => { const s = el("span", "chip fs", curto(n)); s.title = "fora do squad"; ch.append(s); });

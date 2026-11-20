@@ -248,3 +248,7 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 ## BaseAtivos — colunas novas (desde 19/11 21:49)
 - Entraram L "Camiseta" e N "Origem"; as colunas seguintes andaram. Agora: A nome, D Atividade, E CRECI, M Status Corretor, O Data de nascimento, AI GR (Gerente), AL "Nome da conta" (= GV). P em diante tem CPF/RG/contato/banco: não ler.
 - Atividade "Captador" (ex.: Márcia Regina Masini Visibelli, Vanessa Ribeiro de Lima, conta Ana Carolina) não entra como corretor.
+
+## Roleta — período integral
+- Em feriado a roleta é uma só, "integral": REGISTROS com turno "I" (conta como 1 roleta; coluna "Int." nas tabelas; barra verde no ranking). Ex.: 20/11/2026.
+- Apelido "Teco" = Teresinha Aparecida Crivelaro Lopes (CRECI 92.720).
