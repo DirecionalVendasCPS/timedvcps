@@ -22,6 +22,9 @@ header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;
 .eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase}
 .upd{font-size:13px;color:var(--muted);text-align:right}
+.hist-btn{display:inline-block;background:var(--accent);color:var(--bg);font:700 14px var(--body);text-decoration:none;padding:10px 16px;border-radius:999px;margin-bottom:10px}
+.hist-btn:hover{filter:brightness(1.08)}
+.hist-btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .upd b{color:var(--ink)}
 .hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:center}
 @media (max-width:760px){.hero{grid-template-columns:1fr}}
@@ -126,7 +129,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
       <div class="eyebrow">Stand Cores da Mata · Mangará · <span id="periodo-top">—</span></div>
       <h1>Roleta do Stand</h1>
     </div>
-    <div class="upd">Atualizado em <b id="upd">—</b><br>Fotos das listas do grupo GRUPO CAMPINAS GERAL</div>
+    <div class="upd"><a class="hist-btn" href="analise.html">Análise de Presença no Stand →</a><br>Atualizado em <b id="upd">—</b><br>Fotos das listas do grupo GRUPO CAMPINAS GERAL</div>
   </header>
 
   <section class="hero" aria-live="polite">

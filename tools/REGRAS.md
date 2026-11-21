@@ -261,3 +261,9 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 - Os dados da roleta (ATUALIZADO, REGISTROS, EQUIPE, FORA_BASE) agora ficam em roleta/dados.js, usado por roleta/index.html e roleta/semana.html. Novas folhas: editar roleta/dados.js (e subir o ?v= do dados.js nas duas páginas).
 - "Listas registradas" na página da roleta mostra uma linha por semana de trabalho (segunda a domingo); clicando abre roleta/semana.html#AAAA-MM-DD (segunda), com as folhas de todos os dias, navegação entre semanas e link "Ver o placar da semana".
 - Escala de domingo dos GRs no calendário da roleta: ESCALA_DOM em roleta/index.html (início 22/11/2026, ordem Paty → Take → Guga, repetindo a cada domingo). O calendário mostra "GR Paty/Take/Guga" no quadradinho do domingo e a lista dos domingos do mês embaixo; dá para avançar até dezembro.
+
+## Análise de Presença no Stand (roleta/analise.html) — publicada em 21/11
+- Botão amarelo "Análise de Presença no Stand →" no cabeçalho da roleta. Página com senha (só o hash SHA-256 no código; liberação vale enquanto a aba estiver aberta; noindex). A senha não fica escrita no repositório.
+- Faixas por nº de roletas (folhas) em que o nome aparece: 8 ou mais, 5 a 7, 3 a 4, 1 a 2, zero. Resultados vêm de corretores/index.html (semanas que cobrem o período da roleta) e vendas do mês.
+- Regra do usuário: mínimo de 5 roletas de segunda a sexta habilita o corretor do squad para a roleta de sábado (a mais concorrida); a página lista habilitados e "quase lá" (3–4).
+- Atualiza sozinha: lê roleta/dados.js e a página Corretores; não precisa mexer nela a cada atualização.

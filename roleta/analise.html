@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>Análise de Presença no Stand</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1630;--panel:#12224a;--line:#22376b;--ink:#eef2fb;--muted:#93a3c8;--accent:#ffb627;--done:#3ddc97;--blue:#5b7cff;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;--body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 40px;display:flex;flex-direction:column;gap:26px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.back{color:var(--muted);font-size:13px;text-decoration:none;display:inline-block;margin-bottom:6px}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 0;text-transform:uppercase}
+.upd{font-size:13px;color:var(--muted);text-align:right}
+.upd b{color:var(--ink)}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:center}
+@media (max-width:760px){.hero{grid-template-columns:1fr}}
+.lbl{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;line-height:1}
+.big{font-family:var(--display);font-weight:900;font-size:clamp(110px,17vw,190px);line-height:.85;color:var(--accent);font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(255,182,39,.25);margin:8px 0 4px}
+.unit{font-family:var(--display);font-weight:800;font-size:clamp(22px,3vw,30px);letter-spacing:.06em;text-transform:uppercase}
+.sub{margin-top:12px;font-size:17px;color:var(--muted)}
+.sub b{color:var(--ink)}
+.turnos{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.turno{background:#0f1d40;border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:14px;color:var(--muted)}
+.turno b{font-family:var(--display);font-size:26px;color:var(--ink);margin-right:6px;font-variant-numeric:tabular-nums}
+/* calendário */
+.cal{background:#0f1d40;border:1px solid var(--line);border-radius:16px;padding:14px}
+.cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cal-mes{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:.06em;text-transform:uppercase}
+.cal-nav{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;width:30px;height:30px;font-size:18px;cursor:pointer}
+.cal-nav:disabled{opacity:.3;cursor:default}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-dow{font-size:11px;color:var(--muted);text-align:center;font-weight:700}
+.cal-d{background:var(--panel);border:1px solid var(--line);border-radius:8px;min-height:44px;padding:3px 2px;text-align:center;font:inherit;color:var(--muted);cursor:default}
+.cal-d .n{font-size:12px;display:block}
+.cal-d .v{font-family:var(--display);font-weight:800;font-size:17px;color:var(--accent);line-height:1}
+.cal-d.tem{cursor:pointer;color:var(--ink)}
+.cal-d.sel{outline:2px solid var(--accent);outline-offset:-1px}
+.cal-d.fora{visibility:hidden}
+.cal-d .gr{display:block;margin-top:2px;font-size:10px;font-weight:700;letter-spacing:.02em;color:#2bd4a4;line-height:1.1}
+.cal-d.dom-gr{border-color:rgba(43,212,164,.55)}
+.cal-gr{font-size:12px;color:var(--muted);margin-top:4px}
+.cal-gr b{color:#2bd4a4}
+.cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.somar{display:block;margin:10px auto 0;font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:none;border:1px solid var(--line);border-radius:999px;padding:7px 16px;cursor:pointer}
+.somar[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#0b1630}
+.soma-info{font-size:12px;color:var(--accent);text-align:center;margin-top:6px;min-height:15px}
+.cal-hint button{background:none;border:none;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer;padding:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat .n{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.stat .t{font-size:13px;color:var(--muted);margin-top:4px}
+.stat.g .n{color:var(--done)}
+h2{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:.04em;text-transform:uppercase;margin:0 0 12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.rk{display:grid;grid-template-columns:28px minmax(0,1.4fr) minmax(0,2fr) 44px;gap:8px 12px;align-items:center}
+.rk .pos{font-family:var(--display);font-weight:800;font-size:20px;color:var(--muted);text-align:right}
+.rk .who b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk .who small{color:var(--muted);font-size:12px}
+.trk{height:18px;border-radius:9px;background:#0f1d40;overflow:hidden;display:flex}
+.trk i{display:block;height:100%}
+.trk .m{background:var(--accent)} .trk .t{background:var(--blue)} .trk .ig{background:#2bd4a4}
+.rk .tot{font-family:var(--display);font-weight:900;font-size:26px;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums}
+.leg{display:flex;gap:16px;font-size:13px;color:var(--muted);margin:-4px 0 12px;flex-wrap:wrap}
+.leg span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--c)}
+.grs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.grs{grid-template-columns:1fr}}
+.gr h3{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase;margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.gr h3 span{color:var(--accent);font-size:30px}
+.gr .cap{font-size:13px;color:var(--muted);margin:2px 0 10px}
+.gv{border-top:1px solid var(--line);padding:8px 0}
+.gv-t{display:flex;justify-content:space-between;font-weight:700;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.gv-t b{color:var(--ink)}
+.p{display:flex;justify-content:space-between;font-size:14px;padding:3px 0}
+.p.zero{color:#5f6f96}
+.p b{font-variant-numeric:tabular-nums;color:var(--accent)}
+.p.zero b{color:#5f6f96}
+.reg{display:grid;gap:10px}
+.r{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;border-top:1px solid var(--line);padding-top:10px}
+.r:first-child{border-top:none;padding-top:0}
+.r .q{font-weight:700}
+.r .q small{display:block;color:var(--muted);font-weight:500;font-size:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;align-content:flex-start}
+.chip{background:#0f1d40;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;line-height:1.4}
+.chip.fs{border-style:dashed;color:var(--muted)}
+@media (max-width:560px){.r{grid-template-columns:1fr}}
+.tabs2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.tabs2{grid-template-columns:1fr}}
+.tt{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.04em;text-transform:uppercase;margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.tt span{color:var(--accent);font-size:30px}
+.tcap{font-size:13px;color:var(--muted);margin:2px 0 10px}
+.tb{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}
+.tb th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:left;padding:6px 4px;border-bottom:1px solid var(--line)}
+.tb td{padding:7px 4px;border-bottom:1px solid rgba(34,55,107,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb th.n,.tb td.n{text-align:right;width:52px;font-variant-numeric:tabular-nums}
+.tb td.tot{font-family:var(--display);font-weight:800;font-size:18px;color:var(--accent)}
+.tb td small{color:var(--muted)}
+.tb tfoot td{font-weight:700;border-bottom:none;color:var(--ink)}
+.sub2{margin:-4px 0 10px;color:var(--muted);font-size:14px}
+.semanas{display:grid;gap:10px}
+.sem{display:grid;grid-template-columns:200px 1fr auto;gap:4px 14px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;color:var(--ink);text-decoration:none}
+.sem:hover,.sem.on{border-color:var(--accent)}
+.sem-t{font-weight:700;font-size:17px}
+.sem-i{color:var(--muted);font-size:14px}
+.sem-go{color:var(--accent);font-weight:600;font-size:14px}
+@media (max-width:560px){.sem{grid-template-columns:1fr}}
+footer{font-size:13px;color:var(--muted);line-height:1.5}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+h2{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.05em;text-transform:uppercase;margin:0 0 10px}
+.intro{color:var(--muted);font-size:15px;line-height:1.5;margin:0}
+.intro b{color:var(--ink)}
+.faixas{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:860px){.faixas{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fx{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:14px;padding:12px 14px}
+.fx .t{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.fx .n{font-family:var(--display);font-weight:900;font-size:44px;line-height:1;color:var(--c)}
+.fx .s{font-size:13px;color:var(--muted)}
+.charts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.charts{grid-template-columns:1fr}}
+.ch h3{margin:0 0 2px;font-size:16px}
+.ch .cap{font-size:12px;color:var(--muted);margin-bottom:10px}
+.bar{display:grid;grid-template-columns:92px 1fr 44px;gap:8px;align-items:center;font-size:13px;margin:7px 0}
+.bar .tr{background:#0f1d40;border-radius:6px;height:18px;overflow:hidden}
+.bar .tr i{display:block;height:100%;background:var(--c);border-radius:6px}
+.bar b{text-align:right;font-variant-numeric:tabular-nums}
+#tabela{table-layout:auto}
+.tb td,.tb th{padding:7px 6px;border-bottom:1px solid var(--line)}
+.tb th.n{white-space:normal;line-height:1.2}
+.tb td.n,.tb th.n{text-align:right;font-variant-numeric:tabular-nums}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:6px}
+.lst{display:grid;gap:12px}
+.lst .g h3{margin:0 0 6px;font-size:15px;display:flex;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#0f1d40;border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px}
+.chip small{color:var(--muted);margin-left:4px}
+.fx .hab{display:inline-block;margin-top:6px;font-size:11px;font-weight:700;color:var(--bg);background:var(--c);border-radius:999px;padding:2px 8px}
+.chip.ok{border-color:#3ddc97}
+.chip.quase{border-style:dashed;border-color:#ffb627}
+[hidden]{display:none!important}
+.lock{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lock-box{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px 24px;width:min(420px,100%);display:grid;gap:12px}
+.lock-box h1{font-size:30px}
+.lock-box input{background:#0f1d40;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);font:16px var(--body)}
+.lock-box button{background:var(--accent);color:var(--bg);border:none;border-radius:999px;padding:12px;font:700 15px var(--body);cursor:pointer}
+.erro{color:#ff5c7a;font-size:14px;min-height:18px}
+.insight{border-left:4px solid var(--accent);padding:10px 14px;background:#0f1d40;border-radius:0 12px 12px 0;font-size:15px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="lock" id="lock">
+  <form class="lock-box" id="lock-form" autocomplete="off">
+    <a class="back" href="./">← Roleta do Stand</a>
+    <h1>Análise de Presença no Stand</h1>
+    <p class="intro">Página restrita. Digite a senha para ver a análise.</p>
+    <input type="password" id="senha" placeholder="Senha" aria-label="Senha" required>
+    <button type="submit">Entrar</button>
+    <div class="erro" id="erro" role="alert"></div>
+  </form>
+</div>
+<div class="wrap" id="conteudo" hidden>
+  <header>
+    <div>
+      <a class="back" href="./">← Roleta do Stand</a>
+      <div class="eyebrow">Stand Cores da Mata · Mangará · <span id="periodo">—</span></div>
+      <h1>Análise de Presença no Stand</h1>
+    </div>
+    <div class="upd">Roleta atualizada em <b id="upd">—</b><br>Resultados da planilha até <b id="upd2">—</b></div>
+  </header>
+
+  <section class="card">
+    <p class="intro" id="intro">—</p>
+  </section>
+
+  <section>
+    <h2>Corretores por faixa de presença</h2>
+    <div class="faixas" id="faixas"></div>
+  </section>
+
+  <section class="card">
+    <h2>Roleta de sábado · habilitados</h2>
+    <p class="intro" id="sab-intro">—</p>
+    <div class="lst" id="sab" style="margin-top:12px"></div>
+  </section>
+
+  <section>
+    <h2>Resultado médio por corretor, por faixa</h2>
+    <div class="charts" id="charts"></div>
+  </section>
+
+  <section class="card">
+    <div class="insight" id="insight">—</div>
+  </section>
+
+  <section class="card">
+    <h2>Tabela por faixa</h2>
+    <p class="intro" style="margin-bottom:8px">OPs, agendamentos, visitas e pastas = média por corretor na semana; "Agendou" e "Teve visita" = % dos corretores da faixa com pelo menos 1.</p>
+    <table class="tb" id="tabela"></table>
+  </section>
+
+  <section class="card">
+    <h2>Quem está em cada faixa</h2>
+    <div class="lst" id="lista"></div>
+  </section>
+
+  <footer>Presença = número de roletas (folhas) em que o nome do corretor aparece, no squad ou fora do squad (manhã, tarde e integral contam 1 cada). Resultados (OPs, agendamentos, visitas e pastas) vêm da página Corretores, somando as semanas que têm roleta registrada; vendas são as do mês (Contador de vendas). Só corretores ativos da base. Isto mostra associação, não causa: quem vai mais ao stand também pode ser quem mais trabalha em geral.</footer>
+</div>
+<script src="dados.js?v=1"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const norm = (x) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const curto = (n) => { const p = n.split(" "); return p.length > 1 ? p[0] + " " + p[p.length - 1] : n; };
+const fmtD = (iso) => iso.slice(8, 10) + "/" + iso.slice(5, 7);
+const FAIXAS = [
+  {id: "8+", nome: "8 ou mais", ok: (n) => n >= 8, c: "#3ddc97"},
+  {id: "5-7", nome: "5 a 7", ok: (n) => n >= 5 && n <= 7, c: "#2bd4a4"},
+  {id: "3-4", nome: "3 a 4", ok: (n) => n >= 3 && n <= 4, c: "#ffb627"},
+  {id: "1-2", nome: "1 a 2", ok: (n) => n >= 1 && n <= 2, c: "#ff8a3d"},
+  {id: "0", nome: "Zero presença", ok: (n) => n === 0, c: "#ff5c7a"}
+];
+const f1 = (x) => (Math.round(x * 10) / 10).toLocaleString("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1});
+
+// senha: só o hash SHA-256 fica no código; a liberação vale enquanto a aba estiver aberta
+const SENHA_HASH = "36bf03445a2cfa9ebc19b82aaa562958baa40415176ab0b52df51fd59873e7f6";
+async function hash(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, "0")).join(""); }
+let carregado = false;
+function liberar() {
+  $("lock").hidden = true; $("conteudo").hidden = false;
+  if (carregado) return; carregado = true;
+  fetch("../corretores/index.html", {cache: "no-store"}).then((r) => r.text()).then((html) => {
+    const a = html.indexOf("const DADOS = {"), b = html.indexOf("\n};", a);
+    const C = new Function("return " + html.slice(a + 14, b + 2))();
+    montar(C);
+  });
+}
+$("lock-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (await hash($("senha").value) === SENHA_HASH) { try { sessionStorage.setItem("analise_ok", SENHA_HASH); } catch (x) {} liberar(); }
+  else { $("erro").textContent = "Senha incorreta."; $("senha").value = ""; $("senha").focus(); }
+});
+try { if (sessionStorage.getItem("analise_ok") === SENHA_HASH) liberar(); } catch (x) {}
+if ($("conteudo").hidden) $("senha").focus();
+
+function montar(C) {
+  const dias = [...new Set(REGISTROS.map((r) => r.data))].sort();
+  const ini = dias[0], fim = dias[dias.length - 1];
+  // semanas da página Corretores (domingo) que cobrem o período da roleta
+  const domIni = (() => { const d = new Date(ini + "T12:00:00-03:00"); d.setDate(d.getDate() - d.getDay()); return d.toISOString().slice(0, 10); })();
+  const idx = C.semanas.map((s, i) => s >= domIni ? i : -1).filter((i) => i >= 0);
+  const res = {}; Object.entries(C.dados).forEach(([n, v]) => { const s = (k) => idx.reduce((a, i) => a + (v[k][i] || 0), 0); res[norm(n)] = {ops: s("ops"), ag: s("ag"), vis: s("vis"), pas: s("pas")}; });
+  const vend = {}; Object.entries(C.vendas || {}).forEach(([n, q]) => vend[norm(n)] = q);
+  const pres = {}; REGISTROS.forEach((r) => [...r.squad, ...r.fora].forEach((n) => pres[n] = (pres[n] || 0) + 1));
+  const roletas = new Set(REGISTROS.map((r) => r.data + r.turno)).size;
+  const pessoas = EQUIPE.map((p) => { const k = norm(p.nome); const x = res[k] || {ops: 0, ag: 0, vis: 0, pas: 0}; return {...p, ...x, pres: pres[p.nome] || 0, vn: vend[k] || 0}; });
+  $("periodo").textContent = fmtD(ini) + " a " + fmtD(fim) + "/" + fim.slice(0, 4);
+  $("upd").textContent = ATUALIZADO; $("upd2").textContent = C.refresh;
+  const semTxt = idx.map((i) => fmtD(C.semanas[i])).join(", ");
+  $("intro").innerHTML = "";
+  $("intro").append("Período da roleta: ", el("b", null, fmtD(ini) + " a " + fmtD(fim)), " (" + roletas + " roletas). Cada corretor ativo da base (", el("b", null, pessoas.length), ") entra numa faixa pela quantidade de roletas em que estava na folha. Ao lado, o que cada faixa produziu nas semanas da página Corretores que cobrem o período (semana de " + semTxt + ").");
+  const grupos = FAIXAS.map((f) => ({...f, ps: pessoas.filter((p) => f.ok(p.pres))}));
+  const med = (ps, k) => ps.length ? ps.reduce((a, p) => a + p[k], 0) / ps.length : 0;
+  const pct = (ps, f) => ps.length ? Math.round(ps.filter(f).length / ps.length * 100) : 0;
+  // cards
+  const fx = $("faixas"); fx.replaceChildren();
+  grupos.forEach((g) => { const d = el("div", "fx"); d.style.setProperty("--c", g.c); d.append(el("div", "t", g.nome), el("div", "n", g.ps.length), el("div", "s", g.ps.length === 1 ? "corretor" : "corretores")); if (g.id === "8+" || g.id === "5-7") d.append(el("span", "hab", "habilita o sábado")); fx.append(d); });
+  // sábado: mínimo de 5 roletas de segunda a sexta da semana (a roleta de sábado é a mais concorrida)
+  const seg = (() => { const d = new Date(fim + "T12:00:00-03:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.toISOString().slice(0, 10); })();
+  const mais = (iso, n) => { const d = new Date(iso + "T12:00:00-03:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+  const sex = mais(seg, 4), sab = mais(seg, 5);
+  const pw = {}; REGISTROS.filter((r) => r.data >= seg && r.data <= sex).forEach((r) => [...r.squad, ...r.fora].forEach((n) => pw[n] = (pw[n] || 0) + 1));
+  const rolSemana = new Set(REGISTROS.filter((r) => r.data >= seg && r.data <= sex).map((r) => r.data + r.turno)).size;
+  const hab = EQUIPE.filter((p) => (pw[p.nome] || 0) >= 5), quase = EQUIPE.filter((p) => (pw[p.nome] || 0) >= 3 && (pw[p.nome] || 0) < 5);
+  $("sab-intro").replaceChildren("Regra: o corretor do squad precisa de ", el("b", null, "no mínimo 5 roletas"), " na semana (segunda a sexta) para participar da roleta de sábado, que é a mais concorrida. Semana de " + fmtD(seg) + " a " + fmtD(sex) + ": " + rolSemana + " roletas até agora; sábado " + fmtD(sab) + ".");
+  const sb = $("sab"); sb.replaceChildren();
+  [["Habilitados (5 ou mais)", hab, "ok"], ["Quase lá (3 a 4 · faltam 1 ou 2)", quase, "quase"]].forEach(([t, ps, c]) => {
+    const d = el("div", "g"); d.append(el("h3", null, t + " · " + ps.length));
+    const cs = el("div", "chips"); ps.sort((a, b) => (pw[b.nome] || 0) - (pw[a.nome] || 0) || a.nome.localeCompare(b.nome, "pt")).forEach((p) => { const x = el("span", "chip " + c, curto(p.nome)); x.title = p.nome + " · GV " + p.gv + " · GR " + p.gr; x.append(el("small", null, (pw[p.nome] || 0) + " rol." + (c === "quase" ? " · falta " + (5 - (pw[p.nome] || 0)) : ""))); cs.append(x); });
+    if (!ps.length) cs.append(el("span", "chip", "ninguém"));
+    d.append(cs); sb.append(d);
+  });
+  // gráficos
+  const ch = $("charts"); ch.replaceChildren();
+  [["ag", "Agendamentos", "média por corretor"], ["vis", "Visitas", "média por corretor"], ["pas", "Pastas", "média por corretor"]].forEach(([k, t, cap]) => {
+    const box = el("div", "card ch"); box.append(el("h3", null, t), el("div", "cap", cap));
+    const vals = grupos.map((g) => med(g.ps, k)); const mx = Math.max(...vals, 0.0001);
+    grupos.forEach((g, i) => { const b = el("div", "bar"); b.style.setProperty("--c", g.c); const tr = el("div", "tr"); const ii = el("i"); ii.style.width = (vals[i] / mx * 100) + "%"; tr.append(ii); b.append(el("span", null, g.nome), tr, el("b", null, f1(vals[i]))); box.append(b); });
+    ch.append(box);
+  });
+  // tabela
+  const tb = $("tabela"); tb.replaceChildren();
+  const th = el("thead"); const trh = el("tr");
+  [["Faixa", ""], ["Corretores", "n"], ["OPs", "n"], ["Agend.", "n"], ["Visitas", "n"], ["Pastas", "n"], ["Agendou", "n"], ["Teve visita", "n"], ["Vendas mês", "n"]].forEach(([x, c]) => trh.append(el("th", c, x)));
+  th.append(trh); tb.append(th);
+  const tbo = el("tbody");
+  grupos.forEach((g) => { const tr = el("tr"); const td = el("td"); const dt = el("span", "dot"); dt.style.setProperty("--c", g.c); td.append(dt, g.nome);
+    tr.append(td, el("td", "n", g.ps.length), el("td", "n", f1(med(g.ps, "ops"))), el("td", "n", f1(med(g.ps, "ag"))), el("td", "n", f1(med(g.ps, "vis"))), el("td", "n", f1(med(g.ps, "pas"))), el("td", "n", pct(g.ps, (p) => p.ag > 0) + "%"), el("td", "n", pct(g.ps, (p) => p.vis > 0) + "%"), el("td", "n", g.ps.reduce((a, p) => a + p.vn, 0))); tbo.append(tr); });
+  tb.append(tbo);
+  // leitura
+  const alto = pessoas.filter((p) => p.pres >= 5), baixo = pessoas.filter((p) => p.pres <= 2);
+  const r = (k) => med(baixo, k) ? med(alto, k) / med(baixo, k) : 0;
+  const ins = $("insight"); ins.replaceChildren();
+  ins.append("Leitura: quem esteve em ", el("b", null, "5 ou mais roletas"), " (" + alto.length + " corretores) fez em média ", el("b", null, f1(med(alto, "ag")) + " agendamentos"), " e ", el("b", null, f1(med(alto, "vis")) + " visitas"), " na semana; quem esteve em ", el("b", null, "2 ou menos"), " (" + baixo.length + ") fez ", el("b", null, f1(med(baixo, "ag")) + " agendamentos"), " e ", el("b", null, f1(med(baixo, "vis")) + " visitas"), ". " + (r("ag") ? "Diferença de " + f1(r("ag")) + "× em agendamentos" + (r("vis") ? " e " + f1(r("vis")) + "× em visitas" : "") + "." : ""));
+  // listas
+  const ls = $("lista"); ls.replaceChildren();
+  grupos.forEach((g) => { const d = el("div", "g"); const h = el("h3"); const dt = el("span", "dot"); dt.style.setProperty("--c", g.c); h.append(dt, g.nome + " · " + g.ps.length); d.append(h);
+    const cs = el("div", "chips"); g.ps.sort((a, b) => b.pres - a.pres || b.ag - a.ag || a.nome.localeCompare(b.nome, "pt")).forEach((p) => { const c = el("span", "chip", curto(p.nome)); c.title = p.nome + " · GV " + p.gv + " · GR " + p.gr; c.append(el("small", null, p.pres + " rol. · " + p.ag + " ag · " + p.vis + " vis")); cs.append(c); });
+    if (!g.ps.length) cs.append(el("span", "chip", "ninguém"));
+    d.append(cs); ls.append(d); });
+}
+</script>
+</body>
+</html>
