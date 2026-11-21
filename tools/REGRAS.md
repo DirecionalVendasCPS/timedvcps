@@ -266,4 +266,5 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 - Botão amarelo "Análise de Presença no Stand →" no cabeçalho da roleta. Página com senha (só o hash SHA-256 no código; liberação vale enquanto a aba estiver aberta; noindex). A senha não fica escrita no repositório.
 - Faixas por nº de roletas (folhas) em que o nome aparece: 8 ou mais, 5 a 7, 3 a 4, 1 a 2, zero. Resultados vêm de corretores/index.html (semanas que cobrem o período da roleta) e vendas do mês.
 - Regra do usuário: mínimo de 5 roletas de segunda a sexta habilita o corretor do squad para a roleta de sábado (a mais concorrida); a página lista habilitados e "quase lá" (3–4).
+- Calendário na página: Dia (com "+ Somar dias"), Semana (segunda a domingo, padrão) e Mês; endereço guarda a escolha (#AAAA-MM, #sAAAA-MM-DD, #dias). Resultados são semanais (domingo a sábado) e só contam a partir do início da roleta; o selo "habilita o sábado" só aparece no modo Semana.
 - Atualiza sozinha: lê roleta/dados.js e a página Corretores; não precisa mexer nela a cada atualização.

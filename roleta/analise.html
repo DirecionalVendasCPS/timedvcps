@@ -156,6 +156,15 @@ h2{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.05e
 .lock-box input{background:#0f1d40;border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);font:16px var(--body)}
 .lock-box button{background:var(--accent);color:var(--bg);border:none;border-radius:999px;padding:12px;font:700 15px var(--body);cursor:pointer}
 .erro{color:#ff5c7a;font-size:14px;min-height:18px}
+.topo{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+@media (max-width:760px){.topo{grid-template-columns:1fr}}
+.modos{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.modos button{background:#0f1d40;border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:7px 14px;font:600 14px var(--body);cursor:pointer}
+.modos button.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.modos .somar{margin-left:auto}
+.per{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.03em;margin-bottom:8px}
+.cal-d.semana{background:#1a2f63}
+.cal-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
 .insight{border-left:4px solid var(--accent);padding:10px 14px;background:#0f1d40;border-radius:0 12px 12px 0;font-size:15px;line-height:1.5}
 </style>
 </head>
@@ -180,8 +189,20 @@ h2{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.05e
     <div class="upd">Roleta atualizada em <b id="upd">—</b><br>Resultados da planilha até <b id="upd2">—</b></div>
   </header>
 
-  <section class="card">
-    <p class="intro" id="intro">—</p>
+  <section class="card topo">
+    <div>
+      <div class="modos" role="group" aria-label="Período">
+        <button type="button" data-m="dia">Dia</button><button type="button" data-m="semana">Semana</button><button type="button" data-m="mes">Mês</button>
+        <button type="button" id="somar" class="somar">+ Somar dias</button>
+      </div>
+      <div class="per" id="per">—</div>
+      <p class="intro" id="intro">—</p>
+    </div>
+    <div class="cal">
+      <div class="cal-top"><button class="cal-nav" id="cal-prev" type="button" aria-label="Mês anterior">‹</button><div class="cal-mes" id="cal-mes">—</div><button class="cal-nav" id="cal-next" type="button" aria-label="Próximo mês">›</button></div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-hint" id="cal-hint">corretores por dia</div>
+    </div>
   </section>
 
   <section>
@@ -254,28 +275,47 @@ $("lock-form").addEventListener("submit", async (e) => {
 try { if (sessionStorage.getItem("analise_ok") === SENHA_HASH) liberar(); } catch (x) {}
 if ($("conteudo").hidden) $("senha").focus();
 
-function montar(C) {
-  const dias = [...new Set(REGISTROS.map((r) => r.data))].sort();
-  const ini = dias[0], fim = dias[dias.length - 1];
+// ===== período escolhido no calendário: dia (ou dias somados), semana (segunda a domingo) ou mês =====
+const DIAS = [...new Set(REGISTROS.map((r) => r.data))].sort();
+const addD = (iso, n) => { const d = new Date(iso + "T12:00:00-03:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+const segDe = (iso) => addD(iso, -((new Date(iso + "T12:00:00-03:00").getDay() + 6) % 7));
+const MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+let sel = {tipo: "semana", seg: segDe(DIAS[DIAS.length - 1])}, somando = false, calYm = DIAS[DIAS.length - 1].slice(0, 7), CC = null;
+function faixaSel() {
+  if (sel.tipo === "semana") return [sel.seg, addD(sel.seg, 6)];
+  if (sel.tipo === "mes") { const [a, m] = sel.ym.split("-").map(Number); return [sel.ym + "-01", sel.ym + "-" + String(new Date(a, m, 0).getDate()).padStart(2, "0")]; }
+  return [sel.dias[0], sel.dias[sel.dias.length - 1]];
+}
+const naSel = (iso) => sel.tipo === "dia" ? sel.dias.includes(iso) : (() => { const [a, b] = faixaSel(); return iso >= a && iso <= b; })();
+function montar(C) { CC = C; render(); }
+function render() {
+  const C = CC; if (!C) return;
+  const REG = REGISTROS.filter((r) => naSel(r.data));
+  const [ini, fim] = faixaSel();
   // semanas da página Corretores (domingo) que cobrem o período da roleta
-  const domIni = (() => { const d = new Date(ini + "T12:00:00-03:00"); d.setDate(d.getDate() - d.getDay()); return d.toISOString().slice(0, 10); })();
-  const idx = C.semanas.map((s, i) => s >= domIni ? i : -1).filter((i) => i >= 0);
+  const iniR = ini < DIAS[0] ? DIAS[0] : ini; // resultados só a partir do início da roleta
+  const idx = C.semanas.map((s, i) => s <= fim && addD(s, 6) >= iniR ? i : -1).filter((i) => i >= 0);
   const res = {}; Object.entries(C.dados).forEach(([n, v]) => { const s = (k) => idx.reduce((a, i) => a + (v[k][i] || 0), 0); res[norm(n)] = {ops: s("ops"), ag: s("ag"), vis: s("vis"), pas: s("pas")}; });
   const vend = {}; Object.entries(C.vendas || {}).forEach(([n, q]) => vend[norm(n)] = q);
-  const pres = {}; REGISTROS.forEach((r) => [...r.squad, ...r.fora].forEach((n) => pres[n] = (pres[n] || 0) + 1));
-  const roletas = new Set(REGISTROS.map((r) => r.data + r.turno)).size;
+  const pres = {}; REG.forEach((r) => [...r.squad, ...r.fora].forEach((n) => pres[n] = (pres[n] || 0) + 1));
+  const roletas = new Set(REG.map((r) => r.data + r.turno)).size;
   const pessoas = EQUIPE.map((p) => { const k = norm(p.nome); const x = res[k] || {ops: 0, ag: 0, vis: 0, pas: 0}; return {...p, ...x, pres: pres[p.nome] || 0, vn: vend[k] || 0}; });
-  $("periodo").textContent = fmtD(ini) + " a " + fmtD(fim) + "/" + fim.slice(0, 4);
+  const titulo = sel.tipo === "mes" ? MESES[+sel.ym.slice(5) - 1] + " " + sel.ym.slice(0, 4) : sel.tipo === "semana" ? "Semana " + fmtD(ini) + " a " + fmtD(fim) : sel.dias.length === 1 ? "Dia " + fmtD(ini) : sel.dias.length + " dias somados: " + sel.dias.map(fmtD).join(", ");
+  $("periodo").textContent = titulo; $("per").textContent = titulo;
+  document.querySelectorAll(".modos [data-m]").forEach((b) => b.classList.toggle("on", b.dataset.m === sel.tipo));
+  $("somar").classList.toggle("on", somando); $("somar").textContent = somando ? "✓ Somando dias" : "+ Somar dias";
+  try { history.replaceState(null, "", "#" + (sel.tipo === "mes" ? sel.ym : sel.tipo === "semana" ? "s" + sel.seg : sel.dias.join(","))); } catch (e) {}
+  calendario();
   $("upd").textContent = ATUALIZADO; $("upd2").textContent = C.refresh;
   const semTxt = idx.map((i) => fmtD(C.semanas[i])).join(", ");
   $("intro").innerHTML = "";
-  $("intro").append("Período da roleta: ", el("b", null, fmtD(ini) + " a " + fmtD(fim)), " (" + roletas + " roletas). Cada corretor ativo da base (", el("b", null, pessoas.length), ") entra numa faixa pela quantidade de roletas em que estava na folha. Ao lado, o que cada faixa produziu nas semanas da página Corretores que cobrem o período (semana de " + semTxt + ").");
+  $("intro").append(el("b", null, roletas + (roletas === 1 ? " roleta" : " roletas")), " no período. Cada corretor ativo da base (", el("b", null, pessoas.length), ") entra numa faixa pela quantidade de roletas em que estava na folha. Os resultados (OPs, agendamentos, visitas, pastas) são da página Corretores, que é semanal (domingo a sábado): " + (semTxt ? "semana de " + semTxt + "." : "sem dados de resultado nesse período."));
   const grupos = FAIXAS.map((f) => ({...f, ps: pessoas.filter((p) => f.ok(p.pres))}));
   const med = (ps, k) => ps.length ? ps.reduce((a, p) => a + p[k], 0) / ps.length : 0;
   const pct = (ps, f) => ps.length ? Math.round(ps.filter(f).length / ps.length * 100) : 0;
   // cards
   const fx = $("faixas"); fx.replaceChildren();
-  grupos.forEach((g) => { const d = el("div", "fx"); d.style.setProperty("--c", g.c); d.append(el("div", "t", g.nome), el("div", "n", g.ps.length), el("div", "s", g.ps.length === 1 ? "corretor" : "corretores")); if (g.id === "8+" || g.id === "5-7") d.append(el("span", "hab", "habilita o sábado")); fx.append(d); });
+  grupos.forEach((g) => { const d = el("div", "fx"); d.style.setProperty("--c", g.c); d.append(el("div", "t", g.nome), el("div", "n", g.ps.length), el("div", "s", g.ps.length === 1 ? "corretor" : "corretores")); if ((g.id === "8+" || g.id === "5-7") && sel.tipo === "semana") d.append(el("span", "hab", "habilita o sábado")); fx.append(d); });
   // sábado: mínimo de 5 roletas de segunda a sexta da semana (a roleta de sábado é a mais concorrida)
   const seg = (() => { const d = new Date(fim + "T12:00:00-03:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.toISOString().slice(0, 10); })();
   const mais = (iso, n) => { const d = new Date(iso + "T12:00:00-03:00"); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
@@ -320,6 +360,50 @@ function montar(C) {
     if (!g.ps.length) cs.append(el("span", "chip", "ninguém"));
     d.append(cs); ls.append(d); });
 }
+
+function calendario() {
+  const [a, m] = calYm.split("-").map(Number);
+  $("cal-mes").textContent = MESES[m - 1] + " " + a;
+  const grid = $("cal-grid"); grid.replaceChildren();
+  ["D","S","T","Q","Q","S","S"].forEach((x) => grid.append(el("div", "cal-dow", x)));
+  const ini = new Date(a, m - 1, 1).getDay(), n = new Date(a, m, 0).getDate();
+  for (let i = 0; i < ini; i++) grid.append(el("div", "cal-d fora"));
+  for (let d = 1; d <= n; d++) {
+    const iso = calYm + "-" + String(d).padStart(2, "0");
+    const regs = REGISTROS.filter((r) => r.data === iso);
+    const v = new Set(regs.flatMap((r) => [...r.squad, ...r.fora])).size;
+    const b = el("button", "cal-d" + (regs.length ? " tem" : "") + (naSel(iso) ? (sel.tipo === "dia" ? " sel" : " semana sel") : "")); b.type = "button";
+    b.append(el("span", "n", d)); if (v) b.append(el("span", "v", v));
+    b.addEventListener("click", () => clicar(iso)); if (!regs.length && sel.tipo === "dia") b.disabled = true;
+    grid.append(b);
+  }
+  const yms = [...new Set(DIAS.map((d) => d.slice(0, 7)))];
+  $("cal-prev").disabled = calYm <= yms[0]; $("cal-next").disabled = calYm >= yms[yms.length - 1];
+  $("cal-hint").textContent = "corretores por dia · " + (sel.tipo === "semana" ? "toque num dia para ver a semana dele" : sel.tipo === "mes" ? "mostrando o mês inteiro" : somando ? "toque nos dias para juntar ou tirar" : "toque num dia");
+}
+function clicar(iso) {
+  if (sel.tipo === "semana") sel = {tipo: "semana", seg: segDe(iso)};
+  else if (sel.tipo === "mes") sel = {tipo: "semana", seg: segDe(iso)};
+  else if (somando) { let ds = sel.dias.includes(iso) ? sel.dias.filter((d) => d !== iso) : [...sel.dias, iso].sort(); sel = {tipo: "dia", dias: ds.length ? ds : [iso]}; }
+  else sel = {tipo: "dia", dias: [iso]};
+  render();
+}
+document.querySelectorAll(".modos [data-m]").forEach((b) => b.addEventListener("click", () => {
+  const ref = faixaSel()[1] > DIAS[DIAS.length - 1] ? DIAS[DIAS.length - 1] : faixaSel()[1];
+  if (b.dataset.m === "dia") { somando = false; sel = {tipo: "dia", dias: [DIAS.includes(ref) ? ref : DIAS[DIAS.length - 1]]}; }
+  if (b.dataset.m === "semana") { somando = false; sel = {tipo: "semana", seg: segDe(ref)}; }
+  if (b.dataset.m === "mes") { somando = false; sel = {tipo: "mes", ym: calYm}; }
+  render();
+}));
+$("somar").addEventListener("click", () => { somando = !somando; if (somando && sel.tipo !== "dia") { const ref = DIAS.filter(naSel).pop() || DIAS[DIAS.length - 1]; sel = {tipo: "dia", dias: [ref]}; } render(); });
+$("cal-prev").addEventListener("click", () => { const [a, m] = calYm.split("-").map(Number); const d = new Date(a, m - 2, 1); calYm = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); calendario(); });
+$("cal-next").addEventListener("click", () => { const [a, m] = calYm.split("-").map(Number); const d = new Date(a, m, 1); calYm = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); calendario(); });
+(function () {
+  const h = location.hash.slice(1); if (!h) return;
+  if (/^\d{4}-\d{2}$/.test(h)) { sel = {tipo: "mes", ym: h}; calYm = h; }
+  else if (/^s\d{4}-\d{2}-\d{2}$/.test(h)) { sel = {tipo: "semana", seg: segDe(h.slice(1))}; calYm = h.slice(1, 8); }
+  else { const ds = h.split(",").filter((d) => DIAS.includes(d)).sort(); if (ds.length) { sel = {tipo: "dia", dias: ds}; somando = ds.length > 1; calYm = ds[0].slice(0, 7); } }
+})();
 </script>
 </body>
 </html>
