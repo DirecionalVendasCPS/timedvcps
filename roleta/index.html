@@ -47,6 +47,10 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);l
 .cal-d.tem{cursor:pointer;color:var(--ink)}
 .cal-d.sel{outline:2px solid var(--accent);outline-offset:-1px}
 .cal-d.fora{visibility:hidden}
+.cal-d .gr{display:block;margin-top:2px;font-size:10px;font-weight:700;letter-spacing:.02em;color:#2bd4a4;line-height:1.1}
+.cal-d.dom-gr{border-color:rgba(43,212,164,.55)}
+.cal-gr{font-size:12px;color:var(--muted);margin-top:4px}
+.cal-gr b{color:#2bd4a4}
 .cal-hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
 .somar{display:block;margin:10px auto 0;font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:none;border:1px solid var(--line);border-radius:999px;padding:7px 16px;cursor:pointer}
 .somar[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#0b1630}
@@ -145,6 +149,7 @@ footer{font-size:13px;color:var(--muted);line-height:1.5}
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-hint">corretores por dia · toque num dia · <button id="ver-mes" type="button">ver o mês</button></div>
+      <div class="cal-gr" id="cal-gr"></div>
       <button class="somar" id="somar" type="button" aria-pressed="false">+ Somar dias</button>
       <div class="soma-info" id="soma-info"></div>
     </div>
@@ -200,6 +205,13 @@ const DIAS = [...new Set(REGISTROS.map((r) => r.data))].sort();
 let sel = {tipo: "dia", dia: DIAS[DIAS.length - 1]};
 let calYm = sel.dia.slice(0, 7);
 
+// Escala de domingo dos GRs (rodízio a cada domingo, a partir de 22/11/2026: Paty, Take, Guga, ...)
+const ESCALA_DOM = {inicio: "2026-11-22", ordem: ["Paty", "Take", "Guga"]};
+function grDomingo(iso) {
+  if (iso < ESCALA_DOM.inicio || new Date(iso + "T12:00:00-03:00").getDay() !== 0) return "";
+  const sem = Math.round((new Date(iso + "T12:00:00-03:00") - new Date(ESCALA_DOM.inicio + "T12:00:00-03:00")) / 6048e5);
+  return ESCALA_DOM.ordem[sem % ESCALA_DOM.ordem.length];
+}
 const k = (r) => r.turno === "M" ? "m" : r.turno === "I" ? "i" : "t";
 let somando = false;
 function filtrar() { return REGISTROS.filter((r) => sel.tipo === "mes" ? r.data.startsWith(sel.ym) : sel.tipo === "dias" ? sel.dias.includes(r.data) : r.data === sel.dia); }
@@ -311,10 +323,14 @@ function calendario() {
     const v = new Set(regs.flatMap((r) => [...r.squad, ...r.fora])).size;
     const b = el("button", "cal-d" + (regs.length ? " tem" : "") + ((sel.tipo === "dia" && sel.dia === iso) || (sel.tipo === "dias" && sel.dias.includes(iso)) ? " sel" : "")); b.type = "button";
     b.append(el("span", "n", d)); if (v) b.append(el("span", "v", v));
+    const gd = grDomingo(iso); if (gd) { b.append(el("span", "gr", "GR " + gd)); b.classList.add("dom-gr"); b.title = "Domingo: escala do GR " + gd; }
     if (regs.length) b.addEventListener("click", () => clicarDia(iso)); else b.disabled = true;
     grid.append(b);
   }
-  const yms = [...new Set(DIAS.map((d) => d.slice(0, 7)))];
+  const doms = []; for (let d = 1; d <= n; d++) { const iso = calYm + "-" + String(d).padStart(2, "0"); const g = grDomingo(iso); if (g) doms.push([d, g]); }
+  const cg = $("cal-gr"); cg.replaceChildren();
+  if (doms.length) { cg.append("Domingos · GR na escala: "); doms.forEach(([d, g], i) => { if (i) cg.append(" · "); const x = el("b", null, g); cg.append(String(d).padStart(2, "0") + " ", x); }); }
+  const yms = [...new Set([...DIAS.map((d) => d.slice(0, 7)), "2026-12"])].sort();
   $("cal-prev").disabled = calYm <= yms[0]; $("cal-next").disabled = calYm >= yms[yms.length - 1];
 }
 $("cal-prev").addEventListener("click", () => { const [a, m] = calYm.split("-").map(Number); const d = new Date(a, m - 2, 1); calYm = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); calendario(); });
