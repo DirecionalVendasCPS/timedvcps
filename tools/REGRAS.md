@@ -256,3 +256,7 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 
 ## Visitas realizadas — fonte
 - Conferir SEMPRE a aba Visitas (I corretor, K data do comparecimento): ela recebe as visitas do dia antes da coluna H do Agendamentos ser marcada (ex.: 20/11 às 09:49, Visitas tinha 2 e H ainda 0). Não ler a coluna C da Visitas (nome do cliente).
+
+## Roleta — dados e listas por semana (21/11)
+- Os dados da roleta (ATUALIZADO, REGISTROS, EQUIPE, FORA_BASE) agora ficam em roleta/dados.js, usado por roleta/index.html e roleta/semana.html. Novas folhas: editar roleta/dados.js (e subir o ?v= do dados.js nas duas páginas).
+- "Listas registradas" na página da roleta mostra uma linha por semana de trabalho (segunda a domingo); clicando abre roleta/semana.html#AAAA-MM-DD (segunda), com as folhas de todos os dias, navegação entre semanas e link "Ver o placar da semana".
