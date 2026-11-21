@@ -165,6 +165,8 @@ h2{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.05e
 .per{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.03em;margin-bottom:8px}
 .cal-d.semana{background:#1a2f63}
 .cal-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+.chip .vn{color:#3ddc97;font-size:12px;margin-left:2px}
+.chip.com-venda{border-color:#3ddc97}
 .insight{border-left:4px solid var(--accent);padding:10px 14px;background:#0f1d40;border-radius:0 12px 12px 0;font-size:15px;line-height:1.5}
 </style>
 </head>
@@ -233,6 +235,7 @@ h2{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.05e
 
   <section class="card">
     <h2>Quem está em cada faixa</h2>
+    <p class="intro" style="margin-bottom:10px">roleta = roletas no período · agen = agendamentos · visi = visitas · past = pastas (semanas do período) · venda = vendas no mês (quem vendeu fica com borda verde)</p>
     <div class="lst" id="lista"></div>
   </section>
 
@@ -356,7 +359,7 @@ function render() {
   // listas
   const ls = $("lista"); ls.replaceChildren();
   grupos.forEach((g) => { const d = el("div", "g"); const h = el("h3"); const dt = el("span", "dot"); dt.style.setProperty("--c", g.c); h.append(dt, g.nome + " · " + g.ps.length); d.append(h);
-    const cs = el("div", "chips"); g.ps.sort((a, b) => b.pres - a.pres || b.ag - a.ag || a.nome.localeCompare(b.nome, "pt")).forEach((p) => { const c = el("span", "chip", curto(p.nome)); c.title = p.nome + " · GV " + p.gv + " · GR " + p.gr; c.append(el("small", null, p.pres + " rol. · " + p.ag + " ag · " + p.vis + " vis")); cs.append(c); });
+    const cs = el("div", "chips"); g.ps.sort((a, b) => b.pres - a.pres || b.ag - a.ag || a.nome.localeCompare(b.nome, "pt")).forEach((p) => { const c = el("span", "chip", curto(p.nome)); c.title = p.nome + " · GV " + p.gv + " · GR " + p.gr; c.append(el("small", null, p.pres + " roleta · " + p.ag + " agen · " + p.vis + " visi · " + p.pas + " past · ")); const v = el(p.vn ? "b" : "small", p.vn ? "vn" : null, p.vn + " venda"); c.append(v); if (p.vn) c.classList.add("com-venda"); cs.append(c); });
     if (!g.ps.length) cs.append(el("span", "chip", "ninguém"));
     d.append(cs); ls.append(d); });
 }
