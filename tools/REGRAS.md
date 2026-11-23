@@ -233,6 +233,7 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 
 ## Linha "Dados da planilha até" (todas as páginas com botão Atualizar)
 - Cada página mostra: Atualizado em (momento em que o site foi atualizado), **Dados da planilha até** (horário do último refresh da planilha, do "Auto Refresh Execution Log") e Próxima atualização.
+- **Pedido do usuário (23/11):** em TODA verificação (automática ou manual), mesmo sem nenhum dado novo, carimbar todas as páginas para ficarem iguais: `python3 tools/carimbo.py "DD/MM/AAAA HH:MM"` (hora do último refresh do log; se o log não mudou, a mesma hora). Atualiza Atualizado em + Dados da planilha até em agendamentos, visitas, corretores, gestão, conversão e vendas (o corujão fica com o horário do dia do corujão). Depois commit e push.
 - Rodar os scripts com `REFRESH_PLANILHA="DD/MM/AAAA HH:MM"` (agend_hoje, vendas_atualizar); visitas, corretores e gestão recebem o horário no 1º argumento. Agendamentos e Vendas usam o log da planilha "Contadores"; Visitas, Conversão (copia da página de visitas), Corretores e Gestão usam o da planilha de Gestão.
 
 ## Corujão — páginas de dias passados e comparativo por GR
