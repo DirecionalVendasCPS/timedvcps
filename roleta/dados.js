@@ -1,6 +1,6 @@
 // Dados da Roleta do Stand (usados por index.html e semana.html)
 // ===== Dados: uma linha por folha fotografada (data, turno M/T/I = integral em feriado, GR da folha, nomes do squad e de fora do squad) =====
-const ATUALIZADO = "22/11 às 09:35";
+const ATUALIZADO = "23/11 às 09:50";
 const REGISTROS = [
   {data: "2026-11-16", turno: "M", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: []},
   {data: "2026-11-16", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Isabella Garcia Silva", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
@@ -32,6 +32,9 @@ const REGISTROS = [
   {data: "2026-11-21", turno: "I", gr: "Patricia", squad: ["Sonia Maria de Oliveira Maruki", "Claudio Sena Borges", "Flavia Maria Ramos", "Fabio Carlo da Silva", "Guilherme Garcia", "Jorge Luiz de Lima"], fora: ["Marlene Santana Corrêa dos Santos"]},
   {data: "2026-11-21", turno: "I", gr: "Gustavo", squad: [], fora: ["Lincoln Farah"]},
   {data: "2026-11-22", turno: "I", gr: "Patricia", squad: ["Jorge Luiz de Lima", "Amekion Ferreira Cruz", "Flávio Henrique Peres Whiteman", "João Gabriel Campos Carvalho da Silva", "Clarice Pereira", "Fabio Carlo da Silva", "Marlene Santana Corrêa dos Santos", "Aloisio Antonio Mache Tavares", "Guilherme Garcia", "José Paulo Salvador Júnior", "Ellen Cassia Pereira Cassemiro de Campos"], fora: []},
+  {data: "2026-11-23", turno: "M", gr: "Gustavo", squad: ["Roseli Sampaio Bastos Ferreira", "Sirlene Aparecida da Silva"], fora: ["Daniel Alves Silva", "Lincoln Farah"]},
+  {data: "2026-11-23", turno: "M", gr: "Takeashi", squad: ["Isabella Garcia Silva", "Robson de Oliveira", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes", "Luis Fernando Maestro"], fora: ["Ronaldo Luis de Souza Chaves", "Mauro de Pinho Micaela", "Paola Cassanelli da Rocha", "José Luis Gomes de Araujo"]},
+  {data: "2026-11-23", turno: "M", gr: "Patricia", squad: ["Fernanda Guilherme dos Santos", "Ellen Cassia Pereira Cassemiro de Campos", "Fabiana Sertori de Oliveira", "Sonia Maria de Oliveira Maruki", "Amekion Ferreira Cruz", "Guilherme Garcia", "Flavia Maria Ramos", "Franciely Gomes"], fora: ["Marlene Santana Corrêa dos Santos"]},
 ];
 const EQUIPE = [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
