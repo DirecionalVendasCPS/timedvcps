@@ -50,11 +50,9 @@ const REGISTROS = [
 ];
 const EQUIPE = [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
-    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi"},
     {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi"},
     {nome: "João Eduardo de Moraes", gv: "Aldinei", gr: "Takeashi"},
     {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi"},
-    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi"},
     {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi"},
     {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi"},
     {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi"},
@@ -77,7 +75,6 @@ const EQUIPE = [
     {nome: "José Paulo Salvador Júnior", gv: "Bruno", gr: "Patricia"},
     {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia"},
     {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia"},
-    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia"},
     {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia"},
     {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia"},
     {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia"},
@@ -94,16 +91,16 @@ const EQUIPE = [
     {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia"},
     {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia"},
     {nome: "Lincoln Farah", gv: "Débora", gr: "Gustavo"},
+    {nome: "Ademir Renaldini", gv: "Débora", gr: "Gustavo"},
     {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo"},
     {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo"},
     {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo"},
     {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo"},
     {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo"},
     {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo"},
-    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo"},
     {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo"},
     {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo"},
     {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo"}
 ];
 // nomes da folha que não estão na base de corretores ativos: GV/GR como escrito na folha
-const FORA_BASE = {"Vanessa": {gv: "Pina", gr: "Takeashi"}, "José Carlos de Faria": {gv: "Pina", gr: "Takeashi"}};
+const FORA_BASE = {"Vanessa": {gv: "Pina", gr: "Takeashi"}, "Marlene Santana Corrêa dos Santos": {gv: "Bruno", gr: "Patricia"}, "José Carlos de Faria": {gv: "Pina", gr: "Takeashi"}};
