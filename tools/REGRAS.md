@@ -269,3 +269,6 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 - Regra do usuário: mínimo de 5 roletas de segunda a sexta habilita o corretor do squad para a roleta de sábado (a mais concorrida); a página lista habilitados e "quase lá" (3–4).
 - Calendário na página: Dia (com "+ Somar dias"), Semana (segunda a domingo, padrão) e Mês; endereço guarda a escolha (#AAAA-MM, #sAAAA-MM-DD, #dias). Resultados são semanais (domingo a sábado) e só contam a partir do início da roleta; o selo "habilita o sábado" só aparece no modo Semana.
 - Atualiza sozinha: lê roleta/dados.js e a página Corretores; não precisa mexer nela a cada atualização.
+
+## Print gestão semanal GR (25/11)
+- Quando o usuário pedir "print gestao semanal GR": `python3 tools/prints_gestao_gr.py /tmp/pg` gera 1 imagem por GR (Takeashi, Patricia, Gustavo) da página gestao/, do topo até a linha "Funil de conversão do mês" + "Ranking dos GVs", com o filtro de GR aplicado. Enviar as 3.
