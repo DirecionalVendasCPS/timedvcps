@@ -1,6 +1,6 @@
 // Dados da Roleta do Stand (usados por index.html e semana.html)
 // ===== Dados: uma linha por folha fotografada (data, turno M/T/I = integral em feriado, GR da folha, nomes do squad e de fora do squad) =====
-const ATUALIZADO = "24/11 às 14:00";
+const ATUALIZADO = "25/11 às 09:55";
 const REGISTROS = [
   {data: "2026-11-16", turno: "M", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: []},
   {data: "2026-11-16", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Isabella Garcia Silva", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
@@ -44,6 +44,9 @@ const REGISTROS = [
   {data: "2026-11-24", turno: "T", gr: "Takeashi", squad: ["Luciana Lemes", "Ana Luiza Martins", "Luis Fernando Maestro", "Teresinha Aparecida Crivelaro Lopes", "Roseli Martim Tibiriça", "Isabella Garcia Silva"], fora: ["Ronaldo Luis de Souza Chaves", "Wanderson de Carvalho Coutinho", "Mauro de Pinho Micaela", "José Luis Gomes de Araujo", "Paola Cassanelli da Rocha", "José Eleno Martins Filho"]},
   {data: "2026-11-24", turno: "T", gr: "Patricia", squad: ["Flavia Maria Ramos", "Claudio Sena Borges", "Jorge Luiz de Lima", "Guilherme Garcia", "Fabio Carlo da Silva", "Ellen Cassia Pereira Cassemiro de Campos", "Amekion Ferreira Cruz", "Fernanda Guilherme dos Santos", "Sonia Maria de Oliveira Maruki"], fora: ["Jonathan Pereira da Silva", "João Gabriel Campos Carvalho da Silva", "Márcio Antônio Custódio", "Clarice Pereira", "Marlene Santana Corrêa dos Santos"]},
   {data: "2026-11-24", turno: "T", gr: "Gustavo", squad: ["Roseli Sampaio Bastos Ferreira"], fora: ["Ana Paula de Souza Leite Aguiar", "Lincoln Farah"]},
+  {data: "2026-11-25", turno: "M", gr: "Takeashi", squad: ["Robson de Oliveira", "Luis Fernando Maestro", "Ana Luiza Martins", "Teresinha Aparecida Crivelaro Lopes", "Luciana Lemes"], fora: ["Ronaldo Luis de Souza Chaves", "Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
+  {data: "2026-11-25", turno: "M", gr: "Patricia", squad: ["Claudio Sena Borges", "Flavia Maria Ramos", "Amekion Ferreira Cruz", "Guilherme Garcia"], fora: []},
+  {data: "2026-11-25", turno: "M", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho", "Roseli Sampaio Bastos Ferreira", "Sirlene Aparecida da Silva"], fora: ["Larissa Gabriele Vitor", "Lincoln Farah"]},
 ];
 const EQUIPE = [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi"},
