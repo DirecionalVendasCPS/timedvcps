@@ -16,13 +16,13 @@ const REGISTROS = [
   {data: "2026-11-18", turno: "M", gr: "Takeashi", squad: ["Luciana Lemes", "Ana Luiza Martins", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Roberto Oliveira da Silva Souza", "José Luis Gomes de Araujo"]},
   {data: "2026-11-18", turno: "M", gr: "Patricia", squad: ["Guilherme Garcia", "Fabio Carlo da Silva", "Claudio Sena Borges", "Flavia Maria Ramos", "Sonia Maria de Oliveira Maruki"], fora: []},
   {data: "2026-11-18", turno: "M", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho"], fora: ["Rickelle Quirino de Oliveira", "Daniel Alves Silva", "Ana Paula de Souza Leite Aguiar", "Lincoln Farah"]},
-  {data: "2026-11-18", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Ana Luiza Martins", "Teresinha Aparecida Crivelaro Lopes", "Luciana Lemes"], fora: ["Vanessa", "Ronaldo Luis de Souza Chaves", "João Eduardo de Moraes"]},
+  {data: "2026-11-18", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Ana Luiza Martins", "Teresinha Aparecida Crivelaro Lopes", "Luciana Lemes"], fora: ["Vanessa Ribeiro de Lima", "Ronaldo Luis de Souza Chaves", "João Eduardo de Moraes"]},
   {data: "2026-11-18", turno: "T", gr: "Patricia", squad: ["Fernanda Guilherme dos Santos", "Layane Silva Santos Bispo", "Guilherme Garcia", "Jorge Luiz de Lima", "Fabiana Sertori de Oliveira", "Claudio Sena Borges", "Ellen Cassia Pereira Cassemiro de Campos", "Fabio Carlo da Silva", "Franciely Gomes", "Amekion Ferreira Cruz", "Sonia Maria de Oliveira Maruki", "Flavia Maria Ramos"], fora: ["João Gabriel Campos Carvalho da Silva", "Marlene Santana Corrêa dos Santos", "Márcio Antônio Custódio", "Aloisio Antonio Mache Tavares", "José Paulo Salvador Júnior"]},
   {data: "2026-11-18", turno: "T", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho", "Roseli Sampaio Bastos Ferreira"], fora: ["Ana Paula de Souza Leite Aguiar", "Mayara Soares Diogo", "Daniel Alves Silva", "Rickelle Quirino de Oliveira", "Lincoln Farah", "Larissa Gabriele Vitor"]},
   {data: "2026-11-19", turno: "M", gr: "Takeashi", squad: ["Isabella Garcia Silva"], fora: ["Benedito Thomaz Siqueira", "Paola Cassanelli da Rocha"]},
   {data: "2026-11-19", turno: "M", gr: "Patricia", squad: ["Fabio Carlo da Silva", "Flavia Maria Ramos", "Guilherme Garcia", "Amekion Ferreira Cruz", "Sonia Maria de Oliveira Maruki", "Claudio Sena Borges", "Jorge Luiz de Lima"], fora: ["Jonathan Pereira da Silva", "Marlene Santana Corrêa dos Santos", "João Gabriel Campos Carvalho da Silva"]},
   {data: "2026-11-19", turno: "M", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho", "Sirlene Aparecida da Silva"], fora: ["Taíssa Ayane Oliveira da Silva", "Lincoln Farah"]},
-  {data: "2026-11-19", turno: "T", gr: "Takeashi", squad: [], fora: ["Paola Cassanelli da Rocha", "Mauro de Pinho Micaela", "Vanessa", "Robson de Oliveira", "Roberto Oliveira da Silva Souza"]},
+  {data: "2026-11-19", turno: "T", gr: "Takeashi", squad: [], fora: ["Paola Cassanelli da Rocha", "Mauro de Pinho Micaela", "Vanessa Ribeiro de Lima", "Robson de Oliveira", "Roberto Oliveira da Silva Souza"]},
   {data: "2026-11-19", turno: "T", gr: "Gustavo", squad: ["Sirlene Aparecida da Silva", "Roseli Sampaio Bastos Ferreira", "Marcelo Vicentini Coelho"], fora: ["Taíssa Ayane Oliveira da Silva", "Lincoln Farah"]},
   {data: "2026-11-19", turno: "T", gr: "Patricia", squad: ["Claudio Sena Borges", "Fabiana Sertori de Oliveira", "Flavia Maria Ramos", "Amekion Ferreira Cruz", "Ellen Cassia Pereira Cassemiro de Campos", "Fernanda Guilherme dos Santos", "Guilherme Garcia", "Sonia Maria de Oliveira Maruki", "Fabio Carlo da Silva", "Jorge Luiz de Lima", "Franciely Gomes"], fora: ["Aloisio Antonio Mache Tavares", "Márcio Antônio Custódio", "Clarice Pereira"]},
   {data: "2026-11-20", turno: "I", gr: "Takeashi", squad: ["Robson de Oliveira", "Teresinha Aparecida Crivelaro Lopes", "Roseli Martim Tibiriça", "Isabella Garcia Silva"], fora: ["Roberto Oliveira da Silva Souza", "Ronaldo Luis de Souza Chaves", "Mauro de Pinho Micaela", "José Luis Gomes de Araujo", "Paola Cassanelli da Rocha"]},
@@ -36,7 +36,7 @@ const REGISTROS = [
   {data: "2026-11-23", turno: "M", gr: "Takeashi", squad: ["Isabella Garcia Silva", "Robson de Oliveira", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes", "Luis Fernando Maestro"], fora: ["Ronaldo Luis de Souza Chaves", "Mauro de Pinho Micaela", "Paola Cassanelli da Rocha", "José Luis Gomes de Araujo"]},
   {data: "2026-11-23", turno: "M", gr: "Patricia", squad: ["Fernanda Guilherme dos Santos", "Ellen Cassia Pereira Cassemiro de Campos", "Fabiana Sertori de Oliveira", "Sonia Maria de Oliveira Maruki", "Amekion Ferreira Cruz", "Guilherme Garcia", "Flavia Maria Ramos", "Franciely Gomes"], fora: ["Marlene Santana Corrêa dos Santos"]},
   {data: "2026-11-23", turno: "T", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho", "Sirlene Aparecida da Silva"], fora: ["Daniel Alves Silva", "Lincoln Farah"]},
-  {data: "2026-11-23", turno: "T", gr: "Takeashi", squad: ["Luis Fernando Maestro", "Robson de Oliveira", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: ["Ronaldo Luis de Souza Chaves", "Paola Cassanelli da Rocha", "José Luis Gomes de Araujo", "Vanessa", "José Raimundo da Silva"]},
+  {data: "2026-11-23", turno: "T", gr: "Takeashi", squad: ["Luis Fernando Maestro", "Robson de Oliveira", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: ["Ronaldo Luis de Souza Chaves", "Paola Cassanelli da Rocha", "José Luis Gomes de Araujo", "Vanessa Ribeiro de Lima", "José Raimundo da Silva"]},
   {data: "2026-11-23", turno: "T", gr: "Patricia", squad: ["Jorge Luiz de Lima", "Amekion Ferreira Cruz", "Sonia Maria de Oliveira Maruki", "Guilherme Garcia", "Flavia Maria Ramos", "Ellen Cassia Pereira Cassemiro de Campos", "Fabiana Sertori de Oliveira"], fora: ["Aloisio Antonio Mache Tavares", "Jonathan Pereira da Silva", "João Gabriel Campos Carvalho da Silva", "Márcio Antônio Custódio"]},
   {data: "2026-11-24", turno: "M", gr: "Takeashi", squad: ["Isabella Garcia Silva", "Teresinha Aparecida Crivelaro Lopes", "Luis Fernando Maestro", "Luciana Lemes", "Ana Luiza Martins", "Ana Lucia Menezes de Paula", "Roseli Martim Tibiriça"], fora: ["Ronaldo Luis de Souza Chaves", "Wanderson de Carvalho Coutinho", "Mauro de Pinho Micaela", "José Luis Gomes de Araujo", "Paola Cassanelli da Rocha"]},
   {data: "2026-11-24", turno: "M", gr: "Patricia", squad: ["Amekion Ferreira Cruz", "Claudio Sena Borges", "Guilherme Garcia", "Jorge Luiz de Lima", "Fabio Carlo da Silva", "Sonia Maria de Oliveira Maruki"], fora: ["Jonathan Pereira da Silva", "João Gabriel Campos Carvalho da Silva"]},
@@ -58,6 +58,7 @@ const EQUIPE = [
     {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi"},
     {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi"},
     {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi"},
+    {nome: "Vanessa Ribeiro de Lima", gv: "Pina", gr: "Takeashi"},
     {nome: "José Eleno Martins Filho", gv: "Pina", gr: "Takeashi"},
     {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi"},
     {nome: "Ronaldo Luis de Souza Chaves", gv: "Pina", gr: "Takeashi"},
@@ -89,6 +90,7 @@ const EQUIPE = [
     {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia"},
     {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia"},
     {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia"},
+    {nome: "Márcia Regina Masini Visibelli", gv: "Sandro", gr: "Patricia"},
     {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia"},
     {nome: "Lincoln Farah", gv: "Débora", gr: "Gustavo"},
     {nome: "Ademir Renaldini", gv: "Débora", gr: "Gustavo"},
@@ -103,4 +105,4 @@ const EQUIPE = [
     {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo"}
 ];
 // nomes da folha que não estão na base de corretores ativos: GV/GR como escrito na folha
-const FORA_BASE = {"Vanessa": {gv: "Pina", gr: "Takeashi"}, "Marlene Santana Corrêa dos Santos": {gv: "Bruno", gr: "Patricia"}, "José Carlos de Faria": {gv: "Pina", gr: "Takeashi"}};
+const FORA_BASE = {"Marlene Santana Corrêa dos Santos": {gv: "Bruno", gr: "Patricia"}, "José Carlos de Faria": {gv: "Pina", gr: "Takeashi"}};
