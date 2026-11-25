@@ -31,12 +31,21 @@ def mes(txt):
     if not m or int(m.group(3)) > 2100: return None
     return f'{m.group(3)}-{int(m.group(2)):02d}'
 D8 = r'\d{1,2}/\d{1,2}/\d{4}'
-vendas, ruins = [], []
+vendas, ruins, migradas = [], [], []
 for op, resto in partes['SW'].items():
     m = re.fullmatch(rf'(?:([\d.]+)\s+)?(?:({D8})\s+)?({D8})\s+({D8})', resto)
     if not m: ruins.append(op); continue
     fid, t, u, w = m.groups()
     ym = mes(w) or mes(u)
+    # Facilitada Migrada (pedido do usuário 25/11): sem FID, com Data Confirmação Venda 2.0 (T) de um mês
+    # anterior ao mês da venda (U). Entra no mês da venda, só no total da meta (não nas equipes nem no ranking).
+    mu, mt = mes(u), mes(t)
+    if not fid and mt and mu and mt < mu and mu >= inicio:
+        dono = partes['D'].get(op, '')
+        gv = DONO.get(norm(dono), dono.split()[0].title() if dono else '?')
+        mg = {'mes': mu, 'nome': nome_bonito(partes['P'].get(op, '?'), base), 'gv': gv, 'projeto': partes['M'].get(op, '?'), 'tipo': 'Facilitada Migrada'}
+        if gv in GR: mg['gr'] = GR[gv]
+        migradas.append(mg)
     if not ym or ym < inicio: continue
     tipo = 'Comercial' if fid or t else 'Facilitada'
     dono = partes['D'].get(op, '')
@@ -46,7 +55,10 @@ for op, resto in partes['SW'].items():
     vendas.append(v)
 if ruins: print('linhas que não consegui ler:', ruins)
 vendas.sort(key=lambda v: (v['mes'], v['gv'], v['nome']))
+migradas.sort(key=lambda v: (v['mes'], v['gv'], v['nome']))
 s = s0
+mi = s.index('  migradas: [\n'); mf = s.index('\n  ],\n', mi)
+s = s[:mi] + '  migradas: [\n' + ',\n'.join('    ' + json.dumps(v, ensure_ascii=False) for v in migradas) + s[mf:]
 ini = s.index('  vendas: [\n'); fim = s.index('\n  ]\n};', ini)
 antes = s[ini:fim]
 novo = '  vendas: [\n' + ',\n'.join('    ' + json.dumps(v, ensure_ascii=False) for v in vendas)
@@ -61,4 +73,4 @@ from collections import Counter
 c = Counter((v['mes'], v['tipo']) for v in vendas)
 print('vendas mudaram' if mudou else 'vendas sem mudança')
 for k in sorted({v['mes'] for v in vendas}):
-    if k >= '2026-09': print(k, c[(k, 'Comercial')] + c[(k, 'Facilitada')], 'com', c[(k, 'Comercial')], 'fac', c[(k, 'Facilitada')])
+    if k >= '2026-09': print(k, c[(k, 'Comercial')] + c[(k, 'Facilitada')], 'com', c[(k, 'Comercial')], 'fac', c[(k, 'Facilitada')], 'migradas', sum(1 for v in migradas if v['mes'] == k))

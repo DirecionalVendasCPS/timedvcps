@@ -272,3 +272,6 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 
 ## Print gestão semanal GR (25/11)
 - Quando o usuário pedir "print gestao semanal GR": `python3 tools/prints_gestao_gr.py /tmp/pg` gera 1 imagem por GR (Takeashi, Patricia, Gustavo) da página gestao/, do topo até a linha "Funil de conversão do mês" + "Ranking dos GVs", com o filtro de GR aplicado. Enviar as 3.
+
+## Facilitada Migrada (25/11, pedido do usuário)
+- Venda sem FID cuja Data Confirmação Venda 2.0 (T no contador / F na aba Vendas) é de mês anterior ao mês da venda (U): vira "Facilitada Migrada" no mês da venda. Conta no total da meta (caixa roxa, Faltam e "Já foram X de 30") e aparece só na última seção "Facilitadas Migradas"; NÃO entra em "Quanto falta para cada equipe" nem em "Quem já vendeu no mês". Os meses anteriores (set/out) continuam como estavam. vendas_atualizar.py calcula sozinho (array DADOS.migradas).
