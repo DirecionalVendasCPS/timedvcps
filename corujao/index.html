@@ -243,112 +243,85 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
 </div>
 
-<script src="datas.js?v=202611192304"></script>
+<script src="datas.js?v=202611261005"></script>
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
-  dia: "2026-11-19",
-  ate: "2026-11-22", // só valem agendamentos marcados até esta data (regra do grupo)
-  regra: "Só valem agendamentos até 22/11 (domingo).",
-  atualizado: "2026-11-19T23:04:00-03:00",
-  refresh: "19/11/2026 23:03", // horário dos dados do último corujão
+  dia: "2026-11-26",
+  ate: "2026-11-29", // só valem agendamentos marcados até esta data (regra do grupo)
+  regra: "Só valem agendamentos até 29/11 (domingo).",
+  atualizado: "2026-11-26T10:05:00-03:00",
+  refresh: "26/11/2026 05:49", // horário dos dados do último corujão
   corretores: [
-    {nome: "Larissa", prometido: 3, feito: 2},
-    {nome: "Taíssa", prometido: 2, feito: 0},
-    {nome: "Ana Paula", prometido: 2, feito: 0},
-    {nome: "Lincoln", prometido: 4, feito: 2},
-    {nome: "Custódio", prometido: 2, feito: 1},
-    {nome: "Guilherme", prometido: 3, feito: 3},
-    {nome: "Marlene", prometido: 3, feito: 0},
-    {nome: "Jonathan", prometido: 3, feito: 2},
-    {nome: "João Gabriel", prometido: 3, feito: 2},
-    {nome: "Fabiana", prometido: 2, feito: 3},
-    {nome: "Sônia Maruki", prometido: 3, feito: 3},
-    {nome: "Aloísio", prometido: 3, feito: 5},
-    {nome: "Amekion", prometido: 2, feito: 1},
-    {nome: "Jorge", prometido: 3, feito: 2},
-    {nome: "Ellen", prometido: 2, feito: 2},
-    {nome: "Cláudio", prometido: 3, feito: 4}
-,
-    {nome: "Marcelo", prometido: 2, feito: 1},
-    {nome: "Vanessa", prometido: 1, feito: 0},
-    {nome: "Mauro", prometido: 1, feito: 0},
+    {nome: "Jorge", prometido: 3, feito: 0},
+    {nome: "Guilherme", prometido: 3, feito: 0},
+    {nome: "Jow", prometido: 2, feito: 0},
+    {nome: "Fábio", prometido: 3, feito: 0},
+    {nome: "Ronaldo", prometido: 1, feito: 0},
+    {nome: "Flavia", prometido: 3, feito: 0},
     {nome: "Robson", prometido: 1, feito: 0},
-    {nome: "Ronaldo", prometido: 1, feito: 1},
-    {nome: "Paola", prometido: 2, feito: 2},
-    {nome: "Mayara", prometido: 2, feito: 0},
-    {nome: "Flavia", prometido: 2, feito: 2},
-    {nome: "Lúcia", prometido: 2, feito: 0},
-    {nome: "Fer", prometido: 3, feito: 0},
-    {nome: "Fran", prometido: 3, feito: 0}
-,
-    {nome: "Rose", prometido: 1, feito: 1},
-    {nome: "Vanderlucia", prometido: 2, feito: 2},
-    {nome: "Flávio Whiteman", prometido: 1, feito: 1},
-    {nome: "Paulo Salvador", prometido: 1, feito: 1}
-,
-    {nome: "Fabio", prometido: 3, feito: 3}
+    {nome: "Mauro", prometido: 1, feito: 0}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
     {nome: "Ana Luiza Martins", gv: "Aldinei", gr: "Takeashi", lista: null},
-    {nome: "Benedito Thomaz Siqueira", gv: "Aldinei", gr: "Takeashi", lista: null},
     {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi", lista: null},
     {nome: "João Eduardo de Moraes", gv: "Aldinei", gr: "Takeashi", lista: null},
     {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi", lista: null},
-    {nome: "Marli Teixeira da Costa", gv: "Aldinei", gr: "Takeashi", lista: null},
     {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi", lista: null},
     {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi", lista: null},
     {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi", lista: null},
     {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi", lista: "Mauro"},
-    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi", lista: "Paola"},
+    {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Vanessa Ribeiro de Lima", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "José Eleno Martins Filho", gv: "Pina", gr: "Takeashi", lista: null},
     {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi", lista: "Robson"},
     {nome: "Ronaldo Luis de Souza Chaves", gv: "Pina", gr: "Takeashi", lista: "Ronaldo"},
-    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: "Lúcia"},
+    {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi", lista: null},
-    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi", lista: "Rose"},
+    {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Valda Terezinha Delanhese Francisco", gv: "Ícaro", gr: "Takeashi", lista: null},
-    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi", lista: "Vanderlucia"},
-    {nome: "Flávio Henrique Peres Whiteman", gv: "Bruno", gr: "Patricia", lista: "Flávio Whiteman"},
+    {nome: "Vanderlucia de Oliveira Batista Pereira", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Flávio Henrique Peres Whiteman", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia", lista: "Guilherme"},
-    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: "Jonathan"},
-    {nome: "José Paulo Salvador Júnior", gv: "Bruno", gr: "Patricia", lista: "Paulo Salvador"},
-    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: "João Gabriel"},
+    {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: "Jow"},
+    {nome: "José Paulo Salvador Júnior", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia", lista: null},
-    {nome: "Marlene Santana Corrêa dos Santos", gv: "Bruno", gr: "Patricia", lista: "Marlene"},
-    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia", lista: "Custódio"},
-    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia", lista: "Aloísio"},
-    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia", lista: "Amekion"},
+    {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia", lista: null},
-    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: "Cláudio"},
-    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia", lista: "Ellen"},
-    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: "Fabiana"},
-    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: "Fabio"},
-    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia", lista: "Fer"},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: "Fábio"},
+    {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia", lista: "Flavia"},
-    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia", lista: "Fran"},
+    {nome: "Franciely Gomes", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Jorge Luiz de Lima", gv: "Mada", gr: "Patricia", lista: "Jorge"},
     {nome: "Layane Silva Santos Bispo", gv: "Mada", gr: "Patricia", lista: null},
-    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia", lista: "Sônia Maruki"},
+    {nome: "Sonia Maria de Oliveira Maruki", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Márcia Regina Masini Visibelli", gv: "Sandro", gr: "Patricia", lista: null},
     {nome: "Luciane Aparecida Gomes Barbosa Silva", gv: "Sandro", gr: "Patricia", lista: null},
+    {nome: "Lincoln Farah", gv: "Débora", gr: "Gustavo", lista: null},
+    {nome: "Ademir Renaldini", gv: "Débora", gr: "Gustavo", lista: null},
     {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo", lista: null},
     {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo", lista: null},
-    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo", lista: "Ana Paula"},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo", lista: null},
-    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: "Larissa"},
-    {nome: "Lincoln Farah", gv: "Débora", gr: "Gustavo", lista: "Lincoln"},
-    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo", lista: "Marcelo"},
-    {nome: "Mayara Soares Diogo", gv: "Ivan", gr: "Gustavo", lista: "Mayara"},
+    {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Rickelle Quirino de Oliveira", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Roseli Sampaio Bastos Ferreira", gv: "Ivan", gr: "Gustavo", lista: null},
-    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo", lista: "Taíssa"}
+    {nome: "Taíssa Ayane Oliveira da Silva", gv: "Ivan", gr: "Gustavo", lista: null}
   ],
   // agendaram hoje sem ter feito promessa no grupo
   extras: [
-    {nome: "Clarice Pereira", feito: 2}
+
   ]
 };
 // ==========================================================
