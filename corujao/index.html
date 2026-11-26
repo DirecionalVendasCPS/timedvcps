@@ -227,14 +227,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
 </div>
 
-<script src="datas.js?v=202611261639"></script>
+<script src="datas.js?v=202611261716"></script>
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-26",
   ate: "2026-11-29", // só valem agendamentos marcados até esta data (regra do grupo)
   regra: "Só valem agendamentos até 29/11 (domingo).",
-  atualizado: "2026-11-26T16:39:00-03:00",
+  atualizado: "2026-11-26T17:16:00-03:00",
   refresh: "26/11/2026 13:49", // horário dos dados do último corujão
   corretores: [
     {nome: "Jorge", prometido: 3, feito: 0},
@@ -247,7 +247,7 @@ const DADOS = {
     {nome: "Mauro", prometido: 1, feito: 0},
     {nome: "Larissa", prometido: 3, feito: 2},
     {nome: "Taíssa", prometido: 2, feito: 0},
-    {nome: "Paola", prometido: 1, feito: 2},
+    {nome: "Paola", prometido: 2, feito: 2},
     {nome: "Amekion", prometido: 2, feito: 2},
     {nome: "Marcelo", prometido: 2, feito: 0},
     {nome: "Sirlene", prometido: 2, feito: 1},
@@ -271,7 +271,8 @@ const DADOS = {
     {nome: "Ana Lu", prometido: 2, feito: 1},
     {nome: "Teca", prometido: 2, feito: 0},
     {nome: "Wanderson", prometido: 1, feito: 0},
-    {nome: "Ana Luiza", prometido: 1, feito: 0}
+    {nome: "Ana Luiza", prometido: 1, feito: 0},
+    {nome: "Luciana", prometido: 3, feito: 3}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -290,7 +291,7 @@ const DADOS = {
     {nome: "Ronaldo Luis de Souza Chaves", gv: "Pina", gr: "Takeashi", lista: "Ronaldo"},
     {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: "Ana Lu"},
     {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi", lista: null},
-    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi", lista: null},
+    {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi", lista: "Luciana"},
     {nome: "Paulo Henrique Campos Almeida", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Roseli Martim Tibiriça", gv: "Ícaro", gr: "Takeashi", lista: "Rose"},
     {nome: "Teresinha Aparecida Crivelaro Lopes", gv: "Ícaro", gr: "Takeashi", lista: "Teca"},
@@ -332,8 +333,7 @@ const DADOS = {
   ],
   // agendaram hoje sem ter feito promessa no grupo
   extras: [
-    {nome: "Fabiana Sertori de Oliveira", feito: 1},
-    {nome: "Luciana Lemes", feito: 3}
+    {nome: "Fabiana Sertori de Oliveira", feito: 1}
   ]
 };
 // ==========================================================
