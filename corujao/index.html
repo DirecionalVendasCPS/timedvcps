@@ -227,14 +227,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
 </div>
 
-<script src="datas.js?v=202611261954"></script>
+<script src="datas.js?v=202611261958"></script>
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-26",
   ate: "2026-11-29", // só valem agendamentos marcados até esta data (regra do grupo)
   regra: "Só valem agendamentos até 29/11 (domingo).",
-  atualizado: "2026-11-26T19:54:00-03:00",
+  atualizado: "2026-11-26T19:58:00-03:00",
   refresh: "26/11/2026 17:49", // horário dos dados do último corujão
   corretores: [
     {nome: "Jorge", prometido: 3, feito: 1},
@@ -277,7 +277,8 @@ const DADOS = {
     {nome: "Eleno", prometido: 2, feito: 2},
     {nome: "Ademir", prometido: 1, feito: 0},
     {nome: "Elton", prometido: 2, feito: 1},
-    {nome: "Letícia", prometido: 2, feito: 1}
+    {nome: "Letícia", prometido: 2, feito: 1},
+    {nome: "Roberto", prometido: 1, feito: 1}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -285,7 +286,7 @@ const DADOS = {
     {nome: "Isabella Garcia Silva", gv: "Aldinei", gr: "Takeashi", lista: "Isabella"},
     {nome: "João Eduardo de Moraes", gv: "Aldinei", gr: "Takeashi", lista: null},
     {nome: "Luis Fernando Maestro", gv: "Aldinei", gr: "Takeashi", lista: "Luís Fernando"},
-    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi", lista: null},
+    {nome: "Roberto Oliveira da Silva Souza", gv: "Aldinei", gr: "Takeashi", lista: "Roberto"},
     {nome: "Wanderson de Carvalho Coutinho", gv: "Aldinei", gr: "Takeashi", lista: "Wanderson"},
     {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi", lista: null},
     {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi", lista: "Mauro"},
@@ -340,7 +341,7 @@ const DADOS = {
   ],
   // agendaram hoje sem ter feito promessa no grupo
   extras: [
-    {nome: "Roberto Oliveira da Silva Souza", feito: 1}
+
   ]
 };
 // ==========================================================
