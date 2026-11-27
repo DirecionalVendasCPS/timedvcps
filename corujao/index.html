@@ -227,14 +227,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
 </div>
 
-<script src="datas.js?v=202611271623"></script>
+<script src="datas.js?v=202611271627"></script>
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-27",
   ate: "2026-11-29", // só valem agendamentos marcados até esta data (regra do grupo)
   regra: "Só valem agendamentos até 29/11 (domingo).",
-  atualizado: "2026-11-27T16:23:00-03:00",
+  atualizado: "2026-11-27T16:27:00-03:00",
   refresh: "27/11/2026 05:49", // horário dos dados do último corujão
   corretores: [
     {nome: "Larissa", prometido: 3, feito: 0},
@@ -263,7 +263,9 @@ const DADOS = {
     {nome: "Amekion", prometido: 3, feito: 3},
     {nome: "Jonathan", prometido: 2, feito: 0},
     {nome: "Wanderson", prometido: 1, feito: 1},
-    {nome: "Custódio", prometido: 3, feito: 1}
+    {nome: "Custódio", prometido: 3, feito: 1},
+    {nome: "Fabiana", prometido: 2, feito: 0},
+    {nome: "Paulo", prometido: 1, feito: 1}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -291,7 +293,7 @@ const DADOS = {
     {nome: "Flávio Henrique Peres Whiteman", gv: "Bruno", gr: "Patricia", lista: "Flávio"},
     {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia", lista: "Guilherme"},
     {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: "Jonathan"},
-    {nome: "José Paulo Salvador Júnior", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "José Paulo Salvador Júnior", gv: "Bruno", gr: "Patricia", lista: "Paulo"},
     {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: "João Gabriel"},
     {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia", lista: "Custódio"},
@@ -300,7 +302,7 @@ const DADOS = {
     {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia", lista: "Clarice"},
     {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: "Cláudio"},
     {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia", lista: "Ellen"},
-    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: "Fabiana"},
     {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Fernanda Guilherme dos Santos", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Flavia Maria Ramos", gv: "Mada", gr: "Patricia", lista: "Flavia"},
@@ -327,7 +329,6 @@ const DADOS = {
   extras: [
     {nome: "Aloisio Antonio Mache Tavares", feito: 2},
     {nome: "Fernanda Guilherme dos Santos", feito: 1},
-    {nome: "José Paulo Salvador Júnior", feito: 1},
     {nome: "Rickelle Quirino de Oliveira", feito: 1}
   ]
 };
