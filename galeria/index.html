@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galeria · Direcional Vendas CPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1630;--panel:#12224a;--line:#22376b;--ink:#eef2fb;--muted:#93a3c8;--accent:#ffb627;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;--body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+body{background:radial-gradient(1100px 480px at 50% -10%, rgba(255,182,39,.10), transparent 60%),var(--bg);min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+.back{color:var(--muted);font-size:13px;text-decoration:none}
+.eyebrow{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-top:6px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);letter-spacing:.02em;margin:4px 0 6px;text-transform:uppercase}
+.sub{color:var(--muted);font-size:14px;margin:0 0 22px}
+.filtros{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.filtros button{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:999px;padding:8px 16px;font:600 14px var(--body);cursor:pointer}
+.filtros button.on{background:var(--accent);color:#1a1300;border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:3/4;background:#0e1b3a;display:flex;align-items:center;justify-content:center;cursor:zoom-in}
+.thumb img{width:100%;height:100%;object-fit:contain}
+.info{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.nome{font-weight:700}
+.meta{color:var(--muted);font-size:13px}
+.acoes{display:flex;gap:8px}
+.acoes a{flex:1;text-align:center;text-decoration:none;border-radius:10px;padding:8px 0;font-weight:700;font-size:14px}
+.abrir{background:#1d3366;color:var(--ink)}
+.baixar{background:var(--accent);color:#1a1300}
+.vazio{color:var(--muted)}
+#zoom{position:fixed;inset:0;background:rgba(5,10,25,.92);display:none;align-items:center;justify-content:center;z-index:9;cursor:zoom-out}
+#zoom img{max-width:94vw;max-height:94vh;border-radius:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← Direcional Vendas CPS</a>
+  <div class="eyebrow">Direcional Vendas · Campinas</div>
+  <h1>Galeria · Fotos e GIFs</h1>
+  <p class="sub">Imagens e GIFs do time guardados no site. Toque para ver em tela cheia ou baixe para usar no WhatsApp e nos status.</p>
+  <div class="filtros" id="filtros">
+    <button data-f="todos" class="on">Todos</button>
+    <button data-f="gif">GIFs</button>
+    <button data-f="foto">Fotos</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+<div id="zoom"><img alt=""></div>
+<script src="midia.js?v=1"></script>
+<script>
+const grid = document.getElementById("grid"), zoom = document.getElementById("zoom");
+let filtro = "todos";
+function dataBR(d){ return d.slice(8,10) + "/" + d.slice(5,7) + "/" + d.slice(0,4); }
+function render(){
+  const itens = MIDIA.filter(m => filtro === "todos" || m.tipo === filtro);
+  grid.innerHTML = itens.length ? "" : '<p class="vazio">Nada aqui ainda.</p>';
+  for (const m of itens){
+    const nomeArq = m.arquivo.split("/").pop();
+    const c = document.createElement("div"); c.className = "card";
+    c.innerHTML = `<div class="thumb"><img loading="lazy" alt=""></div>
+      <div class="info"><div class="nome"></div><div class="meta"></div>
+      <div class="acoes"><a class="abrir" target="_blank" rel="noopener">Abrir</a><a class="baixar">Baixar</a></div></div>`;
+    c.querySelector("img").src = m.arquivo;
+    c.querySelector(".nome").textContent = m.nome;
+    c.querySelector(".meta").textContent = (m.tipo === "gif" ? "GIF" : "Foto") + " · " + dataBR(m.data);
+    c.querySelector(".abrir").href = m.arquivo;
+    const b = c.querySelector(".baixar"); b.href = m.arquivo; b.setAttribute("download", nomeArq);
+    c.querySelector(".thumb").addEventListener("click", () => { zoom.querySelector("img").src = m.arquivo; zoom.style.display = "flex"; });
+    grid.appendChild(c);
+  }
+}
+zoom.addEventListener("click", () => { zoom.style.display = "none"; });
+document.getElementById("filtros").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  filtro = b.dataset.f;
+  document.querySelectorAll("#filtros button").forEach(x => x.classList.toggle("on", x === b));
+  render();
+});
+render();
+</script>
+</body>
+</html>

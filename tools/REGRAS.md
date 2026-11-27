@@ -275,3 +275,6 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 
 ## Facilitada Migrada (25/11, pedido do usuário)
 - Venda sem FID cuja Data Confirmação Venda 2.0 (T no contador / F na aba Vendas) é de mês anterior ao mês da venda (U): vira "Facilitada Migrada" no mês da venda. Conta no total da meta (caixa roxa, Faltam e "Já foram X de 30") e aparece só na última seção "Facilitadas Migradas"; NÃO entra em "Quanto falta para cada equipe" nem em "Quem já vendeu no mês". Os meses anteriores (set/out) continuam como estavam. vendas_atualizar.py calcula sozinho (array DADOS.migradas).
+
+## Galeria (galeria/)
+- Fotos e GIFs que o usuário manda para "guardar na galeria": copiar para galeria/arquivos/ (ou usar o caminho já existente no site) e acrescentar uma linha em galeria/midia.js (arquivo, nome, tipo gif|foto, data). Subir o ?v= do midia.js no index da galeria.
