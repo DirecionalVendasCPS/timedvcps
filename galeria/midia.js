@@ -1,6 +1,8 @@
 // Fotos e GIFs guardados no site. Para incluir: copiar o arquivo para galeria/arquivos/ (ou usar um que já está no site)
 // e acrescentar uma linha aqui. data = AAAA-MM-DD em que entrou.
 const MIDIA = [
+  {arquivo: "arquivos/corujinha-headset.gif", nome: "Corujinha headset", tipo: "gif", data: "2026-11-27"},
+  {arquivo: "arquivos/corujinha-chave-na-mao.gif", nome: "Corujinha chave na mão", tipo: "gif", data: "2026-11-27"},
   {arquivo: "https://agenciaforus.alboompro.com/proof/pt-BR/s/selecao-d-direcional-spi-outubro-2026", nome: "Seleção D+ · 3º trimestre", tipo: "link", data: "2026-11-27"},
   {arquivo: "arquivos/corujinha-com-taca.jpg", nome: "Corujinha com taça", tipo: "foto", data: "2026-11-27"},
   {arquivo: "arquivos/corujinha-video-a-meta-e-piso.mp4", nome: "Vídeo · A meta é piso", tipo: "video", data: "2026-11-27"},
