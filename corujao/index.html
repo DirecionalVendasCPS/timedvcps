@@ -227,14 +227,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
 </div>
 
-<script src="datas.js?v=202611271057"></script>
+<script src="datas.js?v=202611271149"></script>
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-27",
   ate: "2026-11-29", // só valem agendamentos marcados até esta data (regra do grupo)
   regra: "Só valem agendamentos até 29/11 (domingo).",
-  atualizado: "2026-11-27T10:57:00-03:00",
+  atualizado: "2026-11-27T11:49:00-03:00",
   refresh: "27/11/2026 05:49", // horário dos dados do último corujão
   corretores: [
     {nome: "Larissa", prometido: 3, feito: 0},
@@ -247,7 +247,8 @@ const DADOS = {
     {nome: "Guilherme", prometido: 3, feito: 0},
     {nome: "Ademir", prometido: 1, feito: 0},
     {nome: "Elton", prometido: 1, feito: 0},
-    {nome: "Flavia", prometido: 3, feito: 0}
+    {nome: "Flavia", prometido: 3, feito: 0},
+    {nome: "Ana Paula", prometido: 2, feito: 1}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -298,7 +299,7 @@ const DADOS = {
     {nome: "Ademir Renaldini", gv: "Débora", gr: "Gustavo", lista: "Ademir"},
     {nome: "Mariana Lazaretti Salomão", gv: "Débora", gr: "Gustavo", lista: null},
     {nome: "Sirlene Aparecida da Silva", gv: "Débora", gr: "Gustavo", lista: null},
-    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo", lista: null},
+    {nome: "Ana Paula de Souza Leite Aguiar", gv: "Ivan", gr: "Gustavo", lista: "Ana Paula"},
     {nome: "Daniel Alves Silva", gv: "Ivan", gr: "Gustavo", lista: null},
     {nome: "Larissa Gabriele Vitor", gv: "Ivan", gr: "Gustavo", lista: "Larissa"},
     {nome: "Marcelo Vicentini Coelho", gv: "Ivan", gr: "Gustavo", lista: null},
@@ -309,7 +310,6 @@ const DADOS = {
   ],
   // agendaram hoje sem ter feito promessa no grupo
   extras: [
-    {nome: "Ana Paula de Souza Leite Aguiar", feito: 1},
     {nome: "Wanderson de Carvalho Coutinho", feito: 1}
   ]
 };
