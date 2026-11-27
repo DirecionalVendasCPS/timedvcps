@@ -343,6 +343,8 @@ const C = DADOS.corretores;
 const prometido = C.reduce((a, c) => a + c.prometido, 0);
 const E = DADOS.extras || [];
 const feito = C.reduce((a, c) => a + c.feito, 0) + E.reduce((a, c) => a + c.feito, 0);
+// meta batida: corujinha com a chave na mão (pedido do usuário 27/11)
+if (prometido > 0 && feito >= prometido) { const ow = document.querySelector("img.owl"); if (ow) ow.src = "../galeria/arquivos/corujinha-chave-na-mao.gif"; }
 const faltam = Math.max(0, prometido - feito);
 const pct = prometido ? Math.round(feito / prometido * 100) : 0;
 const SEM = !C.length; // corujão sem lista de promessas (05/11 e 10/11): mostra só o que foi agendado

@@ -285,3 +285,6 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
   - sábado/domingo/feriado: depois das 14:05 deve existir turno "I" de hoje.
 - Faltando algum, avisar o usuário aqui no Claude na mensagem final da atualização (ex.: "Falta subir a roleta da tarde de hoje (27/11)"). Também avisar se o dia anterior ficou sem algum turno.
 - Não mandar nada pelo WhatsApp; o aviso é só aqui.
+
+## Corujão: meta batida
+- Quando o total feito >= total prometido, a página do corujão troca a corujinha pelo GIF galeria/arquivos/corujinha-chave-na-mao.gif (automático no JS das páginas do corujão; ao criar página nova a partir do index, a regra já vem junto).
