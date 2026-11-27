@@ -1,6 +1,6 @@
 // Dados da Roleta do Stand (usados por index.html e semana.html)
 // ===== Dados: uma linha por folha fotografada (data, turno M/T/I = integral em feriado, GR da folha, nomes do squad e de fora do squad) =====
-const ATUALIZADO = "27/11 às 14:45";
+const ATUALIZADO = "27/11 às 14:50";
 const REGISTROS = [
   {data: "2026-11-16", turno: "M", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Teresinha Aparecida Crivelaro Lopes", "Isabella Garcia Silva"], fora: []},
   {data: "2026-11-16", turno: "T", gr: "Takeashi", squad: ["Robson de Oliveira", "Isabella Garcia Silva", "Roseli Martim Tibiriça", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Mauro de Pinho Micaela", "Paola Cassanelli da Rocha"]},
@@ -53,6 +53,9 @@ const REGISTROS = [
   {data: "2026-11-26", turno: "M", gr: "Takeashi", squad: ["Luciana Lemes", "Roseli Martim Tibiriça", "Robson de Oliveira", "Luis Fernando Maestro", "Teresinha Aparecida Crivelaro Lopes"], fora: ["João Eduardo de Moraes", "Ronaldo Luis de Souza Chaves", "José Luis Gomes de Araujo", "Mauro de Pinho Micaela"]},
   {data: "2026-11-26", turno: "M", gr: "Patricia", squad: ["Guilherme Garcia", "Fabio Carlo da Silva", "Flavia Maria Ramos", "Jorge Luiz de Lima", "Claudio Sena Borges", "Amekion Ferreira Cruz", "Ellen Cassia Pereira Cassemiro de Campos", "Fabiana Sertori de Oliveira"], fora: []},
   {data: "2026-11-26", turno: "M", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho"], fora: ["Lincoln Farah"]},
+  {data: "2026-11-26", turno: "T", gr: "Takeashi", squad: ["Roseli Martim Tibiriça", "Luciana Lemes", "Ana Lucia Menezes de Paula", "Ana Luiza Martins", "Isabella Garcia Silva", "Robson de Oliveira", "Teresinha Aparecida Crivelaro Lopes", "Luis Fernando Maestro"], fora: ["Vanessa Ribeiro de Lima", "Paola Cassanelli da Rocha", "Ronaldo Luis de Souza Chaves", "José Luis Gomes de Araujo", "Mauro de Pinho Micaela", "João Eduardo de Moraes"]},
+  {data: "2026-11-26", turno: "T", gr: "Patricia", squad: ["Flavia Maria Ramos", "Fabiana Sertori de Oliveira", "Amekion Ferreira Cruz", "Guilherme Garcia", "Jorge Luiz de Lima", "Claudio Sena Borges", "Fernanda Guilherme dos Santos", "Ellen Cassia Pereira Cassemiro de Campos"], fora: ["João Gabriel Campos Carvalho da Silva", "Márcio Antônio Custódio", "Clarice Pereira", "Aloisio Antonio Mache Tavares"]},
+  {data: "2026-11-26", turno: "T", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho"], fora: ["Lincoln Farah", "Taíssa Ayane Oliveira da Silva", "Larissa Gabriele Vitor"]},
   {data: "2026-11-27", turno: "M", gr: "Takeashi", squad: ["Isabella Garcia Silva", "Roseli Martim Tibiriça", "Luciana Lemes", "Robson de Oliveira", "Teresinha Aparecida Crivelaro Lopes"], fora: ["Roberto Oliveira da Silva Souza", "Ronaldo Luis de Souza Chaves", "João Eduardo de Moraes", "José Luis Gomes de Araujo", "Paola Cassanelli da Rocha"]},
   {data: "2026-11-27", turno: "M", gr: "Patricia", squad: ["Flavia Maria Ramos", "Claudio Sena Borges", "Amekion Ferreira Cruz", "Guilherme Garcia", "Ellen Cassia Pereira Cassemiro de Campos"], fora: []},
   {data: "2026-11-27", turno: "M", gr: "Gustavo", squad: ["Marcelo Vicentini Coelho", "Roseli Sampaio Bastos Ferreira"], fora: ["Larissa Gabriele Vitor", "Lincoln Farah"]},

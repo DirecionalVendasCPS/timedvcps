@@ -278,3 +278,10 @@ Substitui as duas planilhas abaixo (as seções antigas ficam como referência).
 
 ## Galeria (galeria/)
 - Fotos e GIFs que o usuário manda para "guardar na galeria": copiar para galeria/arquivos/ (ou usar o caminho já existente no site) e acrescentar uma linha em galeria/midia.js (arquivo, nome, tipo gif|foto, data). Subir o ?v= do midia.js no index da galeria.
+
+## Lembrete da roleta (pedido do usuário 27/11)
+- Em toda atualização automática, conferir em roleta/dados.js se a roleta do dia já foi registrada:
+  - dias úteis: depois das 14:05 deve existir turno "M" de hoje; depois das 18:05 deve existir turno "T" de hoje;
+  - sábado/domingo/feriado: depois das 14:05 deve existir turno "I" de hoje.
+- Faltando algum, avisar o usuário aqui no Claude na mensagem final da atualização (ex.: "Falta subir a roleta da tarde de hoje (27/11)"). Também avisar se o dia anterior ficou sem algum turno.
+- Não mandar nada pelo WhatsApp; o aviso é só aqui.
