@@ -24,7 +24,8 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);l
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
 .thumb{aspect-ratio:3/4;background:#0e1b3a;display:flex;align-items:center;justify-content:center;cursor:zoom-in}
-.thumb img{width:100%;height:100%;object-fit:contain}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:contain}
+#zoom video{max-width:94vw;max-height:94vh;border-radius:14px;display:none}
 .info{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .nome{font-weight:700}
 .meta{color:var(--muted);font-size:13px}
@@ -41,17 +42,18 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,4.4vw,42px);l
 <div class="wrap">
   <a class="back" href="../">← Direcional Vendas CPS</a>
   <div class="eyebrow">Direcional Vendas · Campinas</div>
-  <h1>Galeria · Fotos e GIFs</h1>
-  <p class="sub">Imagens e GIFs do time guardados no site. Toque para ver em tela cheia ou baixe para usar no WhatsApp e nos status.</p>
+  <h1>Galeria · Fotos, GIFs e vídeos</h1>
+  <p class="sub">Imagens, GIFs e vídeos do time guardados no site. Toque para ver em tela cheia ou baixe para usar no WhatsApp e nos status.</p>
   <div class="filtros" id="filtros">
     <button data-f="todos" class="on">Todos</button>
     <button data-f="gif">GIFs</button>
     <button data-f="foto">Fotos</button>
+    <button data-f="video">Vídeos</button>
   </div>
   <div class="grid" id="grid"></div>
 </div>
-<div id="zoom"><img alt=""></div>
-<script src="midia.js?v=2"></script>
+<div id="zoom"><img alt=""><video controls playsinline></video></div>
+<script src="midia.js?v=3"></script>
 <script>
 const grid = document.getElementById("grid"), zoom = document.getElementById("zoom");
 let filtro = "todos";
@@ -62,19 +64,26 @@ function render(){
   for (const m of itens){
     const nomeArq = m.arquivo.split("/").pop();
     const c = document.createElement("div"); c.className = "card";
-    c.innerHTML = `<div class="thumb"><img loading="lazy" alt=""></div>
+    c.innerHTML = `<div class="thumb">${m.tipo === "video" ? '<video muted loop playsinline preload="metadata"></video>' : '<img loading="lazy" alt="">'}</div>
       <div class="info"><div class="nome"></div><div class="meta"></div>
       <div class="acoes"><a class="abrir" target="_blank" rel="noopener">Abrir</a><a class="baixar">Baixar</a></div></div>`;
-    c.querySelector("img").src = m.arquivo;
+    const mid = c.querySelector(".thumb").firstElementChild; mid.src = m.arquivo + (m.tipo === "video" ? "#t=0.5" : "");
+    if (m.tipo === "video") { mid.addEventListener("mouseenter", () => mid.play()); mid.addEventListener("mouseleave", () => mid.pause()); }
     c.querySelector(".nome").textContent = m.nome;
-    c.querySelector(".meta").textContent = (m.tipo === "gif" ? "GIF" : "Foto") + " · " + dataBR(m.data);
+    c.querySelector(".meta").textContent = ({gif: "GIF", foto: "Foto", video: "Vídeo"}[m.tipo]) + " · " + dataBR(m.data);
     c.querySelector(".abrir").href = m.arquivo;
     const b = c.querySelector(".baixar"); b.href = m.arquivo; b.setAttribute("download", nomeArq);
-    c.querySelector(".thumb").addEventListener("click", () => { zoom.querySelector("img").src = m.arquivo; zoom.style.display = "flex"; });
+    c.querySelector(".thumb").addEventListener("click", () => abrirZoom(m));
     grid.appendChild(c);
   }
 }
-zoom.addEventListener("click", () => { zoom.style.display = "none"; });
+function abrirZoom(m){
+  const im = zoom.querySelector("img"), vi = zoom.querySelector("video");
+  if (m.tipo === "video") { im.style.display = "none"; vi.style.display = "block"; vi.src = m.arquivo; vi.play().catch(() => {}); }
+  else { vi.pause(); vi.style.display = "none"; im.style.display = "block"; im.src = m.arquivo; }
+  zoom.style.display = "flex";
+}
+zoom.addEventListener("click", e => { if (e.target.tagName === "VIDEO") return; const vi = zoom.querySelector("video"); vi.pause(); zoom.style.display = "none"; });
 document.getElementById("filtros").addEventListener("click", e => {
   const b = e.target.closest("button"); if (!b) return;
   filtro = b.dataset.f;
