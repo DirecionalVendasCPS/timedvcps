@@ -227,14 +227,14 @@ footer{font-size:13px;color:var(--muted);line-height:1.5;max-width:70ch}
   <footer>Promessas feitas no grupo do WhatsApp "Time Corretores Direcional Campinas". Agendamentos contados pela data de criação no relatório do sistema (planilha "Contadores do mês e corujão").</footer>
 </div>
 
-<script src="datas.js?v=202611271159"></script>
+<script src="datas.js?v=202611271221"></script>
 <script>
 // ===== Dados (atualizar a cada leitura do relatório) =====
 const DADOS = {
   dia: "2026-11-27",
   ate: "2026-11-29", // só valem agendamentos marcados até esta data (regra do grupo)
   regra: "Só valem agendamentos até 29/11 (domingo).",
-  atualizado: "2026-11-27T11:59:00-03:00",
+  atualizado: "2026-11-27T12:21:00-03:00",
   refresh: "27/11/2026 05:49", // horário dos dados do último corujão
   corretores: [
     {nome: "Larissa", prometido: 3, feito: 0},
@@ -250,7 +250,12 @@ const DADOS = {
     {nome: "Flavia", prometido: 3, feito: 0},
     {nome: "Ana Paula", prometido: 2, feito: 1},
     {nome: "Lincoln", prometido: 2, feito: 0},
-    {nome: "Paola", prometido: 1, feito: 0}
+    {nome: "Paola", prometido: 1, feito: 0},
+    {nome: "Ronaldo", prometido: 1, feito: 0},
+    {nome: "Vanessa", prometido: 1, feito: 0},
+    {nome: "Robson", prometido: 1, feito: 0},
+    {nome: "João Gabriel", prometido: 2, feito: 0},
+    {nome: "Cláudio", prometido: 3, feito: 0}
   ],
   // base de corretores por GR e GV (lista = nome usado na promessa do grupo)
   equipe: [
@@ -263,10 +268,10 @@ const DADOS = {
     {nome: "José Luis Gomes de Araujo", gv: "Pina", gr: "Takeashi", lista: null},
     {nome: "Mauro de Pinho Micaela", gv: "Pina", gr: "Takeashi", lista: null},
     {nome: "Paola Cassanelli da Rocha", gv: "Pina", gr: "Takeashi", lista: "Paola"},
-    {nome: "Vanessa Ribeiro de Lima", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Vanessa Ribeiro de Lima", gv: "Pina", gr: "Takeashi", lista: "Vanessa"},
     {nome: "José Eleno Martins Filho", gv: "Pina", gr: "Takeashi", lista: null},
-    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi", lista: null},
-    {nome: "Ronaldo Luis de Souza Chaves", gv: "Pina", gr: "Takeashi", lista: null},
+    {nome: "Robson de Oliveira", gv: "Pina", gr: "Takeashi", lista: "Robson"},
+    {nome: "Ronaldo Luis de Souza Chaves", gv: "Pina", gr: "Takeashi", lista: "Ronaldo"},
     {nome: "Ana Lucia Menezes de Paula", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "José Raimundo da Silva", gv: "Ícaro", gr: "Takeashi", lista: null},
     {nome: "Luciana Lemes", gv: "Ícaro", gr: "Takeashi", lista: "Luciana"},
@@ -279,13 +284,13 @@ const DADOS = {
     {nome: "Guilherme Garcia", gv: "Bruno", gr: "Patricia", lista: "Guilherme"},
     {nome: "Jonathan Pereira da Silva", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "José Paulo Salvador Júnior", gv: "Bruno", gr: "Patricia", lista: null},
-    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: null},
+    {nome: "João Gabriel Campos Carvalho da Silva", gv: "Bruno", gr: "Patricia", lista: "João Gabriel"},
     {nome: "Lucas Vinícius Ferreira Chaves", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "Márcio Antônio Custódio", gv: "Bruno", gr: "Patricia", lista: null},
     {nome: "Aloisio Antonio Mache Tavares", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Amekion Ferreira Cruz", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Clarice Pereira", gv: "Mada", gr: "Patricia", lista: null},
-    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: null},
+    {nome: "Claudio Sena Borges", gv: "Mada", gr: "Patricia", lista: "Cláudio"},
     {nome: "Ellen Cassia Pereira Cassemiro de Campos", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Fabiana Sertori de Oliveira", gv: "Mada", gr: "Patricia", lista: null},
     {nome: "Fabio Carlo da Silva", gv: "Mada", gr: "Patricia", lista: null},
