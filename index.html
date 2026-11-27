@@ -37,7 +37,7 @@ h1 span{display:block}
 .tag{font-size:16px;color:var(--muted);margin:0}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
 /* telas largas: 2 painéis por linha, centralizados */
-@media (min-width:780px){.tiles{grid-template-columns:repeat(6,minmax(0,1fr))}a.tile{grid-column:span 2}a.tile.nova-linha{grid-column:2 / span 2}a.tile.sozinho{grid-column:3 / span 2}}
+@media (min-width:780px){.tiles{grid-template-columns:repeat(6,minmax(0,1fr))}a.tile{grid-column:span 2}a.tile.sozinho{grid-column:3 / span 2}}
 a.tile{display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;padding:30px 22px 26px;border-radius:24px;background:var(--panel);border:1.5px solid var(--line);color:var(--ink);text-decoration:none;transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease}
 a.tile:hover{border-color:var(--accent);box-shadow:0 10px 40px rgba(255,182,39,.15)}
 a.tile:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -67,7 +67,26 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
   </header>
 
   <nav class="tiles" aria-label="Placares">
-    <a class="tile nova-linha" href="agendamentos/">
+    <a class="tile" href="roleta/">
+      <div class="icon">
+        <svg viewBox="0 0 84 84" aria-hidden="true">
+          <circle cx="42" cy="40" r="28" fill="#1d3366" stroke="#2f4c8f" stroke-width="2"/>
+          <path d="M42 40 L42 12 A28 28 0 0 1 66.2 26 Z" fill="#ffb627"/>
+          <path d="M42 40 L66.2 26 A28 28 0 0 1 66.2 54 Z" fill="#5b7cff"/>
+          <path d="M42 40 L66.2 54 A28 28 0 0 1 42 68 Z" fill="#3ddc97"/>
+          <path d="M42 40 L42 68 A28 28 0 0 1 17.8 54 Z" fill="#ffb627"/>
+          <path d="M42 40 L17.8 54 A28 28 0 0 1 17.8 26 Z" fill="#5b7cff"/>
+          <path d="M42 40 L17.8 26 A28 28 0 0 1 42 12 Z" fill="#3ddc97"/>
+          <circle cx="42" cy="40" r="6" fill="#eef2fb"/>
+          <path d="M42 4 l-6 9 h12 z" fill="#eef2fb"/>
+          <rect x="22" y="73" width="40" height="5" rx="2.5" fill="#22376b"/>
+        </svg>
+      </div>
+      <h2>Roleta do Stand</h2>
+      <p>Quantas vezes cada corretor esteve na roleta presencial do stand Cores da Mata (manhã 8:45 e tarde 13:45).</p>
+      <span class="go">Abrir contador →</span>
+    </a>
+    <a class="tile" href="agendamentos/">
       <div class="icon">
         <svg viewBox="0 0 84 84" aria-hidden="true">
           <g stroke="#ffb627" stroke-width="3" stroke-linecap="round"><path d="M64 6 v6 M64 34 v6 M47 23 h6 M75 23 h6 M52 11 l4 4 M72 31 l4 4 M76 11 l-4 4 M56 31 l-4 4"/></g>
@@ -91,7 +110,7 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       <p>Agendamentos prometidos e realizados no corujão, por corretor e por equipe.</p>
       <span class="go">Abrir placar →</span>
     </a>
-    <a class="tile nova-linha" href="visitas/">
+    <a class="tile" href="visitas/">
       <div class="icon">
         <svg viewBox="0 0 84 84" aria-hidden="true">
           <path d="M14 40 L42 16 L70 40" fill="none" stroke="#93a3c8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -119,7 +138,7 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       <p>Quantos agendamentos do mês viraram visita: ranking de corretores, GVs e GRs.</p>
       <span class="go">Abrir ranking →</span>
     </a>
-    <a class="tile nova-linha" href="vendas/">
+    <a class="tile" href="vendas/">
       <div class="icon">
         <svg viewBox="0 0 84 84" aria-hidden="true">
           <rect x="22" y="12" width="40" height="62" rx="4" fill="#1d3366" stroke="#2f4c8f" stroke-width="2"/>
@@ -150,7 +169,7 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       <p>Corujões, eventos Black, eventos no stand e ações de divulgação do mês.</p>
       <span class="go">Abrir calendário →</span>
     </a>
-    <a class="tile nova-linha" href="gestao/">
+    <a class="tile" href="gestao/">
       <div class="icon">
         <svg viewBox="0 0 84 84" aria-hidden="true">
           <rect x="12" y="14" width="60" height="56" rx="6" fill="#1d3366" stroke="#2f4c8f" stroke-width="2"/>
@@ -180,26 +199,7 @@ footer{text-align:center;font-size:13px;color:var(--muted)}
       <p>Funil 60 OPs → 30 AG → 10 VIS → 4 pastas → 1 venda e quem está mais perto de vender no mês.</p>
       <span class="go">Abrir ranking →</span>
     </a>
-    <a class="tile nova-linha" href="roleta/">
-      <div class="icon">
-        <svg viewBox="0 0 84 84" aria-hidden="true">
-          <circle cx="42" cy="40" r="28" fill="#1d3366" stroke="#2f4c8f" stroke-width="2"/>
-          <path d="M42 40 L42 12 A28 28 0 0 1 66.2 26 Z" fill="#ffb627"/>
-          <path d="M42 40 L66.2 26 A28 28 0 0 1 66.2 54 Z" fill="#5b7cff"/>
-          <path d="M42 40 L66.2 54 A28 28 0 0 1 42 68 Z" fill="#3ddc97"/>
-          <path d="M42 40 L42 68 A28 28 0 0 1 17.8 54 Z" fill="#ffb627"/>
-          <path d="M42 40 L17.8 54 A28 28 0 0 1 17.8 26 Z" fill="#5b7cff"/>
-          <path d="M42 40 L17.8 26 A28 28 0 0 1 42 12 Z" fill="#3ddc97"/>
-          <circle cx="42" cy="40" r="6" fill="#eef2fb"/>
-          <path d="M42 4 l-6 9 h12 z" fill="#eef2fb"/>
-          <rect x="22" y="73" width="40" height="5" rx="2.5" fill="#22376b"/>
-        </svg>
-      </div>
-      <h2>Roleta do Stand</h2>
-      <p>Quantas vezes cada corretor esteve na roleta presencial do stand Cores da Mata (manhã 8:45 e tarde 13:45).</p>
-      <span class="go">Abrir contador →</span>
-    </a>
-    <a class="tile" href="galeria/">
+    <a class="tile sozinho" href="galeria/">
       <div class="icon">
         <img src="galeria-icone.png" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:27px;background:#fff">
       </div>
