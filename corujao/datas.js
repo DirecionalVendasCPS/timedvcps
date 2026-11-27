@@ -8,7 +8,7 @@ const CORUJOES = [
   {dia: "2026-11-12", rotulo: "Corujão p/ 14/11", feito: 60, prometido: 85, placar: "60/85", corretores: 28, cumpriram: 11, prometeram: 35,
    gr: {Takeashi: [8, 19], Patricia: [34, 42], Gustavo: [18, 24]}},
   {dia: "2026-11-19", rotulo: "Corujão p/ 21/11", feito: 48, prometido: 71, placar: "48/71", gr: {Takeashi: [6, 11], Patricia: [37, 45], Gustavo: [5, 15]}},
-  {dia: "2026-11-26", rotulo: "Corujão p/ 28/11", feito: 89, prometido: 89, placar: "89/89", gr: {Takeashi: [20, 23], Patricia: [51, 45], Gustavo: [18, 21]}}
+  {dia: "2026-11-26", rotulo: "Corujão p/ 28/11", feito: 98, prometido: 89, placar: "98/89", gr: {Takeashi: [22, 23], Patricia: [54, 45], Gustavo: [22, 21]}}
 ];
 
 // corujão que está na página principal (corujao/index.html); os anteriores ficam em corujao/AAAA-MM-DD.html
