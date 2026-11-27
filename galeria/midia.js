@@ -3,7 +3,6 @@
 const MIDIA = [
   {arquivo: "https://agenciaforus.alboompro.com/proof/pt-BR/s/selecao-d-direcional-spi-outubro-2026", nome: "Seleção D+ · 3º trimestre", tipo: "link", data: "2026-11-27"},
   {arquivo: "arquivos/corujinha-com-taca.jpg", nome: "Corujinha com taça", tipo: "foto", data: "2026-11-27"},
-  {arquivo: "arquivos/corujinha-27-11-tambem-agendaram.png", nome: "Corujinha 27/11 · Também agendaram hoje", tipo: "foto", data: "2026-11-27"},
   {arquivo: "arquivos/corujinha-video-a-meta-e-piso.mp4", nome: "Vídeo · A meta é piso", tipo: "video", data: "2026-11-27"},
   {arquivo: "arquivos/corujinha-video-a-meta-e-piso-v2.mp4", nome: "Vídeo · A meta é piso (v2)", tipo: "video", data: "2026-11-27"},
   {arquivo: "arquivos/corujinha-video-bora-vender-time-dv.mp4", nome: "Vídeo · Bora vender, Time DV", tipo: "video", data: "2026-11-27"},
